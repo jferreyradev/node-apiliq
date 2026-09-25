@@ -1,0 +1,19 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+curltest.txt
+curltest2.txt
+vistaliq.sql
+node_modules
+services/access.log
+*.sql
+.env
+.env.*
+*.env
+!.env.example
+oracle-client/
+startup.log
+tmp/*
+oracle-client/
+

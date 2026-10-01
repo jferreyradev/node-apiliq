@@ -4,6 +4,10 @@ var config = require('../config/database')
 const { simpleExecute, getConnection } = require('../services/database');
 
 async function post(req, res, next) {
+    if (!req.body || !req.body.usr || !req.body.pws || !req.body.email) {
+        return res.status(400).json({ error: 'usr, pws y email son requeridos' });
+    }
+
     var user = {
         userName: req.body.usr,
         email: req.body.email
@@ -45,7 +49,7 @@ async function insertUser(user) {
 
     const res = await simpleExecute (
         `insert into US_SUELDO.USUARIOS( ID,USR,PWS,MAIL,CREADO,ACTIVO,IDROL)
-                values(1,:usr, :pwd, :email, :creacion, 1, :idrol)`,
+                values((SELECT NVL(MAX(ID), 0) + 1 FROM US_SUELDO.USUARIOS),:usr, :pwd, :email, :creacion, 1, :idrol)`,
         {
             usr: user.userName,
             email: user.email.toLowerCase(),

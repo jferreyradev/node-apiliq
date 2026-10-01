@@ -190,7 +190,15 @@ async function generaNovedadIPSST(uploadId) {
 
   const per = await getPeriodoActivo();
 
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(per)) {
+    throw new Error(`Periodo activo inválido: ${per}`);
+  }
+
   const idHoja = await crearHoja(1, 0, per, 3, 1, 5);
+
+  if (!Number.isInteger(idHoja) || idHoja <= 0) {
+    throw new Error(`Error al crear hoja de novedad, ID inválido: ${idHoja}`);
+  }
 
   if (idHoja > 0) {
     try {

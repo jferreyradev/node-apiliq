@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -9,10 +10,13 @@ let httpServer;
 let httpsServer;
 
 function getTlsCredentials() {
-    const keyPath = process.env.TLS_KEY_PATH;
-    const certPath = process.env.TLS_CERT_PATH;
+    const defaultKey = path.resolve(__dirname, '..', 'certs', 'server.key');
+    const defaultCert = path.resolve(__dirname, '..', 'certs', 'server.crt');
 
-    if (!keyPath || !certPath) {
+    const keyPath = process.env.TLS_KEY_PATH || (fs.existsSync(defaultKey) ? defaultKey : null);
+    const certPath = process.env.TLS_CERT_PATH || (fs.existsSync(defaultCert) ? defaultCert : null);
+
+    if (!keyPath || !certPath || !fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
         throw new Error('TLS_KEY_PATH y TLS_CERT_PATH son obligatorias para iniciar HTTPS');
     }
 

@@ -10,14 +10,23 @@ let httpServer;
 let httpsServer;
 
 function getTlsCredentials() {
+    if (process.env.ENABLE_HTTPS === 'false') {
+        return null;
+    }
+
     const defaultKey = path.resolve(__dirname, '..', 'certs', 'server.key');
     const defaultCert = path.resolve(__dirname, '..', 'certs', 'server.crt');
 
     const keyPath = process.env.TLS_KEY_PATH || (fs.existsSync(defaultKey) ? defaultKey : null);
     const certPath = process.env.TLS_CERT_PATH || (fs.existsSync(defaultCert) ? defaultCert : null);
 
-    if (!keyPath || !certPath || !fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
-        throw new Error('TLS_KEY_PATH y TLS_CERT_PATH son obligatorias para iniciar HTTPS');
+    const hasCert = keyPath && certPath && fs.existsSync(keyPath) && fs.existsSync(certPath);
+
+    if (!hasCert) {
+        if (process.env.ENABLE_HTTPS === 'true') {
+            throw new Error('ENABLE_HTTPS=true pero TLS_KEY_PATH y TLS_CERT_PATH son inválidas o inexistentes');
+        }
+        return null;
     }
 
     return {
@@ -28,14 +37,13 @@ function getTlsCredentials() {
 
 function initialize() {
     return new Promise((resolve, reject) => {
-        let listeningServers = 0;
         const app = express();
-        const credentials = getTlsCredentials();
-
-        httpServer = http.createServer(app);
-        httpsServer = https.createServer(credentials, app);
-
         app.use('/api', router);
+
+        const credentials = getTlsCredentials();
+        const enableHttps = credentials !== null;
+        const targetServers = enableHttps ? 2 : 1;
+        let listeningServers = 0;
 
         const onListening = (protocol, server) => {
             const address = server.address();
@@ -44,18 +52,24 @@ function initialize() {
             console.log(`Web ${protocol} server listening on ${protocol}://localhost:${port}/api`);
 
             listeningServers += 1;
-            if (listeningServers === 2) {
+            if (listeningServers === targetServers) {
                 resolve();
             }
         };
 
+        httpServer = http.createServer(app);
         httpServer.listen(webServerConfig.port, webServerConfig.host)
             .on('listening', () => onListening('http', httpServer))
             .on('error', reject);
 
-        httpsServer.listen(webServerConfig.port_https, webServerConfig.host)
-            .on('listening', () => onListening('https', httpsServer))
-            .on('error', reject);
+        if (enableHttps) {
+            httpsServer = https.createServer(credentials, app);
+            httpsServer.listen(webServerConfig.port_https, webServerConfig.host)
+                .on('listening', () => onListening('https', httpsServer))
+                .on('error', reject);
+        } else {
+            console.log('HTTPS deshabilitado. Servidor iniciado solo en HTTP.');
+        }
     });
 }
 
@@ -63,6 +77,11 @@ module.exports.initialize = initialize;
 
 function close() {
     return new Promise((resolve, reject) => {
+        const activeServers = [httpServer, httpsServer].filter(Boolean);
+        if (activeServers.length === 0) {
+            return resolve();
+        }
+
         let closedServers = 0;
         const onClosed = error => {
             if (error) {
@@ -71,13 +90,14 @@ function close() {
             }
 
             closedServers += 1;
-            if (closedServers === 2) {
+            if (closedServers === activeServers.length) {
                 resolve();
             }
         };
 
-        httpServer.close(onClosed);
-        httpsServer.close(onClosed);
+        for (const server of activeServers) {
+            server.close(onClosed);
+        }
     });
 }
 

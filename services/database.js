@@ -3,14 +3,6 @@ const fs = require('fs');
 const oracledb = require('oracledb');
 const dbConfig = require('../config/database');
 
-const oracleClientPath = process.env.ORACLE_CLIENT_LIB_DIR ||
-    path.resolve(
-        __dirname,
-        '..',
-        'oracle-client',
-        'instantclient_23_3'
-    );
-
 let oracleClientInitialized = false;
 
 function initializeOracleClient() {
@@ -18,24 +10,37 @@ function initializeOracleClient() {
         return;
     }
 
-    if (!fs.existsSync(oracleClientPath)) {
-        throw new Error(
-            `No existe Oracle Instant Client en: ${oracleClientPath}`
-        );
-    }
+    const customPath = process.env.ORACLE_CLIENT_LIB_DIR ? path.resolve(process.env.ORACLE_CLIENT_LIB_DIR) : null;
+    const defaultLocalPath = path.resolve(__dirname, '..', 'oracle-client', 'instantclient_23_3');
 
-    oracledb.initOracleClient({
-        libDir: oracleClientPath
-    });
+    try {
+        if (customPath) {
+            if (!fs.existsSync(customPath)) {
+                throw new Error(`La ruta configurada en ORACLE_CLIENT_LIB_DIR no existe: ${customPath}`);
+            }
+            oracledb.initOracleClient({ libDir: customPath });
+            console.log(`Oracle Client cargado desde: ${customPath}`);
+        } else if (fs.existsSync(defaultLocalPath)) {
+            oracledb.initOracleClient({ libDir: defaultLocalPath });
+            console.log(`Oracle Client cargado desde carpeta local: ${defaultLocalPath}`);
+        } else {
+            // Intentar cargar librerías del sistema operativo (LD_LIBRARY_PATH, ldconfig, PATH)
+            try {
+                oracledb.initOracleClient();
+                console.log(`Oracle Client cargado desde librerías del sistema (${oracledb.oracleClientVersionString || 'sistema'})`);
+            } catch (sysErr) {
+                console.warn('Aviso: No se inicializó Oracle Instant Client local ni de sistema.');
+                console.warn('Se intentará conectar en modo Thin (Puro JS). Nota: Si la BD es Oracle 11g se requiere Instant Client.');
+            }
+        }
+    } catch (err) {
+        console.error('Error al inicializar Oracle Client:', err.message);
+        throw err;
+    }
 
     // En Oracle 11g y posteriores, convertir CLOBs automáticamente a string de JavaScript
     oracledb.fetchAsString = [ oracledb.CLOB ];
-
     oracleClientInitialized = true;
-
-    console.log(
-        `Oracle Client cargado desde: ${oracleClientPath}`
-    );
 }
 
 async function initialize() {

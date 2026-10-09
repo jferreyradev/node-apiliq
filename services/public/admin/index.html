@@ -163,20 +163,42 @@
 
         .nav-tab {
             flex: 1;
-            padding: 12px;
-            font-size: 0.85rem;
+            padding: 10px 4px;
+            font-size: 0.78rem;
             font-weight: 600;
             color: var(--text-muted);
             text-align: center;
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .nav-tab.active {
             color: var(--primary);
             border-bottom-color: var(--primary);
             background: var(--bg-card);
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 36px 20px;
+            text-align: center;
+            background: rgba(30, 41, 59, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .dropzone-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
         }
 
         .search-box {
@@ -470,6 +492,7 @@
                 <div class="nav-tab active" onclick="switchMainTab('views')">📋 Vistas (<span id="viewsCount">0</span>)</div>
                 <div class="nav-tab" onclick="switchMainTab('sqlStudio')">➕ SQL Studio</div>
                 <div class="nav-tab" onclick="switchMainTab('procedures')">⚡ SPs (<span id="spCount">0</span>)</div>
+                <div class="nav-tab" onclick="switchMainTab('importer')">📁 Importar</div>
             </div>
 
             <div class="search-box">
@@ -600,6 +623,121 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 </div>
             </div>
 
+            <!-- Panel Importador -->
+            <div id="importerPanel" style="display: none; flex-direction: column; gap: 20px;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">📁 Cargar Archivo a Tabla Oracle</h2>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Sube archivos Excel (.xlsx, .xls) o Delimitados (.csv, .txt) para insertar masivamente en tablas de la BD con executeMany de alto rendimiento.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dropzone de archivo -->
+                    <div class="dropzone" id="importerDropzone" onclick="document.getElementById('importerFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                        <input type="file" id="importerFileInput" style="display: none;" accept=".xlsx,.xls,.csv,.tsv,.txt" onchange="handleFileSelected(event)">
+                        <div class="dropzone-icon">📥</div>
+                        <div style="font-size: 1rem; font-weight: 600; margin-bottom: 4px;" id="dropzoneMainText">Arrastra tu archivo aquí o haz clic para seleccionarlo</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Formatos compatibles: Excel (.xlsx, .xls) y CSV (.csv, .tsv, .txt) &bull; Máx 50MB</div>
+                    </div>
+                </div>
+
+                <!-- Card de Previsualización y Selección de Tabla -->
+                <div class="card" id="importerPreviewCard" style="display: none;">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span class="card-title" id="importerFileNameTitle">archivo.xlsx</span>
+                            <span class="brand-badge" id="importerTotalRowsBadge">0 filas</span>
+                            <div id="sheetSelectorWrapper" style="display: none; align-items: center; gap: 6px; margin-left: 10px;">
+                                <label style="font-size: 0.8rem; color: var(--text-muted);">Hoja:</label>
+                                <select id="importerSheetSelect" class="form-control" style="width: auto; padding: 4px 8px; font-size: 0.8rem;" onchange="changeExcelSheet()"></select>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" onclick="resetImporter()">🔄 Cambiar Archivo</button>
+                    </div>
+
+                    <!-- Formulario de Selección de Tabla Destino -->
+                    <div style="margin-bottom: 16px;">
+                        <label class="form-label" style="font-weight: 600;">Tabla Destino en Oracle:</label>
+                        <div style="display: flex; gap: 10px; align-items: center; max-width: 600px;">
+                            <input type="text" id="targetTableInput" list="tablesDatalist" class="form-control" placeholder="Ej: STG_NOVEDADES o US_SUELDO.IMPORT_TEMP" onkeydown="if(event.key==='Enter') inspectSelectedTableColumns()">
+                            <datalist id="tablesDatalist"></datalist>
+                            <button class="btn btn-primary" id="btnInspectTableCols" onclick="inspectSelectedTableColumns()">🔍 Inspeccionar Columnas</button>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Escribe el nombre de la tabla o selecciónala de la lista sugerida de Oracle.</p>
+                    </div>
+
+                    <!-- Muestra de Filas (Sample Preview) -->
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;">Previsualización del Archivo (Primeras filas):</div>
+                        <div class="table-container" style="max-height: 220px; overflow-y: auto;">
+                            <table id="importerSampleTable">
+                                <thead id="importerSampleHead"></thead>
+                                <tbody id="importerSampleBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Mapeo de Columnas y Opciones -->
+                <div class="card" id="importerMappingCard" style="display: none;">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <h3 class="card-title">Mapeo de Columnas (Archivo ➔ Oracle)</h3>
+                            <span class="brand-badge" id="mappingMetaBadge">0 mapeadas</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                        Asocia cada columna detectada en el archivo con su correspondiente columna en la tabla de Oracle. Puedes ignorar columnas seleccionando "(No importar / Ignorar)".
+                    </p>
+
+                    <div class="table-container" style="margin-bottom: 18px;">
+                        <table id="importerMappingTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 28%;">Columna en Archivo</th>
+                                    <th style="width: 34%;">➔ Mapear a Columna Oracle</th>
+                                    <th style="width: 20%;">Tipo en Oracle</th>
+                                    <th style="width: 18%;">Ejemplo Fila 1</th>
+                                </tr>
+                            </thead>
+                            <tbody id="importerMappingBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Opciones de Carga -->
+                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 0.85rem; font-weight: 600;">Opciones de Inserción:</div>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                            <input type="checkbox" id="importerTruncateCheck">
+                            <span>⚠️ <strong>Vaciar tabla antes de insertar</strong> (Ejecuta TRUNCATE / DELETE antes de la carga)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                            <input type="checkbox" id="importerAtomicCheck" checked>
+                            <span>🔒 <strong>Modo Transaccional Atómico</strong> (Si alguna fila falla, hace Rollback completo sin dejar registros corruptos)</span>
+                        </label>
+                    </div>
+
+                    <!-- Botón de Ejecución -->
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button class="btn btn-primary" id="btnExecuteImport" style="padding: 10px 24px; font-size: 0.95rem;" onclick="startImportExecution()">
+                            🚀 Iniciar Carga a Oracle
+                        </button>
+                        <span id="importExecutionStatus" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+                    </div>
+                </div>
+
+                <!-- Card de Resultados / Progreso -->
+                <div class="card" id="importerResultsCard" style="display: none;">
+                    <div class="card-header">
+                        <span class="card-title">Resultado de la Importación</span>
+                        <span class="brand-badge" id="importerResultBadge">Estado</span>
+                    </div>
+                    <div id="importerResultContent" style="padding: 10px 0;"></div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -634,6 +772,9 @@ ORDER BY p.apellido, p.nombre"></textarea>
         let currentSelectedView = null;
         let currentSelectedSp = null;
         let lastQueryResultData = [];
+        let cachedDbTables = [];
+        let currentImportSession = null;
+        let currentTargetTableCols = [];
 
         // Inicialización
         window.addEventListener('DOMContentLoaded', async () => {
@@ -738,7 +879,7 @@ ORDER BY p.apellido, p.nombre"></textarea>
             currentTab = tab;
             document.querySelectorAll('.nav-tab').forEach((t, idx) => {
                 t.classList.remove('active');
-                if ((tab === 'views' && idx === 0) || (tab === 'sqlStudio' && idx === 1) || (tab === 'procedures' && idx === 2)) {
+                if ((tab === 'views' && idx === 0) || (tab === 'sqlStudio' && idx === 1) || (tab === 'procedures' && idx === 2) || (tab === 'importer' && idx === 3)) {
                     t.classList.add('active');
                 }
             });
@@ -746,6 +887,11 @@ ORDER BY p.apellido, p.nombre"></textarea>
             document.getElementById('viewPanel').style.display = tab === 'views' ? 'flex' : 'none';
             document.getElementById('sqlStudioPanel').style.display = tab === 'sqlStudio' ? 'flex' : 'none';
             document.getElementById('spPanel').style.display = tab === 'procedures' ? 'flex' : 'none';
+            document.getElementById('importerPanel').style.display = tab === 'importer' ? 'flex' : 'none';
+
+            if (tab === 'importer' && (!cachedDbTables || cachedDbTables.length === 0)) {
+                loadDbTablesList();
+            }
 
             renderSidebar();
         }
@@ -787,6 +933,29 @@ ORDER BY p.apellido, p.nombre"></textarea>
                         <p>2. Los parámetros con dos puntos (ej: <code>:IdRep</code>) se convertirán en filtros URL automáticos.</p>
                     </div>
                 `;
+            } else if (currentTab === 'importer') {
+                const tables = (cachedDbTables || []).filter(t => t.toLowerCase().includes(search));
+                if (tables.length === 0) {
+                    list.innerHTML = `
+                        <div style="padding: 16px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                            <p style="margin-bottom: 8px; font-weight: 600; color: var(--primary);">📁 Carga de Archivos:</p>
+                            <p>1. Arrastra o selecciona tu archivo Excel (.xlsx, .xls) o CSV.</p><br>
+                            <p>2. Selecciona la tabla destino en Oracle.</p><br>
+                            <p>3. Asocia las columnas y haz clic en Iniciar Carga.</p>
+                        </div>
+                    `;
+                } else {
+                    tables.forEach(tableName => {
+                        const item = document.createElement('div');
+                        item.className = 'list-item';
+                        item.onclick = () => selectImportTargetTable(tableName);
+                        item.innerHTML = `
+                            <div class="list-item-title">📊 ${tableName}</div>
+                            <div class="list-item-sub">Clic para usar como tabla destino</div>
+                        `;
+                        list.appendChild(item);
+                    });
+                }
             }
         }
 
@@ -1302,6 +1471,428 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     btn.innerHTML = originalText;
                 }
             }
+        }
+
+        // ==========================================
+        // Módulo Importador de Archivos a Oracle
+        // ==========================================
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const el = document.getElementById('importerDropzone');
+            if (el) el.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const el = document.getElementById('importerDropzone');
+            if (el) el.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const el = document.getElementById('importerDropzone');
+            if (el) el.classList.remove('dragover');
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length > 0) {
+                processUploadedFile(dt.files[0]);
+            }
+        }
+
+        function handleFileSelected(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                processUploadedFile(e.target.files[0]);
+            }
+        }
+
+        async function processUploadedFile(file, sheetName = null) {
+            const dropzoneText = document.getElementById('dropzoneMainText');
+            const originalText = dropzoneText.textContent;
+            dropzoneText.textContent = `⏳ Subiendo y procesando "${file.name}"...`;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                let url = `${API_BASE}/import/preview?fileName=${encodeURIComponent(file.name)}`;
+                if (sheetName) {
+                    url += `&sheet=${encodeURIComponent(sheetName)}`;
+                }
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
+                        'X-Admin-Key': currentAdminKey,
+                        'X-File-Name': encodeURIComponent(file.name)
+                    },
+                    body: arrayBuffer
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Error ${res.status}: Fallo al previsualizar archivo`);
+                }
+
+                const data = await res.json();
+                currentImportSession = data;
+                window.lastImportedFile = file;
+
+                // Actualizar interfaz de Preview
+                document.getElementById('importerFileNameTitle').textContent = `📄 ${data.fileName}`;
+                document.getElementById('importerTotalRowsBadge').textContent = `${data.totalRows.toLocaleString()} filas`;
+
+                // Selector de hojas si es Excel con múltiples hojas
+                const sheetWrapper = document.getElementById('sheetSelectorWrapper');
+                const sheetSelect = document.getElementById('importerSheetSelect');
+                if (data.sheets && data.sheets.length > 1) {
+                    sheetSelect.innerHTML = '';
+                    data.sheets.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s;
+                        opt.textContent = s;
+                        if (s === data.selectedSheet) opt.selected = true;
+                        sheetSelect.appendChild(opt);
+                    });
+                    sheetWrapper.style.display = 'flex';
+                } else {
+                    sheetWrapper.style.display = 'none';
+                }
+
+                renderSampleTable(data.columns, data.preview);
+                document.getElementById('importerPreviewCard').style.display = 'block';
+
+                // Cargar lista de tablas para autocompletar si aún no están cargadas
+                loadDbTablesList();
+
+                showToast(`Archivo procesado: ${data.totalRows.toLocaleString()} registros encontrados`, 'success');
+
+                // Si ya había una tabla escrita, inspeccionar automáticamente
+                const existingTable = document.getElementById('targetTableInput').value.trim();
+                if (existingTable) {
+                    inspectSelectedTableColumns();
+                }
+
+            } catch (err) {
+                showToast(`Error al leer archivo: ${err.message}`, 'error');
+            } finally {
+                dropzoneText.textContent = originalText;
+            }
+        }
+
+        async function changeExcelSheet() {
+            const sheet = document.getElementById('importerSheetSelect').value;
+            if (window.lastImportedFile) {
+                processUploadedFile(window.lastImportedFile, sheet);
+            }
+        }
+
+        async function loadDbTablesList() {
+            try {
+                const res = await fetch(`${API_BASE}/import/tables`, {
+                    headers: { 'X-Admin-Key': currentAdminKey }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    cachedDbTables = data.tables || [];
+                    const datalist = document.getElementById('tablesDatalist');
+                    if (datalist) {
+                        datalist.innerHTML = '';
+                        cachedDbTables.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t;
+                            datalist.appendChild(opt);
+                        });
+                    }
+                    if (currentTab === 'importer') {
+                        renderSidebar();
+                    }
+                }
+            } catch (e) {
+                console.warn('No se pudo cargar la lista de tablas:', e);
+            }
+        }
+
+        function selectImportTargetTable(tableName) {
+            document.getElementById('targetTableInput').value = tableName;
+            inspectSelectedTableColumns();
+        }
+
+        async function inspectSelectedTableColumns() {
+            const tableName = document.getElementById('targetTableInput').value.trim();
+            if (!tableName) {
+                showToast('Por favor escribe o selecciona el nombre de la tabla destino', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnInspectTableCols');
+            const origText = btn.textContent;
+            btn.textContent = '⏳ Inspeccionando...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/import/table-columns/${encodeURIComponent(tableName)}`, {
+                    headers: { 'X-Admin-Key': currentAdminKey }
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Error ${res.status}: No se encontraron columnas`);
+                }
+
+                const data = await res.json();
+                currentTargetTableCols = data.columns || [];
+
+                if (currentTargetTableCols.length === 0) {
+                    showToast(`La tabla "${tableName}" no devolvió columnas o no existe en Oracle.`, 'warning');
+                }
+
+                if (currentImportSession && currentImportSession.columns) {
+                    renderMappingTable(currentImportSession.columns, currentTargetTableCols, currentImportSession.preview[0] || {});
+                    document.getElementById('importerMappingCard').style.display = 'block';
+                    document.getElementById('importerMappingCard').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showToast(`Columnas de ${tableName} obtenidas (${currentTargetTableCols.length}). Ahora sube tu archivo.`, 'info');
+                }
+
+            } catch (err) {
+                showToast(`Error: ${err.message}`, 'error');
+            } finally {
+                btn.textContent = origText;
+                btn.disabled = false;
+            }
+        }
+
+        function renderSampleTable(columns, previewRows) {
+            const head = document.getElementById('importerSampleHead');
+            const body = document.getElementById('importerSampleBody');
+
+            let thHtml = '<tr>';
+            columns.forEach(col => {
+                thHtml += `<th>${col}</th>`;
+            });
+            thHtml += '</tr>';
+            head.innerHTML = thHtml;
+
+            let trHtml = '';
+            previewRows.forEach(row => {
+                trHtml += '<tr>';
+                columns.forEach(col => {
+                    const val = row[col] !== undefined && row[col] !== null ? String(row[col]) : '<span style="color:var(--text-muted);">NULL</span>';
+                    trHtml += `<td>${val}</td>`;
+                });
+                trHtml += '</tr>';
+            });
+            body.innerHTML = trHtml || '<tr><td colspan="' + columns.length + '">Sin datos de muestra</td></tr>';
+        }
+
+        function renderMappingTable(fileColumns, tableColumns, sampleRow) {
+            const body = document.getElementById('importerMappingBody');
+            body.innerHTML = '';
+
+            fileColumns.forEach((fileCol, idx) => {
+                const tr = document.createElement('tr');
+
+                // Buscar coincidencia por nombre (case-insensitive)
+                const normalizedFileCol = fileCol.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '');
+                let matchedCol = null;
+
+                for (const tc of tableColumns) {
+                    const normTc = tc.name.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+                    if (normTc === normalizedFileCol || tc.name.toUpperCase() === fileCol.trim().toUpperCase()) {
+                        matchedCol = tc;
+                        break;
+                    }
+                }
+
+                // Opciones del select
+                let optionsHtml = '<option value="(ignorar)">(No importar / Ignorar)</option>';
+                tableColumns.forEach(tc => {
+                    const isSelected = matchedCol && matchedCol.name === tc.name ? 'selected' : '';
+                    optionsHtml += `<option value="${tc.name}" ${isSelected}>${tc.name} (${tc.type})</option>`;
+                });
+
+                const oracleTypeLabel = matchedCol ? `${matchedCol.type}${matchedCol.length ? '(' + matchedCol.length + ')' : ''}` : '-';
+                const sampleVal = sampleRow[fileCol] !== undefined && sampleRow[fileCol] !== null ? String(sampleRow[fileCol]) : '-';
+
+                tr.innerHTML = `
+                    <td><strong>${fileCol}</strong></td>
+                    <td>
+                        <select class="form-control mapping-select" data-file-col="${fileCol}" onchange="onMappingSelectChanged(this)" style="font-size:0.85rem; padding:6px 10px;">
+                            ${optionsHtml}
+                        </select>
+                    </td>
+                    <td class="type-cell" id="type_cell_${idx}" style="font-size:0.8rem; color:var(--text-muted);">${oracleTypeLabel}</td>
+                    <td style="font-size:0.8rem; color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${sampleVal}</td>
+                `;
+
+                body.appendChild(tr);
+            });
+
+            updateMappingMetaBadge();
+        }
+
+        function onMappingSelectChanged(selectEl) {
+            const selectedVal = selectEl.value;
+            const row = selectEl.closest('tr');
+            const typeCell = row.querySelector('.type-cell');
+            if (selectedVal && selectedVal !== '(ignorar)') {
+                const colMeta = currentTargetTableCols.find(c => c.name === selectedVal);
+                typeCell.textContent = colMeta ? `${colMeta.type}${colMeta.length ? '(' + colMeta.length + ')' : ''}` : '-';
+            } else {
+                typeCell.textContent = '-';
+            }
+            updateMappingMetaBadge();
+        }
+
+        function updateMappingMetaBadge() {
+            const selects = document.querySelectorAll('.mapping-select');
+            let mapped = 0;
+            selects.forEach(s => {
+                if (s.value && s.value !== '(ignorar)') mapped++;
+            });
+            const badge = document.getElementById('mappingMetaBadge');
+            if (badge) {
+                badge.textContent = `${mapped} de ${selects.length} mapeadas`;
+            }
+        }
+
+        async function startImportExecution() {
+            if (!currentImportSession || !currentImportSession.uploadId) {
+                showToast('Primero debes subir un archivo', 'warning');
+                return;
+            }
+
+            const tableName = document.getElementById('targetTableInput').value.trim();
+            if (!tableName) {
+                showToast('Especifica la tabla destino en Oracle', 'warning');
+                return;
+            }
+
+            // Construir mapeo
+            const mapping = {};
+            const selects = document.querySelectorAll('.mapping-select');
+            let countMapped = 0;
+            selects.forEach(s => {
+                const fileCol = s.getAttribute('data-file-col');
+                const targetCol = s.value;
+                if (targetCol && targetCol !== '(ignorar)') {
+                    mapping[fileCol] = targetCol;
+                    countMapped++;
+                }
+            });
+
+            if (countMapped === 0) {
+                showToast('Debes mapear al menos una columna para importar', 'warning');
+                return;
+            }
+
+            const truncate = document.getElementById('importerTruncateCheck').checked;
+            const atomic = document.getElementById('importerAtomicCheck').checked;
+
+            if (truncate) {
+                const ok = confirm(`⚠️ ATENCIÓN: Has marcado "Vaciar tabla".\nSe eliminarán TODOS los registros existentes en la tabla "${tableName}" antes de insertar.\n\n¿Deseas continuar?`);
+                if (!ok) return;
+            }
+
+            const btn = document.getElementById('btnExecuteImport');
+            const statusLabel = document.getElementById('importExecutionStatus');
+            btn.disabled = true;
+            btn.textContent = '⏳ Cargando en Oracle...';
+            statusLabel.textContent = 'Insertando registros por lotes (executeMany)...';
+
+            const resultsCard = document.getElementById('importerResultsCard');
+            const resultsBadge = document.getElementById('importerResultBadge');
+            const resultsContent = document.getElementById('importerResultContent');
+
+            resultsCard.style.display = 'block';
+            resultsBadge.textContent = 'Procesando...';
+            resultsBadge.style.backgroundColor = 'var(--warning)';
+            resultsContent.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem;">⏳ Ejecutando lotes de inserción masiva en Oracle. Por favor espera...</p>';
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const res = await fetch(`${API_BASE}/import/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': currentAdminKey
+                    },
+                    body: JSON.stringify({
+                        uploadId: currentImportSession.uploadId,
+                        tableName,
+                        mapping,
+                        truncate,
+                        atomic,
+                        batchSize: 2000
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || `Error ${res.status}: Fallo en la importación`);
+                }
+
+                resultsBadge.textContent = 'Éxito';
+                resultsBadge.style.backgroundColor = 'var(--success)';
+
+                let errorsSummaryHtml = '';
+                if (data.batchErrors && data.batchErrors.length > 0) {
+                    errorsSummaryHtml = `
+                        <div style="margin-top: 14px; padding: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); border-radius: var(--radius);">
+                            <div style="font-weight: 600; color: #fca5a5; margin-bottom: 6px;">⚠️ Advertencias en ${data.batchErrors.length} filas:</div>
+                            <pre style="max-height: 140px; overflow-y: auto; font-size: 0.75rem;">${JSON.stringify(data.batchErrors, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+
+                resultsContent.innerHTML = `
+                    <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+                        <h4 style="color: var(--success); font-size: 1.1rem; margin-bottom: 8px;">✅ ¡Carga masiva completada con éxito!</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 0.85rem;">
+                            <div><strong>Tabla Destino:</strong> <code>${data.tableName}</code></div>
+                            <div><strong>Filas Insertadas:</strong> <span style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">${data.rowsInserted.toLocaleString()}</span> / ${data.totalRows.toLocaleString()}</div>
+                            <div><strong>Tiempo de Ejecución:</strong> ${data.timeMs} ms (${(data.timeMs / 1000).toFixed(2)}s)</div>
+                            <div><strong>Columnas Mapeadas:</strong> ${countMapped}</div>
+                        </div>
+                    </div>
+                    ${errorsSummaryHtml}
+                `;
+
+                showToast(`¡${data.rowsInserted.toLocaleString()} filas insertadas con éxito en ${data.tableName}!`, 'success');
+
+                btn.textContent = '✅ Importación Completada';
+                statusLabel.textContent = 'Los datos ya están listos en la tabla de Oracle para ser procesados.';
+
+            } catch (err) {
+                resultsBadge.textContent = 'Error';
+                resultsBadge.style.backgroundColor = 'var(--danger)';
+                resultsContent.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); border-radius: var(--radius); padding: 16px;">
+                        <h4 style="color: #fca5a5; font-size: 1.05rem; margin-bottom: 8px;">❌ Error durante la importación a Oracle</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-main);">${err.message}</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Nota: Si el modo atómico estaba activo, se realizó un rollback automático y ningún registro parcial fue insertado.</p>
+                    </div>
+                `;
+                showToast(`Error: ${err.message}`, 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Reintentar Carga';
+                statusLabel.textContent = 'La inserción falló.';
+            }
+        }
+
+        function resetImporter() {
+            currentImportSession = null;
+            document.getElementById('importerFileInput').value = '';
+            document.getElementById('importerPreviewCard').style.display = 'none';
+            document.getElementById('importerMappingCard').style.display = 'none';
+            document.getElementById('importerResultsCard').style.display = 'none';
+            const btn = document.getElementById('btnExecuteImport');
+            btn.disabled = false;
+            btn.textContent = '🚀 Iniciar Carga a Oracle';
+            document.getElementById('importExecutionStatus').textContent = '';
         }
     </script>
 </body>

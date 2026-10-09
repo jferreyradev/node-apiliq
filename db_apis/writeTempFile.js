@@ -34,8 +34,15 @@ async function removeFile(filename) {
     }
 }
 
+async function readJson(filename) {
+    const data = await fs.readFile(getTempPath(filename), 'utf8');
+    return JSON.parse(data);
+}
+
 module.exports.writeFile = writeFile;
 
 module.exports.readFile = readFile;
+
+module.exports.readJson = readJson;
 
 module.exports.removeFile = removeFile;

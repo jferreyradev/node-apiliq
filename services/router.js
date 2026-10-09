@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require('path');
 
 const files = require('../controllers/files.js');
+const importController = require('../controllers/importController.js');
 
 const app = new express.Router();
 
@@ -18,9 +19,10 @@ const adminAuth = require('./adminAuth');
 
 const { json } = require('body-parser');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 
 const options = {
+    limit: '50mb',
     reviver: (key, value) => {
         //console.log('reviver');
         let dateTimeRegExp = /^\d{4}-\d{2}-\d{2}/;
@@ -121,6 +123,12 @@ app.route('/adduser').post(controlUser.post);
 app.route('/boleta').get(control.getBoletaPDF2);
 
 app.route('/generaNovIPSST').get(files.getHojaId);
+
+app.route('/import/tables').get(adminAuth.adminAuthMiddleware, importController.getTables);
+app.route('/import/table-columns/:table').get(adminAuth.adminAuthMiddleware, importController.getTableColumns);
+app.route('/import/preview').post(adminAuth.adminAuthMiddleware, importController.preview);
+app.route('/import/execute').post(adminAuth.adminAuthMiddleware, importController.execute);
+app.route('/import/direct').post(adminAuth.adminAuthMiddleware, importController.directImport);
 
 app.route('/*')
     .get(control.get)

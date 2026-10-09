@@ -2,6 +2,8 @@
 
 API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19c)** para la gestión y liquidación de sueldos municipales, generación de boletas PDF, reportes Excel/TXT, intercambio de novedades IPSST y ejecución dinámica de procedimientos y consultas.
 
+> 🚀 **¿Necesitas instalar el servidor desde cero rápidamente?** Consulta la **[Guía Rápida de Puesta en Marcha para Terceros (PUESTA_EN_MARCHA.md)](PUESTA_EN_MARCHA.md)** con instrucciones detalladas para Linux (Ubuntu/Debian/RHEL), macOS y Windows.
+
 ---
 
 ## 🌟 Características Principales
@@ -10,10 +12,11 @@ API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19
 * **Catálogo de Consultas en Base de Datos**: Las vistas y consultas residen en la tabla `API_VIEW_MAPPER` con recarga en memoria RAM (0 ms de latencia) y fallback automático.
 * **Auto-Parser SQL**: Permite crear nuevas consultas en la API simplemente enviando la sentencia `SELECT ... FROM ...` pura o leyendo una vista física de Oracle.
 * **Introspección en Vivo de Stored Procedures y Funciones**: La API descubre los parámetros `IN` y `OUT` consultando `ALL_ARGUMENTS` en tiempo real.
+* **Carga Masiva de Archivos a Tablas Oracle**: Importación por lotes de archivos Excel (`.xlsx`, `.xls`) y delimitados (`.csv`, `.tsv`, `.txt`) a cualquier tabla de la base de datos con `executeMany`, introspección de columnas, auto-mapeo visual y rollback atómico.
 * **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends existentes (`HojaIns`, `novHaberesDel`, `cargoIns`, `verifConcepto`, etc.).
 * **Generación de Boletas PDF y Reportes XLSX**: Soporte para generación vectorial de recibos y exportación de planillas.
 * **Procesamiento de Novedades IPSST**: Flujo en dos pasos con `uploadId` único y aislado para evitar colisiones concurrentes.
-* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) para explorar y testear las 54 vistas, crear nuevas consultas SQL en tiempo real con auto-parser, testear Stored Procedures con binds dinámicos y reiniciar la memoria RAM.
+* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) para explorar y testear las 54 vistas, crear nuevas consultas SQL en tiempo real con auto-parser, testear Stored Procedures con binds dinámicos, cargar archivos masivos a tablas y reiniciar la memoria RAM.
 * **Seguridad y Producción**: CORS configurable con whitelist, protección de endpoints de modificación y Frontend Studio mediante clave maestra (`ADMIN_ACCESS_KEY`), clave interna `X-Internal-Key` para llamadas desde Deno, y soporte HTTPS con TLS.
 
 ---
@@ -42,11 +45,8 @@ USERDB="US_SUELDO"
 PASSWORD="TuPassword"
 CONNECTIONSTRING="181.14.228.210:1521/desa"
 
-HTTP_PORT=3005
-HTTPS_PORT=3007
-ENABLE_HTTPS=false
-
-ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
+PORT=3005
+# ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
 LOGO_PATH=./assets/logo.png
 
 # Clave maestra para Developer & Admin Studio y endpoints de modificación
@@ -108,9 +108,15 @@ Al ingresar, el estudio solicita la **Clave de Acceso de Administrador** configu
    * Descubre y lista automáticamente los procedimientos y funciones de los paquetes Oracle.
    * Formulario inteligente para parámetros `IN` (`NUMBER`, `VARCHAR2`, `DATE`).
    * Ejecución en vivo con visualización de cursores de salida o valores retornados.
-4. **Recarga de Memoria RAM**:
+4. **Cargador Masivo de Archivos a Tablas Oracle (`📁 Importar`)**:
+   * Pestaña visual con arrastrar y soltar para archivos Excel (`.xlsx`, `.xls`) y delimitados (`.csv`, `.tsv`, `.txt`).
+   * Previsualización instantánea de registros y selector de hojas de cálculo.
+   * Detección automática y sugerencia de tablas destino existentes en Oracle.
+   * Mapeo inteligente columna-a-columna (coincidencias por nombre y visualización de tipos Oracle `NUMBER`, `VARCHAR2`, `DATE`).
+   * Opciones de vaciado previo (`TRUNCATE`) y modo transaccional atómico (`ROLLBACK` automático ante cualquier fila inválida).
+5. **Recarga de Memoria RAM**:
    * Botón en la barra superior para reiniciar la caché de vistas y SPs en memoria sin reiniciar el proceso Node.js.
-5. **Zero Dependencias & 100% Offline**:
+6. **Zero Dependencias & 100% Offline**:
    * SPA nativa sin frameworks externos ni CDNs de internet; funciona de manera completamente autónoma en redes municipales y VPNs cerradas.
 
 ---
@@ -190,7 +196,35 @@ Flujo en dos pasos protegido con `uploadId` concurrente:
 
 ---
 
-### 4. Recibos de Sueldo en PDF y Reportes Excel
+### 4. Carga Masiva de Archivos a Tablas Oracle (`/api/import/*`)
+
+Permite subir archivos **Excel (`.xlsx`, `.xls`)** o **Delimitados (`.csv`, `.tsv`, `.txt`)** e insertarlos masivamente por lotes en cualquier tabla de Oracle (ej. tablas de staging / intermedias para posterior procesamiento por SP):
+
+| Método | Endpoint | Seguridad | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/import/preview` | `X-Admin-Key` | Parsea el archivo en memoria, detecta hojas, columnas y retorna muestra previa con `uploadId`. |
+| `GET` | `/api/import/tables` | `X-Admin-Key` | Lista las tablas disponibles en Oracle. |
+| `GET` | `/api/import/table-columns/:table` | `X-Admin-Key` | Retorna los nombres y tipos de datos de las columnas de la tabla. |
+| `POST` | `/api/import/execute` | `X-Admin-Key` | Ejecuta la inserción masiva (`executeMany`) con el mapeo de columnas elegido. |
+| `POST` | `/api/import/direct` | `X-Admin-Key` | **Carga directa en 1 solo paso** con auto-mapeo de columnas (ideal para scripts y curl). |
+
+#### Ejemplo de carga directa en 1 solo comando (curl):
+```bash
+curl -X POST http://localhost:3005/api/import/direct \
+     -H "X-Admin-Key: admin_liq_2026" \
+     -H "Content-Type: application/octet-stream" \
+     -H "X-Table-Name: STG_NOVEDADES" \
+     -H "X-Truncate: true" \
+     -H "X-Atomic: true" \
+     -H "X-File-Name: novedades_marzo.xlsx" \
+     --data-binary @novedades_marzo.xlsx
+```
+
+*(También se puede utilizar interactivamente con arrastrar y soltar desde el **Developer & Admin Studio** en la pestaña `📁 Importar`).*
+
+---
+
+### 5. Recibos de Sueldo en PDF y Reportes Excel
 
 - **Boleta PDF:** `GET /api/boleta?Periodo=202603&IdRep=1&Orden=10`
 - **Reporte Excel:** `GET /api/xlsx/resumenLiq?Periodo=202603`

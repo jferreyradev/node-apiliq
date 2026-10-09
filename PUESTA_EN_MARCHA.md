@@ -1,0 +1,327 @@
+# 🚀 Guía Rápida de Puesta en Marcha (Instalación por Terceros)
+
+Esta guía describe el procedimiento paso a paso para desplegar e iniciar **API REST Sueldos (`api_liquid` / `node-apiliq`)** en un servidor nuevo (Linux Ubuntu/Debian/RHEL, macOS o Windows Server) de forma rápida y sin complicaciones.
+
+---
+
+## 📌 1. Requisitos Previos del Servidor
+
+Asegúrate de contar con los siguientes elementos antes de comenzar:
+
+1. **Node.js**: Versión **18.x**, **20.x LTS** o superior.
+   * Verificar en terminal: `node -v` y `npm -v`
+2. **Git**: Para clonar el repositorio (`git --version`).
+3. **Oracle Instant Client**: Versión **19c** o **23c** (Basic o Basic Light).
+4. **Acceso de Red a Oracle**: Conectividad al host y puerto de la base de datos (por defecto `1521`).
+   * Probar conectividad: `nc -zv <IP_ORACLE> 1521` o `telnet <IP_ORACLE> 1521`.
+5. **Usuario en Oracle con Privilegios**: Generalmente `US_SUELDO` (debe tener permisos para crear tablas, vistas y secuencias, y permisos `SELECT` sobre `ALL_ARGUMENTS` y `ALL_TAB_COLUMNS`).
+
+---
+
+## 📥 2. Paso a Paso de Instalación
+
+### Paso 1: Clonar el Repositorio
+```bash
+git clone https://github.com/jferreyradev/node-apiliq.git
+cd node-apiliq
+```
+
+### Paso 2: Instalar Dependencias de Node.js
+```bash
+npm install
+```
+*(Si estás en un servidor de producción estricto puedes usar `npm install --omit=dev`).*
+
+---
+
+### Paso 3: Configurar Oracle Instant Client
+
+Node.js utiliza el controlador nativo de Oracle (`node-oracledb`). Se requiere que las librerías binarias del Instant Client estén disponibles en el sistema operativo:
+
+#### Opción A: En Linux (Ubuntu / Debian / CentOS / RHEL)
+1. Instalar la librería del sistema `libaio`:
+   ```bash
+   # Ubuntu / Debian:
+   sudo apt-get update && sudo apt-get install -y libaio1
+
+   # RHEL / CentOS / Rocky Linux:
+   sudo yum install -y libaio
+   ```
+2. Descargar y descomprimir Oracle Instant Client (por ejemplo en `/opt/oracle`):
+   ```bash
+   sudo mkdir -p /opt/oracle
+   cd /opt/oracle
+   sudo wget https://download.oracle.com/otn_software/linux/instantclient/2340000/instantclient-basic-linux.x64-23.4.0.24.05.zip
+   sudo unzip instantclient-basic-linux.x64-23.4.0.24.05.zip
+   ```
+3. Agregar la ruta al cargador dinámico de librerías:
+   ```bash
+   sudo sh -c "echo /opt/oracle/instantclient_23_4 > /etc/ld.so.conf.d/oracle-instantclient.conf"
+   sudo ldconfig
+   ```
+
+#### Opción B: En macOS o Carpeta Local del Proyecto
+Si prefieres colocar el cliente dentro del propio proyecto:
+1. Descomprime Instant Client dentro de `./oracle-client/instantclient_23_3`.
+2. Indica la ruta en la variable `ORACLE_CLIENT_LIB_DIR` de tu `.env` (ver Paso 4).
+
+#### Verificar que Node detecta el Instant Client:
+Ejecuta el script de prueba incluido:
+```bash
+node scripts/test-oracle-client.js
+```
+Debe responder:
+> `Oracle Client cargado correctamente. Versión: 23.x...`
+
+---
+
+### Paso 4: Configurar Variables de Entorno (`.env`)
+
+Copia la plantilla de ejemplo y edita tus credenciales:
+```bash
+cp .env.example .env
+nano .env   # o usa tu editor favorito (vim, code, etc.)
+```
+
+#### Parámetros Clave en `.env`:
+
+| Variable | Valor de Ejemplo | Descripción |
+| :--- | :--- | :--- |
+| `USERDB` | `US_SUELDO` | Usuario del esquema de Oracle. |
+| `PASSWORD` | `MiClaveSegura2026` | Contraseña del usuario Oracle. |
+| `CONNECTIONSTRING` | `192.168.1.50:1521/ORCL` | Cadena de conexión TNS (`host:puerto/servicio` o `TNS_ALIAS`). |
+| `PORT` | `3005` | Puerto único en el que escucha la API (también soporta `HTTP_PORT`). |
+| `ADMIN_ACCESS_KEY` | `admin_liq_2026` | **Clave maestra** para ingresar a `/admin` y autorizar importaciones/guardados. |
+| `ENABLE_ADMIN_STUDIO`| `true` | Habilita el Admin Studio visual en `/admin`. |
+| `ORACLE_CLIENT_LIB_DIR`| *(Comentado)* | Solo necesario si el Instant Client está en una carpeta local y no en el sistema. |
+| `DB_QUEUE_TIMEOUT` | `10000` | Tiempo máximo de espera en cola de BD (10 seg) para evitar congelamientos. |
+
+---
+
+### Paso 5: Ejecutar los Scripts SQL en Oracle (Solo la 1ª vez)
+
+Para que el catálogo dinámico de vistas y el creador automático de consultas funcionen, se deben crear los objetos base en Oracle.
+
+Conéctate con tu herramienta de BD (**SQL Developer**, **DBeaver** o `sqlplus`) como el usuario configurado (`US_SUELDO`) y ejecuta en este orden:
+
+1. **Creación de la tabla de mapeo y procedimientos:**
+   ```sql
+   @scripts/oracle_api_view_mapper.sql
+   ```
+   *(Crea la tabla `API_VIEW_MAPPER`, la secuencia `API_VIEW_MAPPER_SEQ` y los procedimientos de upsert seguro).*
+
+2. **Carga inicial de las 54 consultas maestras:**
+   ```sql
+   @scripts/seed_views.sql
+   ```
+   *(Inserta el catálogo predeterminado de consultas del sistema).*
+
+---
+
+### Paso 6: Validar la Instalación con la Suite de Tests
+
+Antes de poner en marcha el servicio en producción, corre la suite de pruebas automatizadas:
+```bash
+npm test
+```
+**Resultado esperado:**
+```text
+ℹ tests 73
+ℹ suites 0
+ℹ pass 72
+ℹ fail 0
+ℹ skipped 1
+```
+*Si todas las pruebas pasan en verde, el entorno está 100% listo y compatible.*
+
+---
+
+## 🖥️ 3. Puesta en Marcha del Servicio
+
+### Modo A: Desarrollo o Pruebas Rápidas
+```bash
+npm start
+```
+La API iniciará en modo escucha en `http://localhost:3005`.
+
+---
+
+### Modo B: Producción con PM2 (Recomendado)
+
+PM2 mantiene el servicio corriendo en segundo plano, lo reinicia automáticamente en caso de fallos y lo levanta al reiniciar el servidor.
+
+1. **Instalar PM2 globalmente:**
+   ```bash
+   sudo npm install -g pm2
+   ```
+
+2. **Iniciar la API:**
+   ```bash
+   pm2 start index.js --name "api_liquid"
+   ```
+
+3. **Verificar estado y logs:**
+   ```bash
+   pm2 status
+   pm2 logs api_liquid
+   ```
+
+4. **Configurar inicio automático con el sistema:**
+   ```bash
+   pm2 save
+   pm2 startup
+   ```
+   *(Copia y ejecuta el comando que PM2 imprima en pantalla).*
+
+---
+
+### Modo C: Producción con Servicio Systemd (Linux)
+
+Si prefieres administrarlo como servicio nativo de Linux:
+
+1. Crear el archivo de servicio:
+   ```bash
+   sudo nano /etc/systemd/system/api_liquid.service
+   ```
+
+2. Pegar la siguiente configuración (ajusta las rutas según tu servidor):
+   ```ini
+   [Unit]
+   Description=API REST Liquidacion de Sueldos (api_liquid)
+   After=network.target
+
+   [Service]
+   Type=simple
+   User=ubuntu
+   WorkingDirectory=/home/ubuntu/node-apiliq
+   EnvironmentFile=/home/ubuntu/node-apiliq/.env
+   ExecStart=/usr/bin/node index.js
+   Restart=always
+   RestartSec=5
+   StandardOutput=syslog
+   StandardError=syslog
+   SyslogIdentifier=api_liquid
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+3. Habilitar e iniciar el servicio:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable api_liquid
+   sudo systemctl start api_liquid
+   sudo systemctl status api_liquid
+   ```
+
+---
+
+## 🌐 4. Verificación y Primer Acceso
+
+### 1. Probar el Healthcheck por HTTP:
+```bash
+curl http://localhost:3005/api/admin/health
+```
+**Respuesta esperada:**
+```json
+{
+  "api": "online",
+  "version": "1.0.0",
+  "database": {
+    "connected": true,
+    "user": "US_SUELDO",
+    "connectionString": "..."
+  }
+}
+```
+
+### 2. Ingresar al Developer & Admin Studio:
+Abre en tu navegador:
+👉 **`http://<IP_O_DOMINIO_DEL_SERVIDOR>:3005/admin`**
+
+1. Ingresa la clave maestra configurada en `ADMIN_ACCESS_KEY`.
+2. Observa el indicador en la esquina superior derecha:
+   - `DB: Conectado`: La conexión a Oracle está activa y lista.
+3. Explora las pestañas:
+   - **📋 Vistas:** Para ejecutar y consultar cualquiera de las 54 consultas con paginación y filtros.
+   - **➕ SQL Studio:** Para crear nuevas consultas al vuelo enviando sentencias `SELECT`.
+   - **⚡ SPs:** Para ejecutar Stored Procedures y Funciones.
+   - **📁 Importar:** Para subir archivos Excel (`.xlsx`) o CSV e insertarlos directamente en cualquier tabla de Oracle.
+
+---
+
+## 🔒 5. Configuración de Proxy Inverso con Nginx (Opcional)
+
+Si vas a publicar la API hacia una red externa o internet mediante HTTPS con certificado SSL (Let's Encrypt o corporativo), utiliza este bloque de configuración en Nginx:
+
+```nginx
+server {
+    listen 80;
+    server_name sueldos-api.tudominio.gob.ar;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name sueldos-api.tudominio.gob.ar;
+
+    ssl_certificate /etc/letsencrypt/live/sueldos-api.tudominio.gob.ar/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sueldos-api.tudominio.gob.ar/privkey.pem;
+
+    # IMPORTANTE: Permitir subida de archivos Excel/CSV de hasta 50MB
+    client_max_body_size 50M;
+
+    location / {
+        proxy_pass http://127.0.0.1:3005;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Timeouts para consultas o cargas pesadas
+        proxy_read_timeout 120s;
+        proxy_connect_timeout 10s;
+    }
+}
+```
+
+---
+
+## 🛠️ 6. Resolución de Problemas Frecuentes (Troubleshooting)
+
+### Error 1: `DPI-1047: Cannot locate a 64-bit Oracle Client library`
+* **Causa:** El sistema no encuentra las librerías binarias de Oracle (`libclntsh.so` en Linux o `.dylib` en macOS).
+* **Solución:**
+  1. En Linux: Instala `libaio1` (`sudo apt-get install libaio1`).
+  2. Verifica que `ORACLE_CLIENT_LIB_DIR` en tu `.env` apunte a la carpeta real donde fue descomprimido el Instant Client.
+  3. Ejecuta `node scripts/test-oracle-client.js` para ver el diagnóstico exacto.
+
+### Error 2: `ORA-12541: TNS:no listener` o `ORA-12170: Connect timeout occurred`
+* **Causa:** El servidor donde corre Node.js no puede alcanzar la IP/puerto de Oracle.
+* **Solución:**
+  1. Verifica si necesitas conectarte a una VPN municipal/privada.
+  2. Prueba conectividad de red: `nc -zv <HOST_ORACLE> 1521`.
+  3. Verifica que el firewall de Oracle o del servidor permita el tráfico en el puerto 1521.
+
+### Error 3: `ORA-01017: invalid username/password; logon denied`
+* **Causa:** Usuario o contraseña incorrectos en el archivo `.env`.
+* **Solución:** Revisa las variables `USERDB` y `PASSWORD` en `.env`. Asegúrate de que no tengan espacios accidentales al inicio o final.
+
+### Error 4: `401 Unauthorized` al intentar entrar al Admin Studio o invocar `/api/import/*`
+* **Causa:** La clave ingresada no coincide con `ADMIN_ACCESS_KEY` del `.env`.
+* **Solución:** Revisa el valor asignado a `ADMIN_ACCESS_KEY` en tu archivo `.env`. Si lo cambiaste recientemente, reinicia el servicio (`pm2 restart api_liquid`).
+
+### Error 5: `413 Payload Too Large` al subir un archivo Excel pesado
+* **Causa:** El proxy inverso Nginx bloquea archivos mayores a 1MB por defecto.
+* **Solución:** Agrega `client_max_body_size 50M;` dentro del bloque `server` o `location` de tu configuración Nginx y recárgalo (`sudo nginx -s reload`).
+
+---
+
+## 📞 Soporte y Mantenimiento
+
+* **Repositorio Oficial:** [https://github.com/jferreyradev/node-apiliq](https://github.com/jferreyradev/node-apiliq)
+* **Documentación Completa de Endpoints:** Consulta el archivo [`README.md`](README.md).

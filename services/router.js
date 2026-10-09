@@ -14,6 +14,7 @@ const control = require('../controllers/control');
 const controlUser = require('../controllers/controlUsers');
 const createInternalAccessMiddleware = require('./internalAccess');
 const createCorsOptions = require('./corsConfig');
+const adminAuth = require('./adminAuth');
 
 const { json } = require('body-parser');
 
@@ -79,11 +80,13 @@ app.use((req, res, next) => {
 
 app.use(cors(createCorsOptions()));
 
+app.route('/admin/verify').post(adminAuth.verifyKeyHandler);
+
 app.route('/view/list').get(control.getViews);
-app.route('/view/refresh').post(control.refreshViews);
-app.route('/catalog/refresh').post(control.refreshViews);
-app.route('/view/save').post(control.saveView);
-app.route('/view/upsert').post(control.saveView);
+app.route('/view/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
+app.route('/catalog/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
+app.route('/view/save').post(adminAuth.adminAuthMiddleware, control.saveView);
+app.route('/view/upsert').post(adminAuth.adminAuthMiddleware, control.saveView);
 
 app.route('/sp/list').get(control.getProc);
 
@@ -99,7 +102,7 @@ app.route('/fn/*').post(control.execFN);
 
 app.route('/view/*')
     .get(control.getView)
-    .delete(control.deleteView);
+    .delete(adminAuth.adminAuthMiddleware, control.deleteView);
 
 
 app.route('/repo/*').get(control.getRepo);

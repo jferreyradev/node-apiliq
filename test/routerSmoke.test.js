@@ -85,20 +85,54 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(res.statusCode, 400);
     });
 
-    await t.test('POST /api/view/refresh reinicia la caché y responde 200', async () => {
+    const adminHeaders = { 'x-admin-key': process.env.ADMIN_ACCESS_KEY || 'admin_liq_2026' };
+
+    await t.test('POST /api/admin/verify valida clave de administración', async () => {
+        const resBad = await executeRequest({
+            method: 'POST',
+            url: '/api/admin/verify',
+            headers: { 'x-admin-key': 'clave_invalida' }
+        });
+        assert.equal(resBad.statusCode, 401);
+
+        const resOk = await executeRequest({
+            method: 'POST',
+            url: '/api/admin/verify',
+            headers: adminHeaders
+        });
+        assert.equal(resOk.statusCode, 200);
+        const data = JSON.parse(resOk.body);
+        assert.equal(data.authenticated, true);
+    });
+
+    await t.test('POST /api/view/refresh rechaza solicitud sin clave de admin (401)', async () => {
         const res = await executeRequest({ method: 'POST', url: '/api/view/refresh' });
+        assert.equal(res.statusCode, 401);
+    });
+
+    await t.test('POST /api/view/refresh reinicia la caché con clave y responde 200', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/refresh',
+            headers: adminHeaders
+        });
         assert.equal(res.statusCode, 200);
         const data = JSON.parse(res.body);
         assert.equal(data.status, 'ok');
         assert.ok(data.totalViews > 0);
     });
 
-    await t.test('POST /api/view/save rechaza solicitud sin nombre', async () => {
-        const res = await executeRequest({ method: 'POST', url: '/api/view/save', body: {} });
+    await t.test('POST /api/view/save rechaza solicitud sin nombre con clave', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/save',
+            headers: adminHeaders,
+            body: {}
+        });
         assert.equal(res.statusCode, 400);
     });
 
-    await t.test('POST /api/view/save registra vista y la deja disponible en memoria', async () => {
+    await t.test('POST /api/view/save registra vista con clave y la deja disponible en memoria', async () => {
         const newView = {
             viewName: 'testViewCreadaPorApi',
             description: 'Vista de prueba creada dinámicamente',
@@ -110,7 +144,12 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
             whereFields: { Dni: 'p.dni' }
         };
 
-        const res = await executeRequest({ method: 'POST', url: '/api/view/save', body: newView });
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/save',
+            headers: adminHeaders,
+            body: newView
+        });
         assert.equal(res.statusCode, 200);
         const data = JSON.parse(res.body);
         assert.equal(data.status, 'ok');
@@ -122,8 +161,12 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.ok(listData.testViewCreadaPorApi, 'La nueva vista debe figurar en el catálogo');
     });
 
-    await t.test('DELETE /api/view/testViewCreadaPorApi desactiva la vista', async () => {
-        const res = await executeRequest({ method: 'DELETE', url: '/api/view/testViewCreadaPorApi' });
+    await t.test('DELETE /api/view/testViewCreadaPorApi desactiva la vista con clave', async () => {
+        const res = await executeRequest({
+            method: 'DELETE',
+            url: '/api/view/testViewCreadaPorApi',
+            headers: adminHeaders
+        });
         assert.equal(res.statusCode, 200);
         const data = JSON.parse(res.body);
         assert.equal(data.status, 'ok');

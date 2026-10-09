@@ -13,7 +13,8 @@ API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19
 * **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends existentes (`HojaIns`, `novHaberesDel`, `cargoIns`, `verifConcepto`, etc.).
 * **Generación de Boletas PDF y Reportes XLSX**: Soporte para generación vectorial de recibos y exportación de planillas.
 * **Procesamiento de Novedades IPSST**: Flujo en dos pasos con `uploadId` único y aislado para evitar colisiones concurrentes.
-* **Seguridad y Producción**: CORS configurable con whitelist, protección de cabecera interna `X-Internal-Key` para llamadas desde Deno, y soporte HTTPS con TLS.
+* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) para explorar y testear las 54 vistas, crear nuevas consultas SQL en tiempo real con auto-parser, testear Stored Procedures con binds dinámicos y reiniciar la memoria RAM.
+* **Seguridad y Producción**: CORS configurable con whitelist, protección de endpoints de modificación y Frontend Studio mediante clave maestra (`ADMIN_ACCESS_KEY`), clave interna `X-Internal-Key` para llamadas desde Deno, y soporte HTTPS con TLS.
 
 ---
 
@@ -48,6 +49,10 @@ ENABLE_HTTPS=false
 ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
 LOGO_PATH=./assets/logo.png
 
+# Clave maestra para Developer & Admin Studio y endpoints de modificación
+ADMIN_ACCESS_KEY=admin_liq_2026
+ENABLE_ADMIN_STUDIO=true
+
 # Opcional: Clave interna para peticiones del puente Deno
 REQUIRE_INTERNAL_KEY=false
 API_INTERNAL_KEY=clave_secreta_desa
@@ -77,22 +82,57 @@ pm2 save
 
 ---
 
+## 💻 Developer & Admin Studio
+
+La API incluye un estudio web integrado para desarrolladores y administradores accesible directamente en tu navegador:
+👉 **`http://localhost:3005/admin`** *(o simplemente `http://localhost:3005/`)*
+
+### 🛡️ Seguridad y Autenticación
+Al ingresar, el estudio solicita la **Clave de Acceso de Administrador** configurada en `ADMIN_ACCESS_KEY` (`.env`).
+* La autenticación utiliza comparación criptográfica en tiempo constante (`crypto.timingSafeEqual`) para prevenir ataques de temporización (timing attacks).
+* Para llamadas vía API o curl, se envía en la cabecera `X-Admin-Key: <clave>` o `Authorization: Bearer <clave>`.
+* Todos los endpoints de modificación de esquema (`/view/save`, `DELETE /view/:name`, `/view/refresh`) están protegidos con esta clave.
+
+### 🎛️ Funcionalidades del Studio
+1. **Explorador & Tester de Vistas**:
+   * Buscador interactivo de las 54 consultas disponibles.
+   * Generación automática de formularios con los filtros `WHERE` permitidos para cada vista.
+   * Visualización de resultados en **Tabla Dinámica** y **JSON formateado**.
+   * Medición de latencia de ejecución en milisegundos y conteo de registros devueltos.
+   * Botón de desactivación de vistas obsoletas en `API_VIEW_MAPPER`.
+2. **SQL Studio (Creador de Consultas con Auto-Parser)**:
+   * Permite escribir consultas `SELECT ... FROM ... WHERE ...` en texto plano.
+   * Vista previa sintáctica en vivo (detecta columnas, alias, cláusula `FROM` y parámetros bind).
+   * Guardado directo en la base de datos `API_VIEW_MAPPER` y actualización inmediata en la memoria RAM sin reiniciar el servidor.
+3. **Tester de Stored Procedures y Funciones**:
+   * Descubre y lista automáticamente los procedimientos y funciones de los paquetes Oracle.
+   * Formulario inteligente para parámetros `IN` (`NUMBER`, `VARCHAR2`, `DATE`).
+   * Ejecución en vivo con visualización de cursores de salida o valores retornados.
+4. **Recarga de Memoria RAM**:
+   * Botón en la barra superior para reiniciar la caché de vistas y SPs en memoria sin reiniciar el proceso Node.js.
+5. **Zero Dependencias & 100% Offline**:
+   * SPA nativa sin frameworks externos ni CDNs de internet; funciona de manera completamente autónoma en redes municipales y VPNs cerradas.
+
+---
+
 ## 📡 Referencia de Endpoints
 
 ### 1. Vistas y Consultas Dinámicas (`/api/view/*`)
 
-| Método | Endpoint | Descripción |
-| :--- | :--- | :--- |
-| `GET` | `/api/view/list` | Retorna el catálogo completo de vistas activas. |
-| `GET` | `/api/view/:name` | Ejecuta la vista con filtros y paginación en la URL (`?Campo=valor&limit=50&offset=0`). |
-| `POST` | `/api/view/save` | **Crea o actualiza una vista automáticamente** enviando un `SELECT` o vista Oracle. |
-| `DELETE` | `/api/view/:name` | Desactiva lógicamente la vista en `API_VIEW_MAPPER`. |
-| `POST` | `/api/view/refresh` | Reinicia la memoria RAM y recarga cambios desde Oracle. |
+| Método | Endpoint | Seguridad | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/view/list` | Pública | Retorna el catálogo completo de vistas activas. |
+| `GET` | `/api/view/:name` | Pública | Ejecuta la vista con filtros y paginación en la URL (`?Campo=valor&limit=50&offset=0`). |
+| `POST` | `/api/view/save` | `X-Admin-Key` | **Crea o actualiza una vista automáticamente** enviando un `SELECT` o vista Oracle. |
+| `DELETE` | `/api/view/:name` | `X-Admin-Key` | Desactiva lógicamente la vista en `API_VIEW_MAPPER`. |
+| `POST` | `/api/view/refresh` | `X-Admin-Key` | Reinicia la memoria RAM y recarga cambios desde Oracle. |
+| `POST` | `/api/admin/verify` | `X-Admin-Key` | Valida si la clave de administrador suministrada es correcta. |
 
 #### Crear una consulta automáticamente desde un `SELECT`:
 ```bash
 curl -X POST http://localhost:3005/api/view/save \
      -H "Content-Type: application/json" \
+     -H "X-Admin-Key: admin_liq_2026" \
      -d '{
        "viewName": "empleadosPorRep",
        "sql": "SELECT p.idpers AS PersonaId, p.dni AS Documento, p.apellido || \x27, \x27 || p.nombre AS ApeNom, c.idrep AS IdRep FROM personas p INNER JOIN cargos c ON c.idpers = p.idpers WHERE c.idrep = :IdRep ORDER BY p.apellido"

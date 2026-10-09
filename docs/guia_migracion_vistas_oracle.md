@@ -174,32 +174,56 @@ Todos los procedimientos históricos (`HojaIns`, `novHaberesDel`, `cargoIns`, et
 
 ---
 
-## 5. Tabla de Endpoints Disponibles
+## 5. Developer & Admin Studio y Seguridad
 
-| Endpoint | Método | Descripción |
-| :--- | :---: | :--- |
-| `/api/view/list` | `GET` | Retorna el catálogo completo de vistas activas. |
-| `/api/view/:name` | `GET` | Ejecuta una vista con filtros en URL (`?Campo=valor&limit=50&offset=0`). |
-| `/api/view/save` | `POST` | Crea o actualiza una vista a partir de un `SELECT` o vista de Oracle. |
-| `/api/view/:name` | `DELETE` | Desactiva lógicamente una vista (`IS_ACTIVE = 0`). |
-| `/api/view/refresh` | `POST` | Limpia la caché en RAM y recarga vistas y procedimientos. |
-| `/api/catalog/refresh`| `POST` | Alias para recarga completa de caché. |
-| `/api/sp/list` | `GET` | Retorna el catálogo de Stored Procedures disponibles. |
-| `/api/sp/:name` | `POST` | Ejecuta un Stored Procedure (dinámico o legacy). |
-| `/api/fn/list` | `GET` | Retorna el catálogo de Funciones disponibles. |
-| `/api/fn/:name` | `POST` | Ejecuta una Función de base de datos. |
+La API integra una suite web administrativa accesible en:
+👉 `http://localhost:3005/admin` (y redirección desde `http://localhost:3005/`).
+
+### 🛡️ Seguridad y Control de Acceso
+* **Clave de Acceso (`ADMIN_ACCESS_KEY`)**: Configurada en el archivo `.env`.
+* **Comparación en Tiempo Constante**: Se emplea `crypto.timingSafeEqual` en [services/adminAuth.js](../services/adminAuth.js) para evitar ataques de canal lateral / timing attacks.
+* **Cabecera Requerida**: Las operaciones administrativas requieren la cabecera `X-Admin-Key: <clave>` o `Authorization: Bearer <clave>`.
+* **Protección de Endpoints**: Todas las rutas de modificación (`/view/save`, `/view/upsert`, `DELETE /view/:name`, `/view/refresh`) exigen autenticación válida.
+
+### 🎛️ Capacidades del Frontend Studio:
+1. **Explorador & Tester de Vistas**: Búsqueda en vivo de las 54 vistas, formulario automático para parámetros `WHERE`, visualización de datos en tabla dinámica o JSON formateado, medición de latencia y opción de desactivación lógica.
+2. **SQL Studio con Auto-Parser**: Permite redactar un `SELECT ... FROM ... WHERE ...` en texto claro, previsualizar la estructura detectada y guardarla directamente en `API_VIEW_MAPPER` con recarga inmediata en RAM.
+3. **Tester de Stored Procedures y Funciones**: Formulario dinámico con introspección de parámetros `IN` y ejecución de procedimientos con visualización de cursores o retornos.
+4. **Recarga de Memoria RAM**: Botón directo para refrescar la caché sin necesidad de reiniciar la API.
+5. **Autonomía 100% Offline**: Cero dependencias externas; funciona sin acceso a Internet en redes municipales cerradas.
 
 ---
 
-## 6. Resumen de Archivos del Proyecto
+## 6. Tabla de Endpoints Disponibles
+
+| Endpoint | Método | Seguridad | Descripción |
+| :--- | :---: | :---: | :--- |
+| `/api/view/list` | `GET` | Pública | Retorna el catálogo completo de vistas activas. |
+| `/api/view/:name` | `GET` | Pública | Ejecuta una vista con filtros en URL (`?Campo=valor&limit=50&offset=0`). |
+| `/api/view/save` | `POST` | `X-Admin-Key` | Crea o actualiza una vista a partir de un `SELECT` o vista de Oracle. |
+| `/api/view/:name` | `DELETE` | `X-Admin-Key` | Desactiva lógicamente una vista (`IS_ACTIVE = 0`). |
+| `/api/view/refresh` | `POST` | `X-Admin-Key` | Limpia la caché en RAM y recarga vistas y procedimientos. |
+| `/api/catalog/refresh`| `POST` | `X-Admin-Key` | Alias para recarga completa de caché. |
+| `/api/admin/verify` | `POST` | `X-Admin-Key` | Verifica si la clave suministrada es válida. |
+| `/api/sp/list` | `GET` | Pública | Retorna el catálogo de Stored Procedures disponibles. |
+| `/api/sp/:name` | `POST` | Pública | Ejecuta un Stored Procedure (dinámico o legacy). |
+| `/api/fn/list` | `GET` | Pública | Retorna el catálogo de Funciones disponibles. |
+| `/api/fn/:name` | `POST` | Pública | Ejecuta una Función de base de datos. |
+
+---
+
+## 7. Resumen de Archivos del Proyecto
 
 | Archivo | Rol en el sistema |
 | :--- | :--- |
+| [services/public/admin/index.html](../services/public/admin/index.html) | Frontend Studio SPA nativo (Offline, Dark UI, cero dependencias). |
+| [services/adminAuth.js](../services/adminAuth.js) | Middleware y validación criptográfica de seguridad con `ADMIN_ACCESS_KEY`. |
 | [services/viewCatalog.js](../services/viewCatalog.js) | Gestor de caché y acceso a `API_VIEW_MAPPER`. |
 | [services/procedureCatalog.js](../services/procedureCatalog.js) | Introspección dinámica de SPs y FNs desde `ALL_ARGUMENTS`. |
 | [services/sqlViewParser.js](../services/sqlViewParser.js) | Motor de parseo automático de sentencias SQL `SELECT`. |
 | [controllers/control.js](../controllers/control.js) | Controlador principal conectado a los catálogos dinámicos. |
-| [services/router.js](../services/router.js) | Definición y enrutamiento de endpoints HTTP. |
+| [services/router.js](../services/router.js) | Definición y enrutamiento de endpoints HTTP protegidos. |
+| [services/web_server.js](../services/web_server.js) | Servidor HTTP/HTTPS y servidor estático para `/admin`. |
 | [scripts/create_view.js](../scripts/create_view.js) | Utilidad CLI para generar código PL/SQL a partir de un `SELECT`. |
 | [scripts/oracle_api_view_mapper.sql](../scripts/oracle_api_view_mapper.sql) | DDL de la tabla y SPs de auditoría para Oracle 11g/12c+. |
 | [scripts/seed_views.sql](../scripts/seed_views.sql) | Carga inicial SQL de las 54 vistas para DBeaver / SQL Developer. |

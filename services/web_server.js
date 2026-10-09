@@ -38,6 +38,19 @@ function getTlsCredentials() {
 function initialize() {
     return new Promise((resolve, reject) => {
         const app = express();
+
+        const enableAdminStudio = process.env.ENABLE_ADMIN_STUDIO !== 'false';
+        if (enableAdminStudio) {
+            const adminPath = path.resolve(__dirname, 'public', 'admin');
+            app.use('/admin', express.static(adminPath));
+            app.get('/admin', (req, res) => {
+                res.sendFile(path.join(adminPath, 'index.html'));
+            });
+            app.get('/', (req, res) => {
+                res.redirect('/admin');
+            });
+        }
+
         app.use('/api', router);
 
         const credentials = getTlsCredentials();
@@ -50,6 +63,9 @@ function initialize() {
             const port = typeof address === 'object' && address ? address.port : address;
 
             console.log(`Web ${protocol} server listening on ${protocol}://localhost:${port}/api`);
+            if (enableAdminStudio) {
+                console.log(`Admin Studio disponible en: ${protocol}://localhost:${port}/admin`);
+            }
 
             listeningServers += 1;
             if (listeningServers === targetServers) {

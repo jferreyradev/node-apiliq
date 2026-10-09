@@ -42,8 +42,12 @@ function initialize() {
         const enableAdminStudio = process.env.ENABLE_ADMIN_STUDIO !== 'false';
         if (enableAdminStudio) {
             const adminPath = path.resolve(__dirname, 'public', 'admin');
-            app.use('/admin', express.static(adminPath));
+            app.use('/admin', (req, res, next) => {
+                res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+                next();
+            }, express.static(adminPath));
             app.get('/admin', (req, res) => {
+                res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
                 res.sendFile(path.join(adminPath, 'index.html'));
             });
             app.get('/', (req, res) => {

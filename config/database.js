@@ -10,7 +10,7 @@ module.exports = {
     poolMax: Number(process.env.DB_POOL_MAX || 10),
     poolIncrement: Number(process.env.DB_POOL_INCREMENT || 1),
     poolTimeout: Number(process.env.DB_POOL_TIMEOUT || 60),
-    queueTimeout: Number(process.env.DB_QUEUE_TIMEOUT || 60000)
+    queueTimeout: Number(process.env.DB_QUEUE_TIMEOUT || 10000)
   },
   jwtSecretKey: process.env.JWT_SECRET
 };

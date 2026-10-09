@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -8,6 +8,7 @@ vistaliq.sql
 node_modules
 services/access.log
 *.sql
+!scripts/*.sql
 .env
 .env.*
 *.env
@@ -16,4 +17,4 @@ oracle-client/
 startup.log
 tmp/*
 oracle-client/
-
+.DS_Store

@@ -80,6 +80,10 @@ app.use((req, res, next) => {
 app.use(cors(createCorsOptions()));
 
 app.route('/view/list').get(control.getViews);
+app.route('/view/refresh').post(control.refreshViews);
+app.route('/catalog/refresh').post(control.refreshViews);
+app.route('/view/save').post(control.saveView);
+app.route('/view/upsert').post(control.saveView);
 
 app.route('/sp/list').get(control.getProc);
 
@@ -93,7 +97,10 @@ app.route('/sp/*').post(control.execSP);
 
 app.route('/fn/*').post(control.execFN);
 
-app.route('/view/*').get(control.getView);
+app.route('/view/*')
+    .get(control.getView)
+    .delete(control.deleteView);
+
 
 app.route('/repo/*').get(control.getRepo);
 

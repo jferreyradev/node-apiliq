@@ -2,11 +2,13 @@ const oracledb = require('oracledb');
 const entityapi = require('../db_apis/entity');
 const mapper = require('../config/mapper');
 const mapperViews = require('../config/mapperViews');
+const viewCatalog = require('../services/viewCatalog');
 const viewapi = require('../db_apis/view');
 
 const repomapper = require('../config/repomapper.js')
 const spmapper = require('../config/spmapper');
 const fnmapper = require('../config/fnmapper');
+const procedureCatalog = require('../services/procedureCatalog');
 const spapi = require('../db_apis/sp');
 const fnapi = require('../db_apis/fn');
 const repoapi = require('../db_apis/repo');
@@ -153,8 +155,9 @@ async function getView(req, res, next) {
         let entityName = req.path.substring(6);
         //console.log(entityName);
 
-        if (mapperViews.jsonViewMap[entityName]) {
-            result = await viewapi.getView(context, mapperViews.jsonViewMap[entityName]);
+        const viewConfig = await viewCatalog.getViewConfig(entityName);
+        if (viewConfig) {
+            result = await viewapi.getView(context, viewConfig);
         }
 
         if (result && result.rows.length > 0) {
@@ -174,13 +177,11 @@ async function execSP(req, res, next) {
         let result;
 
         context = req.body;
-        //console.log(req);
-
         let spName = req.path.substring(4);
-        //console.log(spName);
 
-        if (spmapper.jsonStoreProcedure[spName]) {
-            result = await spapi.execStoreProcedure(context, spmapper.jsonStoreProcedure[spName]);
+        const spConfig = await procedureCatalog.getSpConfig(spName);
+        if (spConfig) {
+            result = await spapi.execStoreProcedure(context, spConfig);
         }
 
         if (result) {
@@ -190,7 +191,6 @@ async function execSP(req, res, next) {
         }
 
     } catch (err) {
-        //console.log(err);
         next(err);
     }
 }
@@ -201,12 +201,11 @@ async function execFN(req, res, next) {
         let result;
 
         context = req.body;
-        //context = req.query;
+        let fnName = req.path.substring(4);
 
-        let spName = req.path.substring(4);
-
-        if (fnmapper.jsonStoreFunction[spName]) {
-            result = await fnapi.execFn(context, fnmapper.jsonStoreFunction[spName]);
+        const fnConfig = await procedureCatalog.getFnConfig(fnName);
+        if (fnConfig) {
+            result = await fnapi.execFn(context, fnConfig);
         }
 
         const val = result ? res.status(200).json(result) : res.status(404).end();
@@ -220,27 +219,10 @@ async function execFN(req, res, next) {
 
 async function getProc(req, res, next) {
     try {
-        let context = {};
-        let result = {};
-
-        context = req.query;
-        //context = req.body;
-
-        //let spName = req.path.substring(6,);
-        //console.log(spName);
-
-        //if (spmapper.jsonStoreProcedure[spName]) {
-        //result = spmapper.jsonStoreProcedure[spName];
-        // console.log(result);        
-        //}
-
-        //const val = result?res.status(200).json(result):res.status(404).end();
-        result = spmapper.jsonStoreProcedure;
+        const result = await procedureCatalog.getAllSp();
         const val = result ? res.status(200).json(result) : res.status(404).end();
 
         return val;
-
-        //return result;
 
     } catch (err) {
         next(err);
@@ -249,8 +231,7 @@ async function getProc(req, res, next) {
 
 async function getFunc(req, res, next) {
     try {
-
-        let result = fnmapper.jsonStoreFunction;
+        const result = await procedureCatalog.getAllFn();
         const val = result ? res.status(200).json(result) : res.status(404).end();
 
         return val;
@@ -276,7 +257,7 @@ async function getEntities(req, res, next) {
 async function getViews(req, res, next) {
     try {
 
-        let result = mapperViews.jsonViewMap;
+        let result = await viewCatalog.getAllViews();
         const val = result ? res.status(200).json(result) : res.status(404).end();
 
         return val;
@@ -368,8 +349,9 @@ async function getTXT(req, res, next) {
 
         let entityName = req.path.substring(5);
 
-        if (mapperViews.jsonViewMap[entityName]) {
-            result = await viewapi.getView(context, mapperViews.jsonViewMap[entityName]);
+        const viewConfig = await viewCatalog.getViewConfig(entityName);
+        if (viewConfig) {
+            result = await viewapi.getView(context, viewConfig);
         }
 
         if (result && result.rows.length > 0) {
@@ -423,8 +405,9 @@ async function getTXTipsst(req, res, next) {
         let entityName = req.path.substring(5);
         //console.log(entityName);
 
-        if (mapperViews.jsonViewMap[entityName]) {
-            result = await viewapi.getView(context, mapperViews.jsonViewMap[entityName]);
+        const viewConfig = await viewCatalog.getViewConfig(entityName);
+        if (viewConfig) {
+            result = await viewapi.getView(context, viewConfig);
         }
 
         if (result && result.rows.length > 0) {
@@ -461,65 +444,57 @@ async function getTXTipsst(req, res, next) {
 
 async function getCursorFromSP(req, res, next) {
     try {
-
         let result;
-
         let spName = req.path.substring(11);
 
-        let context = getEntityArrayValues(req, spmapper.jsonStoreProcedure[spName].in_param);
+        const spConfig = await procedureCatalog.getSpConfig(spName);
+        if (!spConfig) {
+            return res.status(404).end();
+        }
 
-        const query = spapi.getSQLcall(spmapper.jsonStoreProcedure[spName]);
-        const binds = spapi.getSQLbinds(context, spmapper.jsonStoreProcedure[spName]);
+        let context = getEntityArrayValues(req, spConfig.in_param || []);
+        const query = spapi.getSQLcall(spConfig);
+        const binds = spapi.getSQLbinds(context, spConfig);
 
-        //console.log(query);
-        //console.log(binds);
+        let conn;
+        let rs;
 
-        if (spmapper.jsonStoreProcedure[spName]) {
+        try {
+            conn = await getConnection();
+            result = await conn.execute(query, binds);
 
-            let conn;
-            let rs;
+            let txt = '';
+            rs = result.outBinds.Cursor;
+            let row;
 
-            try {
-                conn = await getConnection();
-                result = await conn.execute(query, binds);
-
-                let txt = '';
-
-                rs = result.outBinds.Cursor;
-                let row;
-
-                while ((row = await rs.getRow())) {
-                    //console.log(row);
-                    txt = txt + row.toString() + '\n';
-                }
-
-                let fileName = '';
-
-                const buf = Buffer.from(txt, 'latin1');
-
-                if (!spmapper.jsonStoreProcedure[spName].fileName) {
-                    fileName = yyyymmdd() + '_' + spName;
-                }
-
-                res.setHeader('Content-Length', buf.length);
-                res.setHeader('Content-Type', 'application/text');
-                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
-                res.write(buf.toString('latin1'));
-                res.end();
-            } finally {
-                try {
-                    if (rs) {
-                        await rs.close();
-                    }
-                } finally {
-                    if (conn) {
-                        await conn.close();
-                    }
-                }
+            while ((row = await rs.getRow())) {
+                txt = txt + row.toString() + '\n';
             }
 
-        } else {
-            res.status(404).end();
+            let fileName = '';
+            const buf = Buffer.from(txt, 'latin1');
+
+            if (!spConfig.fileName) {
+                fileName = yyyymmdd() + '_' + spName;
+            } else {
+                fileName = spConfig.fileName;
+            }
+
+            res.setHeader('Content-Length', buf.length);
+            res.setHeader('Content-Type', 'application/text');
+            res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+            res.write(buf.toString('latin1'));
+            res.end();
+        } finally {
+            try {
+                if (rs) {
+                    await rs.close();
+                }
+            } finally {
+                if (conn) {
+                    await conn.close();
+                }
+            }
         }
 
     } catch (err) {
@@ -539,8 +514,9 @@ async function getBoletaPDF(req, res, next) {
         //let entityName = req.path.substring(5,);
         //console.log(entityName);
 
-        if (mapperViews.jsonViewMap[entityName]) {
-            result = await viewapi.getView(context, mapperViews.jsonViewMap[entityName]);
+        const viewConfig = await viewCatalog.getViewConfig(entityName);
+        if (viewConfig) {
+            result = await viewapi.getView(context, viewConfig);
         }
 
         //console.log(result);
@@ -584,16 +560,16 @@ async function getBoletaPDF2(req, res, next) {
         context = req.query;
 
         let entityNameCab = 'boletaCabPie';
-
-        if (mapperViews.jsonViewMap[entityNameCab]) {
-            resultcab = await viewapi.getView(context, mapperViews.jsonViewMap[entityNameCab]);
-        };
+        const viewConfigCab = await viewCatalog.getViewConfig(entityNameCab);
+        if (viewConfigCab) {
+            resultcab = await viewapi.getView(context, viewConfigCab);
+        }
 
         let entityName = 'boletaDetalle';
-
-        if (mapperViews.jsonViewMap[entityName]) {
-            result = await viewapi.getView(context, mapperViews.jsonViewMap[entityName]);
-        };
+        const viewConfigDet = await viewCatalog.getViewConfig(entityName);
+        if (viewConfigDet) {
+            result = await viewapi.getView(context, viewConfigDet);
+        }
 
         let cadenacab = '', cadenapie = '', filename = '';
         let idLiq = 0;
@@ -794,3 +770,103 @@ module.exports.getCursorFromSP = getCursorFromSP;
 module.exports.getBoletaPDF = getBoletaPDF;
 
 module.exports.getBoletaPDF2 = getBoletaPDF2;
+
+async function saveView(req, res, next) {
+    try {
+        const body = req.body || {};
+        const viewName = body.viewName || body.name;
+        const description = body.description || body.desc || `Vista/consulta ${viewName}`;
+
+        if (!viewName) {
+            return res.status(400).json({ error: 'El nombre de la vista (viewName o name) es obligatorio' });
+        }
+
+        let configObj = body.config;
+
+        // Opción 1: Armado automático a partir de un SELECT SQL puro
+        if (typeof body.sql === 'string' && /^\s*SELECT\b/i.test(body.sql)) {
+            configObj = viewCatalog.parseSqlToViewConfig(body.sql);
+        } else if (typeof body.query === 'string' && /^\s*SELECT\b/i.test(body.query)) {
+            configObj = viewCatalog.parseSqlToViewConfig(body.query);
+        } else if (body.oracleView) {
+            // Opción 2: Armado automático a partir de una tabla o vista física de Oracle
+            const saved = await viewCatalog.createFromOracleView(viewName, description, body.oracleView);
+            return res.status(200).json({
+                status: 'ok',
+                message: `Vista '${viewName}' generada automáticamente desde '${body.oracleView}' y guardada en API_VIEW_MAPPER`,
+                viewName,
+                config: saved.config
+            });
+        }
+
+        // Opción 3: Armado estructurado manual con fields y fromClause
+        if (!configObj) {
+            if (body.fields) {
+                configObj = {
+                    fields: body.fields,
+                    key: body.key || { field: Object.keys(body.fields)[0] },
+                    sql: {
+                        fromClause: Array.isArray(body.fromClause) ? body.fromClause : (body.sql && body.sql.fromClause ? body.sql.fromClause : []),
+                        whereFields: body.whereFields || (body.sql && body.sql.whereFields ? body.sql.whereFields : {}),
+                        groupClause: body.groupClause || (body.sql && body.sql.groupClause ? body.sql.groupClause : undefined)
+                    }
+                };
+            }
+        }
+
+        if (!configObj || !configObj.fields) {
+            return res.status(400).json({
+                error: 'Para crear la consulta automáticamente envía "sql": "SELECT ... FROM ...", o indica "oracleView": "V_NOMBRE", o define el objeto "fields".'
+            });
+        }
+
+
+        const saved = await viewCatalog.upsertView(viewName, description, configObj);
+        res.status(200).json({
+            status: 'ok',
+            message: `Vista '${viewName}' guardada exitosamente en API_VIEW_MAPPER`,
+            viewName,
+            config: saved.config
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function deleteView(req, res, next) {
+    try {
+        const viewName = (req.body && req.body.viewName) || req.path.substring(6);
+        if (!viewName) {
+            return res.status(400).json({ error: 'El nombre de la vista es obligatorio' });
+        }
+
+        await viewCatalog.deleteView(viewName);
+        res.status(200).json({
+            status: 'ok',
+            message: `Vista '${viewName}' desactivada en API_VIEW_MAPPER`,
+            viewName
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function refreshViews(req, res, next) {
+    try {
+        viewCatalog.clearCache();
+        procedureCatalog.clearCache();
+        const views = await viewCatalog.getAllViews();
+        res.status(200).json({
+            status: 'ok',
+            message: 'Caché de vistas y procedimientos reiniciada correctamente',
+            totalViews: Object.keys(views).length
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports.saveView = saveView;
+module.exports.deleteView = deleteView;
+module.exports.refreshViews = refreshViews;
+

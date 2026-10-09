@@ -28,6 +28,9 @@ function initializeOracleClient() {
         libDir: oracleClientPath
     });
 
+    // En Oracle 11g y posteriores, convertir CLOBs automáticamente a string de JavaScript
+    oracledb.fetchAsString = [ oracledb.CLOB ];
+
     oracleClientInitialized = true;
 
     console.log(

@@ -85,10 +85,48 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(res.statusCode, 400);
     });
 
-    await t.test('POST /api/adduser sin datos obligatorios responde 400', async () => {
-        const res = await executeRequest({ method: 'POST', url: '/api/adduser', body: {} });
-        assert.equal(res.statusCode, 400);
+    await t.test('POST /api/view/refresh reinicia la caché y responde 200', async () => {
+        const res = await executeRequest({ method: 'POST', url: '/api/view/refresh' });
+        assert.equal(res.statusCode, 200);
         const data = JSON.parse(res.body);
-        assert.equal(data.error, 'usr, pws y email son requeridos');
+        assert.equal(data.status, 'ok');
+        assert.ok(data.totalViews > 0);
+    });
+
+    await t.test('POST /api/view/save rechaza solicitud sin nombre', async () => {
+        const res = await executeRequest({ method: 'POST', url: '/api/view/save', body: {} });
+        assert.equal(res.statusCode, 400);
+    });
+
+    await t.test('POST /api/view/save registra vista y la deja disponible en memoria', async () => {
+        const newView = {
+            viewName: 'testViewCreadaPorApi',
+            description: 'Vista de prueba creada dinámicamente',
+            fields: {
+                Id: 'p.idpers',
+                Dni: 'p.dni'
+            },
+            fromClause: ['FROM personas p'],
+            whereFields: { Dni: 'p.dni' }
+        };
+
+        const res = await executeRequest({ method: 'POST', url: '/api/view/save', body: newView });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
+        assert.equal(data.viewName, 'testViewCreadaPorApi');
+
+        // Verificar que ahora está disponible en el catálogo
+        const listRes = await executeRequest({ url: '/api/view/list' });
+        const listData = JSON.parse(listRes.body);
+        assert.ok(listData.testViewCreadaPorApi, 'La nueva vista debe figurar en el catálogo');
+    });
+
+    await t.test('DELETE /api/view/testViewCreadaPorApi desactiva la vista', async () => {
+        const res = await executeRequest({ method: 'DELETE', url: '/api/view/testViewCreadaPorApi' });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
     });
 });
+

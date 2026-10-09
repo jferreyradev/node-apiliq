@@ -446,9 +446,13 @@
             <span class="brand-badge">Oracle 11g Data-Driven</span>
         </div>
         <div class="header-actions">
+            <div class="status-pill" id="dbStatusPill" title="Clic para probar conexión a Oracle" onclick="checkDbHealth(true)" style="cursor: pointer;">
+                <span class="status-dot" id="dbStatusDot" style="background-color: var(--warning);"></span>
+                <span id="dbStatusText">DB: Oracle</span>
+            </div>
             <div class="status-pill">
                 <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Online</span>
+                <span id="statusText">API: Online</span>
             </div>
             <button class="btn btn-sm" onclick="refreshCache()">🔄 Recargar Caché RAM</button>
             <button class="btn btn-sm btn-danger" onclick="logout()">🔒 Salir</button>
@@ -511,6 +515,8 @@
                             <button class="btn btn-sm" onclick="copyResultsJson()">📋 Copiar JSON</button>
                         </div>
                     </div>
+
+                    <div id="resultsErrorWrapper" style="display: none; padding: 15px 0;"></div>
 
                     <div id="resultsTableWrapper" class="table-container">
                         <table id="resultsTable">
@@ -634,6 +640,7 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 if (isValid) {
                     hideAuthModal();
                     loadCatalogs();
+                    checkDbHealth(false);
                 } else {
                     showAuthModal();
                 }
@@ -680,6 +687,7 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 hideAuthModal();
                 showToast('Autenticación exitosa', 'success');
                 loadCatalogs();
+                checkDbHealth(false);
             } else {
                 errorDiv.textContent = 'Clave incorrecta. Verifica tu archivo .env (ADMIN_ACCESS_KEY).';
                 errorDiv.style.display = 'block';
@@ -825,8 +833,51 @@ ORDER BY p.apellido, p.nombre"></textarea>
             filtersContainer.innerHTML = html;
         }
 
+        let dbConnectionString = '';
+
+        async function checkDbHealth(interactive = false) {
+            const dot = document.getElementById('dbStatusDot');
+            const text = document.getElementById('dbStatusText');
+
+            if (interactive) {
+                text.textContent = 'Probando Oracle...';
+                dot.style.backgroundColor = 'var(--warning)';
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/health?testDb=${interactive ? 'true' : 'false'}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    dbConnectionString = data.database?.connectionString || '';
+                    if (interactive) {
+                        if (data.database?.connected) {
+                            dot.style.backgroundColor = 'var(--success)';
+                            text.textContent = `DB: Conectado (${data.database.user}@${data.database.connectionString})`;
+                            showToast(`Conexión a Oracle exitosa (${data.database.connectionString})`, 'success');
+                        } else {
+                            dot.style.backgroundColor = 'var(--danger)';
+                            text.textContent = `DB: Desconectado (${data.database.connectionString})`;
+                            showToast(`Fallo de conexión a Oracle: ${data.database?.message || 'Error'}`, 'error');
+                        }
+                    } else {
+                        text.textContent = `DB: ${data.database?.connectionString || 'Oracle'}`;
+                        dot.style.backgroundColor = 'var(--warning)';
+                    }
+                }
+            } catch (err) {
+                if (interactive) {
+                    showToast('No se pudo verificar el estado de la base de datos', 'error');
+                }
+            }
+        }
+
         async function executeCurrentView() {
             if (!currentSelectedView) return;
+
+            const btn = document.getElementById('btnExecuteView');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Consultando Oracle...';
 
             const config = viewsCatalog[currentSelectedView];
             const whereFields = config.sql?.whereFields || {};
@@ -843,10 +894,30 @@ ORDER BY p.apellido, p.nombre"></textarea>
             });
 
             const url = `${API_BASE}/view/${currentSelectedView}?${params.toString()}`;
+
+            // Estado de carga visible inmediato
+            document.getElementById('resultsCard').style.display = 'block';
+            document.getElementById('resultsMeta').textContent = 'Consultando Oracle Database...';
+            document.getElementById('resultsErrorWrapper').style.display = 'none';
+            document.getElementById('resultsTableWrapper').style.display = 'block';
+            document.getElementById('resultsJsonWrapper').style.display = 'none';
+            document.getElementById('resultsTableHead').innerHTML = '';
+            document.getElementById('resultsTableBody').innerHTML = `
+                <tr>
+                    <td style="text-align:center; padding: 40px; color: var(--text-muted);">
+                        <div style="font-size: 28px; margin-bottom: 10px;">⏳</div>
+                        <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">Ejecutando consulta en Oracle Database...</div>
+                        <div style="font-size: 12px; margin-top: 4px;">Por favor aguarde mientras se conecta al servidor y se recuperan los registros.</div>
+                    </td>
+                </tr>
+            `;
+
             const t0 = performance.now();
 
             try {
-                const res = await fetch(url);
+                const res = await fetch(url, {
+                    headers: currentAdminKey ? { 'X-Admin-Key': currentAdminKey } : {}
+                });
                 const t1 = performance.now();
                 const latency = Math.round(t1 - t0);
 
@@ -855,20 +926,33 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     lastQueryResultData = Array.isArray(data) ? data : [data];
                     displayViewResults(lastQueryResultData, latency);
                 } else if (res.status === 404) {
-                    displayViewResults([], latency);
-                    showToast('Consulta sin registros devueltos (404)', 'warning');
+                    lastQueryResultData = [];
+                    displayEmptyResults(latency);
                 } else {
-                    const err = await res.json();
-                    showToast(`Error ${res.status}: ${err.error || 'Fallo en consulta'}`, 'error');
+                    let errObj = {};
+                    try {
+                        errObj = await res.json();
+                    } catch (_) {
+                        errObj = { error: await res.text() };
+                    }
+                    displayViewError(res.status, errObj.error || errObj.message || 'Error en consulta', latency);
                 }
             } catch (err) {
-                showToast('Error de conexión al ejecutar vista', 'error');
+                const t1 = performance.now();
+                const latency = Math.round(t1 - t0);
+                displayViewError(0, 'Error de red o conexión: ' + err.message, latency);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
             }
         }
 
         function displayViewResults(rows, latency) {
             document.getElementById('resultsCard').style.display = 'block';
             document.getElementById('resultsMeta').textContent = `${rows.length} registros (${latency} ms)`;
+            document.getElementById('resultsErrorWrapper').style.display = 'none';
+            document.getElementById('resultsTableWrapper').style.display = 'block';
+            document.getElementById('resultsJsonWrapper').style.display = 'none';
 
             // Llenar JSON
             document.getElementById('resultsJsonCode').textContent = JSON.stringify(rows, null, 2);
@@ -880,7 +964,7 @@ ORDER BY p.apellido, p.nombre"></textarea>
             tbody.innerHTML = '';
 
             if (rows.length === 0) {
-                tbody.innerHTML = '<tr><td style="text-align:center; padding: 20px; color: var(--text-muted);">No se encontraron datos para los filtros especificados.</td></tr>';
+                displayEmptyResults(latency);
                 return;
             }
 
@@ -902,6 +986,66 @@ ORDER BY p.apellido, p.nombre"></textarea>
             tbody.innerHTML = bodyHtml;
 
             switchViewFormat('table');
+            showToast(`Consulta exitosa: ${rows.length} registros (${latency} ms)`, 'success');
+        }
+
+        function displayEmptyResults(latency) {
+            document.getElementById('resultsCard').style.display = 'block';
+            document.getElementById('resultsMeta').textContent = `0 registros (${latency} ms)`;
+            document.getElementById('resultsErrorWrapper').style.display = 'none';
+            document.getElementById('resultsTableWrapper').style.display = 'block';
+            document.getElementById('resultsJsonWrapper').style.display = 'none';
+            document.getElementById('resultsTableHead').innerHTML = '';
+            document.getElementById('resultsTableBody').innerHTML = `
+                <tr>
+                    <td style="text-align:center; padding: 35px 20px; color: var(--text-muted);">
+                        <div style="font-size: 26px; margin-bottom: 8px;">ℹ️</div>
+                        <div style="font-weight: 600; font-size: 14px; color: var(--text-main);">0 registros devueltos</div>
+                        <div style="font-size: 13px; margin-top: 6px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                            La consulta se ejecutó en Oracle pero no arrojó registros para los filtros ingresados. Intenta modificando o quitando los filtros de búsqueda.
+                        </div>
+                    </td>
+                </tr>
+            `;
+            showToast('Consulta finalizada: 0 registros encontrados', 'warning');
+        }
+
+        function displayViewError(status, message, latency) {
+            document.getElementById('resultsCard').style.display = 'block';
+            document.getElementById('resultsMeta').textContent = `Fallo (${latency} ms)`;
+            document.getElementById('resultsTableWrapper').style.display = 'none';
+            document.getElementById('resultsJsonWrapper').style.display = 'none';
+
+            const errBox = document.getElementById('resultsErrorWrapper');
+            errBox.style.display = 'block';
+
+            const isDbConnError = message.includes('ORA-12170') || message.includes('NJS-040') || message.includes('timeout') || message.includes('ECONNREFUSED') || message.includes('ETIMEDOUT') || message.includes('ORA-12541');
+
+            errBox.innerHTML = `
+                <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid var(--danger); border-radius: 8px; padding: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #ef4444; font-weight: 700; font-size: 15px; margin-bottom: 10px;">
+                        <span>⚠️ Error ${status ? 'HTTP ' + status : ''} al ejecutar consulta en Oracle</span>
+                    </div>
+                    <div style="font-family: monospace; font-size: 13px; color: #fca5a5; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 6px; margin-bottom: 14px; word-break: break-all; white-space: pre-wrap;">${message}</div>
+                    ${isDbConnError ? `
+                        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 14px; border-radius: 6px;">
+                            <div style="font-weight: 700; color: var(--warning); margin-bottom: 6px;">🔍 Diagnóstico de Conexión:</div>
+                            La API no pudo comunicarse con el servidor Oracle Database configurado.
+                            <ul style="margin: 8px 0 0 18px; padding: 0;">
+                                <li><strong>VPN Desconectada:</strong> Si el servidor Oracle está en la red municipal o privada, verifique que su cliente VPN (FortiClient, AnyConnect, OpenVPN, etc.) esté activo.</li>
+                                <li><strong>Host / IP inaccesible:</strong> Verifique la variable <code>CONNECTIONSTRING</code> en su archivo <code>.env</code> (actualmente apunta a <code>${dbConnectionString || '181.14.228.210:1521/desa'}</code>).</li>
+                                <li><strong>Listener de Oracle:</strong> Asegúrese de que el servicio listener en el servidor esté corriendo en el puerto 1521.</li>
+                            </ul>
+                        </div>
+                    ` : `
+                        <div style="font-size: 13px; color: var(--text-muted);">
+                            💡 Verifique que los campos, tablas o parámetros ingresados correspondan al esquema Oracle de Liquidación.
+                        </div>
+                    `}
+                </div>
+            `;
+
+            showToast(`Error: ${message.slice(0, 90)}`, 'error');
         }
 
         function switchViewFormat(format) {
@@ -1068,6 +1212,15 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 }
             });
 
+            const btn = document.getElementById('btnExecuteSp');
+            const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Ejecutando en Oracle...';
+
+            document.getElementById('spResultsCard').style.display = 'block';
+            document.getElementById('spResultsMeta').textContent = 'Ejecutando en Oracle...';
+            document.getElementById('spResultsCode').textContent = 'Llamando al procedimiento en la base de datos... Por favor aguarde.';
+
             const t0 = performance.now();
             try {
                 const res = await fetch(`${API_BASE}/sp/${currentSelectedSp}`, {
@@ -1081,19 +1234,34 @@ ORDER BY p.apellido, p.nombre"></textarea>
 
                 const t1 = performance.now();
                 const latency = Math.round(t1 - t0);
-                const data = await res.json();
+                let data = {};
+                try {
+                    data = await res.json();
+                } catch (_) {
+                    data = { error: await res.text() };
+                }
 
                 document.getElementById('spResultsCard').style.display = 'block';
                 document.getElementById('spResultsMeta').textContent = `Estado: ${res.status} (${latency} ms)`;
                 document.getElementById('spResultsCode').textContent = JSON.stringify(data, null, 2);
 
                 if (res.ok) {
-                    showToast('Procedimiento ejecutado', 'success');
+                    showToast('Procedimiento ejecutado con éxito', 'success');
                 } else {
-                    showToast(`Error al ejecutar: ${data.error || 'Error'}`, 'error');
+                    showToast(`Error al ejecutar (${res.status}): ${data.error || 'Error'}`, 'error');
                 }
             } catch (err) {
-                showToast('Error de red ejecutando SP', 'error');
+                const t1 = performance.now();
+                const latency = Math.round(t1 - t0);
+                document.getElementById('spResultsMeta').textContent = `Fallo (${latency} ms)`;
+                document.getElementById('spResultsCode').textContent = JSON.stringify({
+                    error: err.message,
+                    diagnostic: 'Fallo de conexión o red con la API / Oracle'
+                }, null, 2);
+                showToast('Error de red ejecutando SP: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
             }
         }
 

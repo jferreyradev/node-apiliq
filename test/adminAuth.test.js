@@ -155,4 +155,27 @@ test('adminAuth service unit tests', async t => {
             }
         }
     });
+
+    await t.test('adminHealthHandler retorna estado de la API y de BD', async () => {
+        const { adminHealthHandler } = require('../services/adminAuth');
+        let statusCalled = null;
+        let jsonCalled = null;
+        const mockRes = {
+            status: code => {
+                statusCalled = code;
+                return {
+                    json: data => { jsonCalled = data; }
+                };
+            }
+        };
+
+        const mockReq = { query: {} };
+        await adminHealthHandler(mockReq, mockRes);
+        assert.equal(statusCalled, 200);
+        assert.equal(jsonCalled.status, 'ok');
+        assert.equal(jsonCalled.api, 'online');
+        assert.ok(jsonCalled.database);
+        assert.ok(jsonCalled.database.connectionString !== undefined);
+    });
 });
+

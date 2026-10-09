@@ -111,9 +111,58 @@ function verifyKeyHandler(req, res) {
     });
 }
 
+/**
+ * Endpoint de estado y diagnóstico para el Admin Studio (/api/admin/health).
+ */
+async function adminHealthHandler(req, res) {
+    const rawConnectionString = process.env.CONNECTIONSTRING || '';
+    const cleanConnString = rawConnectionString.replace(/^https?:\/\//i, '').trim();
+    const user = process.env.USERDB || 'US_SUELDO';
+
+    const health = {
+        status: 'ok',
+        api: 'online',
+        uptimeSeconds: Math.round(process.uptime()),
+        database: {
+            user: user,
+            connectionString: cleanConnString,
+            connected: false,
+            message: 'Inactivo / pendiente de prueba'
+        }
+    };
+
+    if (req.query.testDb === 'true') {
+        const oracledb = require('oracledb');
+        let conn;
+        try {
+            const pool = oracledb.getPool();
+            if (pool) {
+                conn = await pool.getConnection();
+                await conn.execute('SELECT 1 FROM DUAL');
+                health.database.connected = true;
+                health.database.message = 'Conexión a Oracle OK';
+            } else {
+                health.database.message = 'Pool de Oracle no inicializado';
+            }
+        } catch (err) {
+            health.database.connected = false;
+            health.database.message = err.message;
+            health.database.code = err.code || err.errorNum;
+        } finally {
+            if (conn) {
+                try { await conn.close(); } catch (_) {}
+            }
+        }
+    }
+
+    res.status(200).json(health);
+}
+
 module.exports = {
     adminAuthMiddleware,
     verifyKeyHandler,
+    adminHealthHandler,
     extractKeyFromRequest,
     valuesMatch
 };
+

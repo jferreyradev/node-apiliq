@@ -81,6 +81,7 @@ app.use((req, res, next) => {
 app.use(cors(createCorsOptions()));
 
 app.route('/admin/verify').post(adminAuth.verifyKeyHandler);
+app.route('/admin/health').get(adminAuth.adminHealthHandler);
 
 app.route('/view/list').get(control.getViews);
 app.route('/view/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
@@ -136,18 +137,24 @@ app.use((err, req, res, next) => {
         method: req.method,
         path: req.originalUrl,
         statusCode: safeStatusCode,
-        code: err.code
+        code: err.code,
+        message: err.message
     });
 
     if (res.headersSent) {
         return next(err);
     }
 
-    const message = safeStatusCode >= 500 ?
+    const isDevOrAdmin = process.env.NODE_ENV !== 'production' || Boolean(req.get('X-Admin-Key')) || req.isAdmin;
+
+    const message = (safeStatusCode >= 500 && !isDevOrAdmin) ?
         'Internal server error' :
         (err.message || 'Request failed');
 
-    res.status(safeStatusCode).json({ error: message });
+    res.status(safeStatusCode).json({
+        error: message,
+        code: err.code || err.errorNum || undefined
+    });
 });
 
 module.exports = app;

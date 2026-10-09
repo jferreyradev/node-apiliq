@@ -1,246 +1,189 @@
-# API REST SUELDOS ##
+# API REST Sueldos (api_liquid / node-apiliq)
 
-## Descripción
-    
-    API para acceder a tablas de una base de datos relacional oracle para consltas e inserción de registros.
-
-## Instalación
-### Requisitos
-- Tener instalado node en el sistema. En principio node viene con la herramienta npm.
-
-### Instalación
-Descargar la aplicación. Una vez descargada, en el directorio principal ejecutar ```npm install``` . Éste comando instalará todos los paquetes necesarios para el funcionamiento de la aplicación.
-
-### Ejecución
-Para lanzar la aplicación se puede realizar con algunos de los siguientes comandos: 
-```npm start``` o ```node index.js ``` .
-
-## Conexión
-
-### Punto de entrada:
-http://host:3000/api/[entidad]
-
-### Entidad:
-
-    Se puede realizar una petición a cualquier entidad configurada en el archivo ./config/mapper.js
-
-### Ejemplo del contenido de archivo mapper.js:
-
-```
-hoja: {
-        table: 'hoja_nov',
-        fields: {
-            FechaGrabacion: 'FECHAALTA',
-            TipoCarga: 'IDTIPOCARGA',
-            DescripcionTipoCarga: {
-                table: 'tabtipocarga',
-                parentKey: 'IDTIPOCARGA',
-                foringKey: 'IDTIPOCARGA',
-                fields: {
-                    Descripcion: 'DESCRIPCION'
-                }
-            },
-            EstadoHoja: 'IDESTADOHOJA',
-            GrupoAdicional: 'IDGRUPOADI',
-            TipoLiquidacion: 'IDTIPOLIQ',
-            DescripcionTipoLiquidacion: {
-                table: 'tipoliquidacion',
-                parentKey: 'IDTIPOLIQ',
-                foringKey: 'IDTIPOLIQ',
-                fields: {
-                    Descripcion: 'DESCRIPCION'
-                }
-            },
-            Periodo: 'PERIODO',
-            TipoHoja: 'IDTIPOHOJA',
-            Id: 'IDHOJANOV'
-        },
-        sequence: { field: "Id", seq: 'HOJA_NOV_SEQ.NEXTVAL' }
-    },
-    tipoliq: {
-        table: 'tipoliquidacion',
-        fields: {
-            Id: 'IDTIPOLIQ',
-            Descripcion: 'DESCRIPCION'
-        }
-    },
-    novhaberes: {
-        table: 'NOVHABERES',
-        fields: {
-            NroReparticion: 'IDREP',
-            ReparticionDescripcion: {
-                table: 'reparticion',
-                parentKey: 'IDREP',
-                foringKey: 'IDREP',
-                fields: {
-                    Descripcion: 'DESCRIPCION'
-                }
-            },
-            NroBoleta: 'ORDEN',
-            NroAfiliado: 'AFILIADO',
-            Codigo: 'CODIGO',
-            Subcodigo: 'SUBCOD',
-            Clase: 'PARM1',
-            Dias: 'PARM2',
-            Vencimiento: 'VTO',
-            Importe: 'IMPORTE',
-            Documento: 'DNI',
-            NombreCompleto: 'APYNOM',
-            TipoEmpleoId: 'TE',
-            TipoEmpleoDescripcion: {
-                table: 'tabtipoempleo',
-                parentKey: 'TE',
-                foringKey: 'IDTE',
-                fields: {
-                    Descripcion: 'DESCRIPCION'
-                }
-            },
-            SituacionRevistaId: 'SITREV',
-            SituacionRevistaDescripcion: {
-                table: 'tabsitrevista',
-                parentKey: 'SITREV',
-                foringKey: 'IDSITREV',
-                fields: {
-                    Descripcion: 'DESCRIPCION'
-                }
-            },
-            TipoObraSocialId: 'OS',
-            PPP: 'PPP',
-            FechaGrabacion: 'FECHAGRAB',
-            EstadoRegistro: 'IDESTADOREG',
-            HojaId: 'IDHOJANOV',
-            Id: 'IDNOVHAB'
-        },
-        sequence: { field: "Id", seq: 'NOVHABERES_SEQ.NEXTVAL' }
-    }
-```
-
-Ejemplo GET:
-
-http://www.duckdns.org:3000/api/hoja
-
-http://www.duckdns.org:3000/api/tipoliq
+API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19c)** para la gestión y liquidación de sueldos municipales, generación de boletas PDF, reportes Excel/TXT, intercambio de novedades IPSST y ejecución dinámica de procedimientos y consultas.
 
 ---
 
-| Segmento url |Sintaxis|Observación|
-| --- |---:| ---:|
-| where |?field=value&field=value...| Se puede agregar n condiciones|
-| like   | ?search=atributo:texto| Ejemplo: http://localhost:3000/api/persona?search=ApellidoYNombre:FER&limit=5|
-| >= o <= | ?greatereq=atrubuto:dd/mm/yyy[&lesseq=atributo:dd/mm/yyyy]| Ejemplo: ?greatereq=Periodo:01/06/2020&lesseq=Periodo:01/11/2020|
-|order by | sort={"atributo obj","asc/desc"} |
-| limites y corrimiento |&limit=value&offset=value | limit obligatorio, offset opcional |
+## 🌟 Características Principales
+
+* **Arquitectura Dinámica Zero-Config**: Se prescinde de la edición manual de archivos de mapeo en tiempo de ejecución.
+* **Catálogo de Consultas en Base de Datos**: Las vistas y consultas residen en la tabla `API_VIEW_MAPPER` con recarga en memoria RAM (0 ms de latencia) y fallback automático.
+* **Auto-Parser SQL**: Permite crear nuevas consultas en la API simplemente enviando la sentencia `SELECT ... FROM ...` pura o leyendo una vista física de Oracle.
+* **Introspección en Vivo de Stored Procedures y Funciones**: La API descubre los parámetros `IN` y `OUT` consultando `ALL_ARGUMENTS` en tiempo real.
+* **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends existentes (`HojaIns`, `novHaberesDel`, `cargoIns`, `verifConcepto`, etc.).
+* **Generación de Boletas PDF y Reportes XLSX**: Soporte para generación vectorial de recibos y exportación de planillas.
+* **Procesamiento de Novedades IPSST**: Flujo en dos pasos con `uploadId` único y aislado para evitar colisiones concurrentes.
+* **Seguridad y Producción**: CORS configurable con whitelist, protección de cabecera interna `X-Internal-Key` para llamadas desde Deno, y soporte HTTPS con TLS.
 
 ---
 
+## 📋 Requisitos Previos
 
-### Ejemplo y pruebas POST:
-Las pruebas fueron realizadas con la herramienta curl en linea de comandos.
+1. **Node.js**: Versión 18, 20 o superior.
+2. **Oracle Instant Client**: Versión 19c o 23c (configurado en `ORACLE_CLIENT_LIB_DIR`).
+3. **Oracle Database**: Compatible con Oracle 11g Release 2 (11.2.x), 12c, 19c o 21c.
 
-#### Tipo liquidación:
+---
 
-` curl -X "POST" "http://localhost:3000/api/tipoliq" -i -H 'Content-Type: application/json' -d $'{"Id":"6", "Descripcion":"inc doc"}' `
+## 🚀 Instalación y Puesta en Marcha
 
-#### Hoja de novedad:
+### 1. Clonar e Instalar Dependencias
+```bash
+git clone https://github.com/jferreyradev/node-apiliq.git
+cd node-apiliq
+npm install
+```
 
-` curl -X "POST" "http://localhost:3000/api/hoja" -i -H 'Content-Type: application/json' -d $'{"FechaGrabacion":"20-nov-2020", "TipoCarga":"1","EstadoHoja":"1", "GrupoAdicional":"24","TipoLiquidacion":"5","Periodo":"01-dec-2020","TipoHoja":"1"}' `
+### 2. Configurar Variables de Entorno (`.env`)
+Crea o edita tu archivo `.env` en la raíz del proyecto:
+```env
+USERDB="US_SUELDO"
+PASSWORD="TuPassword"
+CONNECTIONSTRING="181.14.228.210:1521/desa"
 
-## Carga de novedades IPSST
+HTTP_PORT=3005
+HTTPS_PORT=3007
+ENABLE_HTTPS=false
 
-La carga de novedades IPSST se realiza en dos pasos. El archivo temporal se identifica mediante un `uploadId` para evitar que dos cargas concurrentes se mezclen.
+ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
+LOGO_PATH=./assets/logo.png
 
-### 1. Subir el archivo
+# Opcional: Clave interna para peticiones del puente Deno
+REQUIRE_INTERNAL_KEY=false
+API_INTERNAL_KEY=clave_secreta_desa
 
-El cuerpo debe enviarse como archivo binario y el nombre debe estar en el header `x-file-name`:
+# Opcional: Whitelist CORS (separada por comas)
+CORS_ORIGINS=http://localhost:3005,https://liq.midominio.com
+```
+
+### 3. Ejecutar los Scripts Iniciales en Oracle (Solo la primera vez)
+En tu gestor de base de datos (**DBeaver**, **SQL Developer** o **PL/SQL Developer**) conectado como `US_SUELDO`:
+1. Ejecuta [scripts/oracle_api_view_mapper.sql](scripts/oracle_api_view_mapper.sql) (Crea la tabla `API_VIEW_MAPPER` y los procedimientos de upsert).
+2. Ejecuta [scripts/seed_views.sql](scripts/seed_views.sql) (Carga las 54 consultas iniciales).
+
+### 4. Iniciar la Aplicación
+
+#### En desarrollo:
+```bash
+npm start
+```
+*(Inicia con `nodemon` en el puerto `3005`).*
+
+#### En producción:
+```bash
+pm2 start index.js --name "api_liquid"
+pm2 save
+```
+
+---
+
+## 📡 Referencia de Endpoints
+
+### 1. Vistas y Consultas Dinámicas (`/api/view/*`)
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/view/list` | Retorna el catálogo completo de vistas activas. |
+| `GET` | `/api/view/:name` | Ejecuta la vista con filtros y paginación en la URL (`?Campo=valor&limit=50&offset=0`). |
+| `POST` | `/api/view/save` | **Crea o actualiza una vista automáticamente** enviando un `SELECT` o vista Oracle. |
+| `DELETE` | `/api/view/:name` | Desactiva lógicamente la vista en `API_VIEW_MAPPER`. |
+| `POST` | `/api/view/refresh` | Reinicia la memoria RAM y recarga cambios desde Oracle. |
+
+#### Crear una consulta automáticamente desde un `SELECT`:
+```bash
+curl -X POST http://localhost:3005/api/view/save \
+     -H "Content-Type: application/json" \
+     -d '{
+       "viewName": "empleadosPorRep",
+       "sql": "SELECT p.idpers AS PersonaId, p.dni AS Documento, p.apellido || \x27, \x27 || p.nombre AS ApeNom, c.idrep AS IdRep FROM personas p INNER JOIN cargos c ON c.idpers = p.idpers WHERE c.idrep = :IdRep ORDER BY p.apellido"
+     }'
+```
+
+#### Consumir la vista inmediatamente:
+```bash
+curl "http://localhost:3005/api/view/empleadosPorRep?IdRep=1&limit=20"
+```
+
+---
+
+### 2. Stored Procedures y Funciones (`/api/sp/*` y `/api/fn/*`)
+
+La API introspecciona los parámetros `IN` y `OUT` en tiempo real desde Oracle.
+
+| Método | Endpoint | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/sp/list` | Lista los procedimientos disponibles. |
+| `POST` | `/api/sp/:name` | Ejecuta un SP enviando un JSON en el body. |
+| `GET` | `/api/fn/list` | Lista las funciones disponibles. |
+| `POST` | `/api/fn/:name` | Ejecuta una función y retorna `{ "value": resultado }`. |
+
+#### Ejemplo de invocación de Stored Procedure:
+```bash
+curl -X POST http://localhost:3005/api/sp/hojaIns \
+     -H "Content-Type: application/json" \
+     -d '{
+       "vIDREP": 1,
+       "vORDEN": 10,
+       "vPERIODO": 202603
+     }'
+```
+
+---
+
+### 3. Carga y Procesamiento de Novedades IPSST
+
+Flujo en dos pasos protegido con `uploadId` concurrente:
+
+1. **Subir archivo plano:**
+   ```bash
+   curl -X POST "http://localhost:3005/api/fileUpload" \
+        -H "Content-Type: text/plain" \
+        -H "x-file-name: novedades.txt" \
+        --data-binary @novedades.txt
+   ```
+   *Respuesta:* `201 Created` con `{ "uploadId": "uuid-aqui" }`.
+
+2. **Procesar novedades con el `uploadId`:**
+   ```bash
+   curl "http://localhost:3005/api/generaNovIPSST?uploadId=uuid-aqui"
+   ```
+
+---
+
+### 4. Recibos de Sueldo en PDF y Reportes Excel
+
+- **Boleta PDF:** `GET /api/boleta?Periodo=202603&IdRep=1&Orden=10`
+- **Reporte Excel:** `GET /api/xlsx/resumenLiq?Periodo=202603`
+- **Reporte TXT:** `GET /api/txt/archivoIPSST?Periodo=202603`
+
+---
+
+## 🛠️ Herramientas y Scripts Útiles
+
+* **Generador de Vistas por Terminal (`scripts/create_view.js`):**
+  Genera el bloque PL/SQL listo para ejecutar en DBeaver a partir de cualquier consulta SQL:
+  ```bash
+  node scripts/create_view.js --name miConsulta "SELECT p.idpers AS PersonaId, p.dni FROM personas p"
+  ```
+* **Introspección y Generación de Mappers (`scripts/generate_mappers.js`):**
+  Inspecciona paquetes de Oracle y genera los archivos de mapeo:
+  ```bash
+  node scripts/generate_mappers.js MOD_NOV
+  ```
+
+---
+
+## 🧪 Pruebas Automatizadas
+
+El proyecto cuenta con una suite completa de pruebas unitarias y de integración que se ejecutan sin requerir conexión a base de datos externa:
 
 ```bash
-curl -X POST "http://localhost:3007/api/fileUpload" \
-    -H "Content-Type: text/plain" \
-    -H "x-file-name: novedades.txt" \
-    --data-binary @novedades.txt
+npm test
 ```
 
-La respuesta exitosa es `201` e incluye un identificador único:
+---
 
-```json
-{
-    "resume": {},
-    "rows": [],
-    "uploadId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-}
-```
+## 📖 Documentación Detallada
 
-### 2. Procesar la carga
-
-Enviar el `uploadId` recibido en el paso anterior:
-
-```bash
-curl -X GET "http://localhost:3007/api/generaNovIPSST?uploadId=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
-
-La respuesta exitosa es `201`. El archivo temporal se elimina al finalizar el procesamiento, incluso si ocurre un error en Oracle.
-
-Si falta `uploadId` o no tiene formato válido, la API responde `400`:
-
-```json
-{
-    "error": "uploadId válido es requerido"
-}
-```
-
-## Logo de boletas PDF
-
-El logo puede reutilizarse sin modificar el código configurando `LOGO_PATH` en `.env`:
-
-```env
-LOGO_PATH=./assets/logo-municipal.png
-```
-
-Se admiten archivos `.png`, `.jpg` y `.jpeg`. Si `LOGO_PATH` no está definido, se usan los logos existentes `Logo.png` o `Logo.jpg` según el tipo de boleta.
-
-## Acceso desde el puente Deno
-
-La protección interna está desactivada por defecto para conservar el comportamiento actual. Para exigir que las solicitudes provengan del puente Deno, configurar en `.env`:
-
-```env
-REQUIRE_INTERNAL_KEY=true
-API_INTERNAL_KEY=una-clave-larga-y-secreta
-```
-
-El puente debe enviar esa misma clave en cada solicitud hacia esta API:
-
-```http
-X-Internal-Key: una-clave-larga-y-secreta
-```
-
-Sin la cabecera correcta, la API responde `403`. Si la protección está activada pero no se configuró la clave, responde `503`. En desarrollo, mantener `REQUIRE_INTERNAL_KEY=false` conserva el acceso local actual.
-
-## Whitelist CORS opcional
-
-La whitelist CORS se activa únicamente cuando se configura `CORS_ORIGINS` en `.env`:
-
-```env
-CORS_ORIGINS=https://app.midominio.com,https://admin.midominio.com
-```
-
-Si `CORS_ORIGINS` está vacío o ausente, se conserva temporalmente el comportamiento actual de CORS abierto. Las solicitudes sin header `Origin`, como `curl` o llamadas servidor-servidor desde Deno, no se bloquean por CORS.
-
-## HTTPS y certificados
-
-La clave privada y el certificado no forman parte del repositorio. Para iniciar HTTPS, configurar rutas externas en `.env`:
-
-```env
-TLS_KEY_PATH=/ruta/segura/server.key
-TLS_CERT_PATH=/ruta/segura/server.crt
-```
-
-Los archivos deben existir en el entorno de despliegue y no deben versionarse.
-
-## Llamadas a procedimientos y funciones
-
-### Ejemplo de prueba (ejecución en terminal):
-
-    curl -X "GET" "http://localhost:3000/api/fn/verifConcepto?Rep=484&Te=1&Codigo=0&SubCodigo=0&Vto=01-nov-2020" -i -H 'Content-Type: application/json'
-
-### Resultado:
-    {"value":1}
+Para consultar la guía técnica completa de arquitectura, compatibilidad con Oracle 11g y resolución de problemas, consulta:
+> 📄 [docs/guia_migracion_vistas_oracle.md](docs/guia_migracion_vistas_oracle.md)

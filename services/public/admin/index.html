@@ -588,8 +588,11 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="saveViewFromSql()">🚀 Guardar en Oracle (API_VIEW_MAPPER)</button>
                         <button class="btn" onclick="previewSqlParse()">⚡ Previsualizar Parseo JSON</button>
-                        <button class="btn" onclick="syncMapperViewsToDb()" title="Sincroniza las 54 consultas predefinidas de config/mapperViews.js hacia Oracle">📥 Importar mapperViews.js a BD</button>
+                        <button class="btn" onclick="syncMapperViewsToDb()" title="Sincroniza las consultas del archivo local (config/mapperViews.js o mapperViews.local.js)">📥 Sincronizar archivo local a BD</button>
+                        <button class="btn" onclick="triggerImportViewsJson()" title="Subir y guardar un archivo JSON con definiciones de vistas a la base de datos">📁 Subir vistas JSON a BD</button>
+                        <button class="btn" onclick="exportViewsJson()" title="Descargar todas las vistas de este servidor como archivo JSON">📤 Exportar vistas a JSON</button>
                     </div>
+                    <input type="file" id="viewsJsonFileInput" accept=".json" onchange="handleViewsJsonUpload(event)" style="display: none;">
                 </div>
 
                 <div class="card" id="sqlPreviewCard" style="display: none;">
@@ -1509,6 +1512,70 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 }
+            }
+        }
+
+        function exportViewsJson() {
+            if (!viewsCatalog || Object.keys(viewsCatalog).length === 0) {
+                showToast('No hay vistas cargadas en el catálogo para exportar', 'warning');
+                return;
+            }
+            const jsonStr = JSON.stringify(viewsCatalog, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const dateStr = new Date().toISOString().slice(0, 10);
+            a.download = `views_catalog_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Catálogo de vistas exportado exitosamente', 'success');
+        }
+
+        function triggerImportViewsJson() {
+            const input = document.getElementById('viewsJsonFileInput');
+            if (input) {
+                input.value = '';
+                input.click();
+            }
+        }
+
+        async function handleViewsJsonUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+                const views = (parsed && (parsed.jsonViewMap || parsed.views)) ? (parsed.jsonViewMap || parsed.views) : parsed;
+                const count = Object.keys(views).length;
+
+                if (!confirm(`Se encontraron ${count} consultas en el archivo "${file.name}".\n\n¿Deseas importarlas y guardarlas en la tabla API_VIEW_MAPPER de esta base de datos?`)) {
+                    return;
+                }
+
+                showToast(`Importando ${count} consultas a Oracle (API_VIEW_MAPPER)...`, 'info');
+
+                const res = await fetch(`${API_BASE}/view/import-json`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': currentAdminKey
+                    },
+                    body: JSON.stringify(views)
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(`✅ ${data.message || 'Vistas importadas exitosamente'}`, 'success');
+                    await loadCatalogs();
+                } else {
+                    showToast(`Error al importar (${res.status}): ${data.error || 'Fallo'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Error al leer o procesar el archivo JSON: ' + err.message, 'error');
             }
         }
 

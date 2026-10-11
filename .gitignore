@@ -18,3 +18,4 @@ startup.log
 tmp/*
 oracle-client/
 .DS_Store
+config/mapperViews.local.*

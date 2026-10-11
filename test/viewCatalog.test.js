@@ -44,4 +44,29 @@ test('viewCatalog administra la caché y resuelve vistas', async (t) => {
         viewCatalog.clearCache();
         assert.equal(viewCatalog._viewCache.size, 0);
     });
+
+    await t.test('mapperViews soporta mapperViews.local.json si existe', async () => {
+        const fs = require('fs');
+        const path = require('path');
+        const localPath = path.join(__dirname, '../config/mapperViews.local.json');
+        
+        try {
+            fs.writeFileSync(localPath, JSON.stringify({
+                vistaLocalEspecial: {
+                    fields: { Campo1: 'c.campo1' },
+                    sql: { fromClause: ['FROM tabla_local'] }
+                }
+            }));
+
+            delete require.cache[require.resolve('../config/mapperViews')];
+            const reloaded = require('../config/mapperViews');
+            assert.ok(reloaded.jsonViewMap.vistaLocalEspecial, 'Debe haber cargado la vista local');
+        } finally {
+            if (fs.existsSync(localPath)) {
+                fs.unlinkSync(localPath);
+            }
+            delete require.cache[require.resolve('../config/mapperViews')];
+            require('../config/mapperViews');
+        }
+    });
 });

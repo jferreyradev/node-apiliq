@@ -1,4 +1,4 @@
-module.exports.jsonViewMap = {    
+const baseJsonViewMap = {    
     configServer: {
         fields: {
             IdConf: "c.idconf",
@@ -1411,4 +1411,33 @@ module.exports.jsonViewMap = {
             ]
         }
     }	
+};
+
+// Soporte para archivos de vistas locales por despliegue / municipio (no pisados por git)
+const fs = require('fs');
+const path = require('path');
+
+const localJsPath = path.join(__dirname, 'mapperViews.local.js');
+const localJsonPath = path.join(__dirname, 'mapperViews.local.json');
+
+let localViews = null;
+if (fs.existsSync(localJsPath)) {
+    try {
+        const mod = require('./mapperViews.local.js');
+        localViews = (mod && mod.jsonViewMap) ? mod.jsonViewMap : mod;
+    } catch (e) {
+        console.warn('[config/mapperViews] Advertencia al cargar mapperViews.local.js:', e.message);
+    }
+} else if (fs.existsSync(localJsonPath)) {
+    try {
+        const raw = fs.readFileSync(localJsonPath, 'utf8');
+        const parsed = JSON.parse(raw);
+        localViews = (parsed && parsed.jsonViewMap) ? parsed.jsonViewMap : parsed;
+    } catch (e) {
+        console.warn('[config/mapperViews] Advertencia al cargar mapperViews.local.json:', e.message);
+    }
 }
+
+module.exports = {
+    jsonViewMap: localViews || baseJsonViewMap
+};

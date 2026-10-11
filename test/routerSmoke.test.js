@@ -140,6 +140,40 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(data.successful, data.total);
     });
 
+    await t.test('POST /api/view/import-json rechaza solicitud sin clave de admin (401)', async () => {
+        const res = await executeRequest({ method: 'POST', url: '/api/view/import-json' });
+        assert.equal(res.statusCode, 401);
+    });
+
+    await t.test('POST /api/view/import-json rechaza payload no válido (400)', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/import-json',
+            headers: adminHeaders,
+            body: 'invalido'
+        });
+        assert.equal(res.statusCode, 400);
+    });
+
+    await t.test('POST /api/view/import-json importa objeto de vistas con clave y responde 200', async () => {
+        const payload = {
+            vistaImportadaTest: {
+                fields: { Id: '1' },
+                sql: { fromClause: ['FROM DUAL'] }
+            }
+        };
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/import-json',
+            headers: adminHeaders,
+            body: payload
+        });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
+        assert.equal(data.successful, 1);
+    });
+
     await t.test('POST /api/view/save rechaza solicitud sin nombre con clave', async () => {
         const res = await executeRequest({
             method: 'POST',

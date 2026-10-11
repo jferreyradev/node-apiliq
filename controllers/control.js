@@ -879,8 +879,49 @@ async function seedViewsFromFile(req, res, next) {
     }
 }
 
+async function importViewsJson(req, res, next) {
+    try {
+        const body = req.body;
+        const views = (body && (body.views || body.jsonViewMap)) ? (body.views || body.jsonViewMap) : body;
+        if (!views || typeof views !== 'object' || Array.isArray(views)) {
+            return res.status(400).json({ error: 'Formato inválido: se esperaba un objeto con las definiciones de las vistas' });
+        }
+
+        const viewNames = Object.keys(views);
+        let total = viewNames.length;
+        let successful = 0;
+        let failed = 0;
+        const errors = [];
+
+        for (const name of viewNames) {
+            const configObj = views[name];
+            if (!configObj || typeof configObj !== 'object') continue;
+            const description = configObj.description || `Vista/consulta ${name}`;
+            try {
+                await viewCatalog.upsertView(name, description, configObj);
+                successful++;
+            } catch (err) {
+                failed++;
+                errors.push({ viewName: name, error: err.message });
+            }
+        }
+
+        res.status(200).json({
+            status: 'ok',
+            message: `Importación finalizada: ${successful} de ${total} vistas guardadas en API_VIEW_MAPPER`,
+            total,
+            successful,
+            failed,
+            errors
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports.saveView = saveView;
 module.exports.deleteView = deleteView;
 module.exports.refreshViews = refreshViews;
 module.exports.seedViewsFromFile = seedViewsFromFile;
+module.exports.importViewsJson = importViewsJson;
 

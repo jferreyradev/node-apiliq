@@ -122,6 +122,24 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.ok(data.totalViews > 0);
     });
 
+    await t.test('POST /api/view/seed-from-file rechaza solicitud sin clave de admin (401)', async () => {
+        const res = await executeRequest({ method: 'POST', url: '/api/view/seed-from-file' });
+        assert.equal(res.statusCode, 401);
+    });
+
+    await t.test('POST /api/view/seed-from-file sincroniza vistas con clave y responde 200', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/view/seed-from-file',
+            headers: adminHeaders
+        });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
+        assert.ok(data.total > 0);
+        assert.equal(data.successful, data.total);
+    });
+
     await t.test('POST /api/view/save rechaza solicitud sin nombre con clave', async () => {
         const res = await executeRequest({
             method: 'POST',

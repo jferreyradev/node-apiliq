@@ -478,6 +478,7 @@
                 <span class="status-dot" id="statusDot"></span>
                 <span id="statusText">API: Online</span>
             </div>
+            <button class="btn btn-sm" id="btnSyncMapperViews" onclick="syncMapperViewsToDb()" title="Sincroniza las 54 consultas de config/mapperViews.js a la tabla API_VIEW_MAPPER en Oracle">📥 Sincronizar mapperViews a BD</button>
             <button class="btn btn-sm" id="btnRefreshCache" onclick="refreshCache()">🔄 Recargar Caché RAM</button>
             <button class="btn btn-sm btn-danger" onclick="logout()">🔒 Salir</button>
         </div>
@@ -584,9 +585,10 @@ WHERE c.idrep = :IdRep
 ORDER BY p.apellido, p.nombre"></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="saveViewFromSql()">🚀 Guardar en Oracle (API_VIEW_MAPPER)</button>
                         <button class="btn" onclick="previewSqlParse()">⚡ Previsualizar Parseo JSON</button>
+                        <button class="btn" onclick="syncMapperViewsToDb()" title="Sincroniza las 54 consultas predefinidas de config/mapperViews.js hacia Oracle">📥 Importar mapperViews.js a BD</button>
                     </div>
                 </div>
 
@@ -1465,6 +1467,43 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 }
             } catch (err) {
                 showToast('Error de conexión al recargar: ' + err.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        }
+
+        async function syncMapperViewsToDb() {
+            if (!confirm('¿Deseas sincronizar todas las vistas preconfiguradas del archivo local "config/mapperViews.js" (54 consultas) directamente a la tabla API_VIEW_MAPPER en Oracle?\n\nEsto creará o actualizará las definiciones en la base de datos y refrescará la caché RAM.')) {
+                return;
+            }
+
+            const btn = document.getElementById('btnSyncMapperViews');
+            const originalText = btn ? btn.innerHTML : '📥 Sincronizar mapperViews a BD';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Sincronizando (54 vistas)...';
+            }
+
+            showToast('Sincronizando 54 consultas a Oracle (API_VIEW_MAPPER)...', 'info');
+
+            try {
+                const res = await fetch(`${API_BASE}/view/seed-from-file`, {
+                    method: 'POST',
+                    headers: { 'X-Admin-Key': currentAdminKey }
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) {
+                    showToast(`✅ ${data.message || 'Sincronización finalizada'}`, 'success');
+                    await loadCatalogs();
+                } else {
+                    showToast(`Error al sincronizar (${res.status}): ${data.error || 'Fallo'}`, 'error');
+                }
+            } catch (err) {
+                showToast('Error de conexión al sincronizar vistas: ' + err.message, 'error');
             } finally {
                 if (btn) {
                     btn.disabled = false;

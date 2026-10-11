@@ -211,7 +211,7 @@ async function upsertView(viewName, description, configObj) {
     }
 
     // Actualizar inmediatamente la memoria RAM
-    const parsed = typeof configObj === 'string' ? JSON.parse(configObj) : configObj;
+    const parsed = parsedConfig;
     viewCache.set(viewName, parsed);
 
     return { success: true, viewName, config: parsed };
@@ -289,6 +289,39 @@ async function createFromOracleView(viewName, description, oracleViewName) {
     return await upsertView(viewName, description, config);
 }
 
+/**
+ * Importa o sincroniza todas las vistas preconfiguradas del archivo config/mapperViews.js
+ * hacia la tabla API_VIEW_MAPPER en Oracle y actualiza la caché en memoria RAM.
+ */
+async function seedViewsFromFile(options = {}) {
+    const views = (mapperViews && mapperViews.jsonViewMap) || {};
+    const viewNames = Object.keys(views);
+
+    let total = viewNames.length;
+    let successful = 0;
+    let failed = 0;
+    const errors = [];
+
+    for (const name of viewNames) {
+        const configObj = views[name];
+        const description = (configObj && configObj.description) || `Vista/consulta ${name}`;
+        try {
+            await upsertView(name, description, configObj);
+            successful++;
+        } catch (err) {
+            failed++;
+            errors.push({ viewName: name, error: err.message });
+        }
+    }
+
+    return {
+        total,
+        successful,
+        failed,
+        errors
+    };
+}
+
 module.exports = {
     getViewConfig,
     getAllViews,
@@ -297,6 +330,7 @@ module.exports = {
     deleteView,
     createFromSql,
     createFromOracleView,
+    seedViewsFromFile,
     parseSqlToViewConfig: sqlViewParser.parseSqlToViewConfig,
     _viewCache: viewCache
 };

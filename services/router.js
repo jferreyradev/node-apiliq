@@ -90,6 +90,7 @@ app.route('/view/refresh').post(adminAuth.adminAuthMiddleware, control.refreshVi
 app.route('/catalog/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
 app.route('/view/save').post(adminAuth.adminAuthMiddleware, control.saveView);
 app.route('/view/upsert').post(adminAuth.adminAuthMiddleware, control.saveView);
+app.route('/view/seed-from-file').post(adminAuth.adminAuthMiddleware, control.seedViewsFromFile);
 
 app.route('/sp/list').get(control.getProc);
 

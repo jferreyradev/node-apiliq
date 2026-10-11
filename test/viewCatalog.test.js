@@ -31,6 +31,14 @@ test('viewCatalog administra la caché y resuelve vistas', async (t) => {
         assert.ok(allViews.aportesPat);
     });
 
+    await t.test('seedViewsFromFile sincroniza todas las vistas del mapperViews local', async () => {
+        const result = await viewCatalog.seedViewsFromFile();
+        assert.ok(result.total > 0, 'Debe haber vistas para sincronizar');
+        assert.equal(result.successful, result.total, 'Todas las vistas deben procesarse exitosamente');
+        assert.equal(result.failed, 0, 'No debe haber fallas');
+        assert.ok(viewCatalog._viewCache.has('configServer'), 'Debe estar en la caché RAM');
+    });
+
     await t.test('clearCache vacía la memoria RAM', async () => {
         assert.ok(viewCatalog._viewCache.size > 0);
         viewCatalog.clearCache();

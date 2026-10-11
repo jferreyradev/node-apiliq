@@ -866,7 +866,21 @@ async function refreshViews(req, res, next) {
     }
 }
 
+async function seedViewsFromFile(req, res, next) {
+    try {
+        const result = await viewCatalog.seedViewsFromFile();
+        res.status(200).json({
+            status: 'ok',
+            message: `Sincronización finalizada: ${result.successful} de ${result.total} vistas guardadas en API_VIEW_MAPPER`,
+            ...result
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports.saveView = saveView;
 module.exports.deleteView = deleteView;
 module.exports.refreshViews = refreshViews;
+module.exports.seedViewsFromFile = seedViewsFromFile;
 

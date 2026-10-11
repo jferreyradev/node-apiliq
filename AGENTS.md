@@ -139,6 +139,11 @@ api_liquid/
    - Si `atomic=true`, hace `commit()` al final o `rollback()` total ante fallos.
    - Elimina el archivo temporal en `finally`.
 
+### Flujo E: Sincronización e Importación de Vistas (`POST /api/view/seed-from-file`, `POST /api/view/import-json`)
+1. **Sincronización de archivo local:** `POST /api/view/seed-from-file` toma `config/mapperViews.local.js` (o `mapperViews.js` de fallback) y puebla la tabla `API_VIEW_MAPPER` de ese servidor con `SP_UPSERT_VISTA`.
+2. **Importación masiva por JSON:** `POST /api/view/import-json` recibe un lote JSON `{ viewName: config, ... }` y registra/actualiza todas las vistas en Oracle sin necesidad de acceso por consola o SSH.
+3. **Aislamiento Multi-despliegue:** Para clientes con vistas particulares, el archivo `config/mapperViews.local.*` está ignorado en Git (`.gitignore`) para permitir `git pull origin main` sin conflictos de merge.
+
 ---
 
 ## 🧪 5. Comandos de Prueba y Diagnóstico

@@ -98,23 +98,25 @@ nano .env   # o usa tu editor favorito (vim, code, etc.)
 
 ---
 
-### Paso 5: Ejecutar los Scripts SQL en Oracle (Solo la 1ª vez)
+### Paso 5: Crear los Objetos Base en Oracle (Solo la 1ª vez)
 
-Para que el catálogo dinámico de vistas y el creador automático de consultas funcionen, se deben crear los objetos base en Oracle.
+Para que el catálogo dinámico de vistas, el importador de archivos y el creador automático de consultas funcionen, se deben crear los objetos base en Oracle.
 
-Conéctate con tu herramienta de BD (**SQL Developer**, **DBeaver** o `sqlplus`) como el usuario configurado (`US_SUELDO`) y ejecuta en este orden:
+Conéctate con tu herramienta de BD (**SQL Developer**, **DBeaver** o `sqlplus`) como el usuario configurado (`US_SUELDO`) y ejecuta:
 
-1. **Creación de la tabla de mapeo y procedimientos:**
-   ```sql
-   @scripts/oracle_api_view_mapper.sql
-   ```
-   *(Crea la tabla `API_VIEW_MAPPER`, la secuencia `API_VIEW_MAPPER_SEQ` y los procedimientos de upsert seguro).*
+```sql
+@scripts/oracle_api_view_mapper.sql
+```
+*(Crea la tabla `API_VIEW_MAPPER`, la secuencia `API_VIEW_MAPPER_SEQ` y los procedimientos almacenados de upsert seguro).*
 
-2. **Carga inicial de las 54 consultas maestras:**
-   ```sql
-   @scripts/seed_views.sql
-   ```
-   *(Inserta el catálogo predeterminado de consultas del sistema).*
+#### ¿Cómo poblar las 54 consultas maestras? (Elige una opción):
+* **Opción A (Recomendada - Con 1 solo clic desde el navegador):**
+  Una vez que inicies la API (Paso 3 o 4), ingresa al Admin Studio (`http://<servidor>:3005/admin`) y presiona el botón **`📥 Sincronizar mapperViews a BD`**. La API leerá el archivo local y poblará la tabla en Oracle en menos de 2 segundos.
+* **Opción B (Desde tu cliente SQL):**
+  Si prefieres poblarla antes de levantar la API, ejecuta en tu cliente SQL:
+  ```sql
+  @scripts/seed_views.sql
+  ```
 
 ---
 
@@ -291,7 +293,33 @@ server {
 
 ---
 
-## 🛠️ 6. Resolución de Problemas Frecuentes (Troubleshooting)
+## 🏢 7. Despliegue en Múltiples Servidores con Vistas Personalizadas
+
+Si administras múltiples instalaciones de la API (por ejemplo, 4 servidores para distintos municipios o dependencias) donde cada uno tiene consultas o campos ligeramente diferentes en `mapperViews`:
+
+### Principio de Aislamiento:
+* **Cada base de datos Oracle es soberana:** La tabla `API_VIEW_MAPPER` reside en la base de datos de cada cliente. Si una consulta está registrada en la BD, la API usará esa versión y no la del archivo genérico.
+
+### Estrategia A: Archivo Local Desacoplado (`config/mapperViews.local.js`)
+Para evitar conflictos con Git al actualizar el código con `git pull origin main`:
+1. En el servidor del cliente específico, guarda sus consultas personalizadas como:
+   ```text
+   config/mapperViews.local.js   (o config/mapperViews.local.json)
+   ```
+2. Este archivo ya se encuentra en `.gitignore`, por lo que **Git jamás lo sobreescribirá ni generará conflictos de merge**.
+3. La API lo detecta con máxima prioridad sobre el archivo base.
+4. Ingresas al Admin Studio (`/admin`) de ese servidor y presionas:
+   > **`📥 Sincronizar archivo local a BD`**
+   *(Impactará las consultas específicas de ese servidor en su tabla Oracle).*
+
+### Estrategia B: Respaldo y Carga vía JSON desde el Navegador (Sin SSH)
+Desde la pestaña **`➕ SQL Studio`** del Admin Studio:
+* **`📤 Exportar vistas a JSON`**: Descarga todas las consultas activas de ese servidor a tu computadora como un archivo `.json`.
+* **`📁 Subir vistas JSON a BD`**: Te permite seleccionar desde tu máquina el archivo `.json` de un cliente y sincronizarlo directamente en la base de datos de ese servidor, sin tener que entrar por consola ni copiar archivos a mano.
+
+---
+
+## 🛠️ 8. Resolución de Problemas Frecuentes (Troubleshooting)
 
 ### Error 1: `DPI-1047: Cannot locate a 64-bit Oracle Client library`
 * **Causa:** El sistema no encuentra las librerías binarias de Oracle (`libclntsh.so` en Linux o `.dylib` en macOS).

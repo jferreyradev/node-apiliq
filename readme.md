@@ -132,6 +132,8 @@ Al ingresar, el estudio solicita la **Clave de Acceso de Administrador** configu
 | `POST` | `/api/view/save` | `X-Admin-Key` | **Crea o actualiza una vista automáticamente** enviando un `SELECT` o vista Oracle. |
 | `DELETE` | `/api/view/:name` | `X-Admin-Key` | Desactiva lógicamente la vista en `API_VIEW_MAPPER`. |
 | `POST` | `/api/view/refresh` | `X-Admin-Key` | Reinicia la memoria RAM y recarga cambios desde Oracle. |
+| `POST` | `/api/view/seed-from-file` | `X-Admin-Key` | Sincroniza todas las consultas del archivo local (`mapperViews.js` o `mapperViews.local.js`) a la BD Oracle. |
+| `POST` | `/api/view/import-json` | `X-Admin-Key` | Importa y guarda un lote de vistas en formato JSON directamente en `API_VIEW_MAPPER`. |
 | `POST` | `/api/admin/verify` | `X-Admin-Key` | Valida si la clave de administrador suministrada es correcta. |
 
 #### Crear una consulta automáticamente desde un `SELECT`:

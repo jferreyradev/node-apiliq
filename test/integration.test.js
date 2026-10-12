@@ -64,8 +64,7 @@ test('API responde rutas básicas e integración Oracle', async t => {
         cwd: process.cwd(),
         env: {
             ...process.env,
-            HTTP_PORT: String(apiPort),
-            HTTPS_PORT: '3019'
+            PORT: String(apiPort)
         },
         stdio: ['ignore', 'pipe', 'pipe']
     });

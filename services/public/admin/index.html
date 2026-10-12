@@ -166,12 +166,19 @@
             display: flex;
             border-bottom: 1px solid var(--border);
             background: rgba(15, 23, 42, 0.5);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-tab {
             flex: 1;
-            padding: 10px 4px;
-            font-size: 0.78rem;
+            min-width: 58px;
+            padding: 9px 3px;
+            font-size: 0.72rem;
             font-weight: 600;
             color: var(--text-muted);
             text-align: center;
@@ -520,6 +527,7 @@
         <aside class="sidebar">
             <div class="nav-tabs">
                 <div class="nav-tab active" onclick="switchMainTab('views')">📋 Vistas (<span id="viewsCount">0</span>)</div>
+                <div class="nav-tab" onclick="switchMainTab('explorer')">🌐 Explorer</div>
                 <div class="nav-tab" onclick="switchMainTab('sqlStudio')">➕ SQL Studio</div>
                 <div class="nav-tab" onclick="switchMainTab('procedures')">⚡ SPs (<span id="spCount">0</span>)</div>
                 <div class="nav-tab" onclick="switchMainTab('importer')">📁 Importar</div>
@@ -548,6 +556,20 @@
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-primary" id="btnExecuteView" onclick="executeCurrentView()" disabled>▶ Ejecutar Consulta</button>
                             <button class="btn btn-danger" id="btnDeleteView" onclick="deleteCurrentView()" disabled>🗑️ Desactivar</button>
+                        </div>
+                    </div>
+
+                    <!-- Barra interactiva de Endpoint y Query Preview -->
+                    <div id="viewEndpointBar" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; overflow: hidden;">
+                            <span style="background: rgba(34, 197, 94, 0.2); color: var(--success); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">GET</span>
+                            <code id="viewEndpointUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/view/...</code>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button class="btn btn-sm" onclick="copyCurrentViewUrl()" title="Copiar URL completa">📋 Copiar URL</button>
+                            <button class="btn btn-sm" onclick="copyCurrentViewCurl()" title="Copiar comando cURL">📋 Copiar cURL</button>
+                            <button class="btn btn-sm" onclick="openCurrentViewInExplorer()" title="Abrir esta consulta en API Explorer para personalizar">🚀 Probar en Explorer</button>
+                            <a id="viewOpenTabLink" href="#" target="_blank" class="btn btn-sm" title="Abrir en pestaña nueva">🔗 Abrir</a>
                         </div>
                     </div>
 
@@ -581,6 +603,141 @@
                     </div>
 
                     <pre id="resultsJsonWrapper" style="display: none;"><code id="resultsJsonCode"></code></pre>
+                </div>
+            </div>
+
+            <!-- Panel API Explorer (Probador de Endpoints & Constructor de Consultas) -->
+            <div id="explorerPanel" style="display: none; flex-direction: column; gap: 20px; width: 100%; min-width: 0; max-width: 100%;">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">🌐 API Explorer & Probador de Endpoints</h2>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">
+                                Construye, parametriza y prueba cualquier consulta o endpoint de la API con inspección de respuestas en vivo.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-sm" onclick="explorerReset()" title="Restablecer formulario">🧹 Limpiar</button>
+                            <button class="btn btn-sm" onclick="explorerCopyCurl()" title="Copiar comando cURL">📋 Copiar cURL</button>
+                        </div>
+                    </div>
+
+                    <!-- Selector rápido de catálogo -->
+                    <div style="margin-bottom: 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <label class="form-label" style="margin-bottom: 0; min-width: 140px;">Cargar desde Catálogo:</label>
+                        <select id="explorerPresetSelect" class="form-control" style="flex: 1; min-width: 250px;" onchange="explorerLoadPreset(this.value)">
+                            <option value="">-- Seleccionar endpoint del catálogo --</option>
+                        </select>
+                    </div>
+
+                    <!-- Barra de Petición HTTP -->
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+                        <select id="explorerMethod" class="form-control" style="width: 110px; font-weight: 700; color: var(--primary);" onchange="explorerUpdateState()">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                        <div style="position: relative; flex: 1; min-width: 240px; display: flex; align-items: center;">
+                            <input type="text" id="explorerPath" class="form-control" style="width: 100%; font-family: monospace;" placeholder="/api/view/configServer" oninput="explorerOnPathInput()">
+                        </div>
+                        <button class="btn btn-primary" id="btnExplorerSend" onclick="explorerSendRequest()">
+                            🚀 Enviar Petición
+                        </button>
+                    </div>
+
+                    <!-- Subpestañas del Constructor de Petición -->
+                    <div style="display: flex; border-bottom: 1px solid var(--border); margin-bottom: 14px;">
+                        <div class="nav-tab active" id="expTabParams" onclick="explorerSwitchSubTab('params')" style="flex: none; padding: 6px 16px;">Parámetros Query (<span id="expParamsCount">0</span>)</div>
+                        <div class="nav-tab" id="expTabBody" onclick="explorerSwitchSubTab('body')" style="flex: none; padding: 6px 16px;">Cuerpo JSON (Body)</div>
+                        <div class="nav-tab" id="expTabHeaders" onclick="explorerSwitchSubTab('headers')" style="flex: none; padding: 6px 16px;">Encabezados (Headers)</div>
+                    </div>
+
+                    <!-- Subpanel: Parámetros Query -->
+                    <div id="expSubPanelParams">
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">ATAJOS RÁPIDOS:</span>
+                            <button class="btn btn-sm" onclick="explorerAddParam('fields', '')" title="Seleccionar ciertas columnas">+ fields</button>
+                            <button class="btn btn-sm" onclick="explorerAddParam('limit', '50')" title="Límite de registros">+ limit</button>
+                            <button class="btn btn-sm" onclick="explorerAddParam('offset', '0')" title="Desplazamiento">+ offset</button>
+                            <button class="btn btn-sm" onclick="explorerAddParam('search', 'Campo:texto')" title="Búsqueda LIKE">+ search</button>
+                            <button class="btn btn-sm" onclick="explorerAddParam('sort', '{&quot;Campo&quot;:&quot;asc&quot;}')" title="Ordenamiento JSON">+ sort</button>
+                            <button class="btn btn-sm" onclick="explorerAddParam('', '')" style="margin-left: auto;">+ Agregar Fila</button>
+                        </div>
+
+                        <div class="table-container" style="max-height: 220px; overflow-y: auto; margin-bottom: 10px;">
+                            <table id="explorerParamsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px; text-align: center;">Activo</th>
+                                        <th style="width: 40%;">Clave (Parámetro)</th>
+                                        <th style="width: 50%;">Valor</th>
+                                        <th style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="explorerParamsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Subpanel: Cuerpo JSON -->
+                    <div id="expSubPanelBody" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">PAYLOAD JSON (POST / PUT):</span>
+                            <button class="btn btn-sm" onclick="explorerFormatJsonBody()">🧹 Formatear JSON</button>
+                        </div>
+                        <textarea id="explorerJsonBody" class="form-control" style="min-height: 150px; font-family: monospace;" placeholder="{&#10;  &quot;param1&quot;: &quot;valor&quot;&#10;}"></textarea>
+                    </div>
+
+                    <!-- Subpanel: Headers -->
+                    <div id="expSubPanelHeaders" style="display: none;">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                <input type="checkbox" id="expIncludeAdminKey" checked onchange="explorerUpdateState()">
+                                <span>Incluir <code>X-Admin-Key</code> de administrador (autenticación)</span>
+                            </label>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                Encabezados automáticos adicionales: <code>Content-Type: application/json</code>, <code>Accept: application/json</code>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa en vivo de URL y cURL -->
+                    <div style="margin-top: 14px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px; overflow: hidden;">
+                            <span id="explorerLiveMethodBadge" style="font-weight: 700; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; background: rgba(34, 197, 94, 0.2); color: var(--success);">GET</span>
+                            <code id="explorerLiveUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/...</code>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn btn-sm" onclick="explorerCopyUrl()">📋 Copiar URL</button>
+                            <button class="btn btn-sm" onclick="explorerCopyCurl()">📋 Copiar cURL</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Respuesta (Resultados de Explorer) -->
+                <div class="card" id="explorerResponseCard" style="display: none;">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <span class="card-title">Respuesta del Servidor</span>
+                            <span id="expStatusBadge" class="brand-badge" style="background: rgba(34, 197, 94, 0.2); color: var(--success); font-weight: 700;">200 OK</span>
+                            <span id="expResponseMeta" style="font-size: 0.8rem; color: var(--text-muted);">0 ms &bull; 0 KB</span>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn btn-sm" id="btnExpViewTable" onclick="explorerSwitchViewFormat('table')">📊 Tabla</button>
+                            <button class="btn btn-sm" id="btnExpViewJson" onclick="explorerSwitchViewFormat('json')">{ } JSON</button>
+                            <button class="btn btn-sm" onclick="explorerCopyResponse()">📋 Copiar Respuesta</button>
+                        </div>
+                    </div>
+
+                    <div id="explorerTableWrapper" class="table-container">
+                        <table id="explorerTable">
+                            <thead id="explorerTableHead"></thead>
+                            <tbody id="explorerTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <pre id="explorerJsonWrapper" style="display: none;"><code id="explorerJsonCode"></code></pre>
                 </div>
             </div>
 
@@ -641,6 +798,18 @@ ORDER BY p.apellido, p.nombre"></textarea>
                             <p style="font-size: 0.8rem; color: var(--text-muted);" id="selectedSpDesc">Permite ejecutar SPs o Funciones enviando los parámetros en tiempo real.</p>
                         </div>
                         <button class="btn btn-primary" id="btnExecuteSp" onclick="executeCurrentSp()" disabled>▶ Ejecutar SP</button>
+                    </div>
+
+                    <!-- Barra interactiva de Endpoint SP -->
+                    <div id="spEndpointBar" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; overflow: hidden;">
+                            <span style="background: rgba(59, 130, 246, 0.2); color: var(--primary); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">POST</span>
+                            <code id="spEndpointUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/sp/...</code>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <button class="btn btn-sm" onclick="copyCurrentSpCurl()" title="Copiar comando cURL">📋 Copiar cURL</button>
+                            <button class="btn btn-sm" onclick="openCurrentSpInExplorer()" title="Abrir en API Explorer">🚀 Probar en Explorer</button>
+                        </div>
                     </div>
 
                     <div id="spInputsContainer">
@@ -815,6 +984,9 @@ ORDER BY p.apellido, p.nombre"></textarea>
         let currentAdminKey = sessionStorage.getItem('liquid_admin_key') || '';
         let viewsCatalog = {};
         let spCatalog = {};
+        let fnCatalog = {};
+        let repoCatalog = {};
+        let entityCatalog = {};
         let currentTab = 'views';
         let currentSelectedView = null;
         let currentSelectedSp = null;
@@ -822,6 +994,16 @@ ORDER BY p.apellido, p.nombre"></textarea>
         let cachedDbTables = [];
         let currentImportSession = null;
         let currentTargetTableCols = [];
+        let lastExplorerResultData = null;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
 
         // Inicialización
         window.addEventListener('DOMContentLoaded', async () => {
@@ -916,6 +1098,25 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     document.getElementById('spCount').textContent = Object.keys(spCatalog).length;
                 }
 
+                // Cargar Funciones
+                try {
+                    const resFn = await fetch(`${API_BASE}/fn/list`);
+                    if (resFn.ok) fnCatalog = await resFn.json();
+                } catch (e) {}
+
+                // Cargar Reportes
+                try {
+                    const resRepo = await fetch(`${API_BASE}/repo/list`);
+                    if (resRepo.ok) repoCatalog = await resRepo.json();
+                } catch (e) {}
+
+                // Cargar Entidades
+                try {
+                    const resEn = await fetch(`${API_BASE}/en/list`);
+                    if (resEn.ok) entityCatalog = await resEn.json();
+                } catch (e) {}
+
+                explorerPopulatePresetSelect();
                 renderSidebar();
             } catch (err) {
                 showToast('Error cargando catálogos de la API', 'error');
@@ -924,20 +1125,26 @@ ORDER BY p.apellido, p.nombre"></textarea>
 
         function switchMainTab(tab) {
             currentTab = tab;
+            const tabs = ['views', 'explorer', 'sqlStudio', 'procedures', 'importer'];
             document.querySelectorAll('.nav-tab').forEach((t, idx) => {
                 t.classList.remove('active');
-                if ((tab === 'views' && idx === 0) || (tab === 'sqlStudio' && idx === 1) || (tab === 'procedures' && idx === 2) || (tab === 'importer' && idx === 3)) {
+                if (tabs[idx] === tab) {
                     t.classList.add('active');
                 }
             });
 
             document.getElementById('viewPanel').style.display = tab === 'views' ? 'flex' : 'none';
+            document.getElementById('explorerPanel').style.display = tab === 'explorer' ? 'flex' : 'none';
             document.getElementById('sqlStudioPanel').style.display = tab === 'sqlStudio' ? 'flex' : 'none';
             document.getElementById('spPanel').style.display = tab === 'procedures' ? 'flex' : 'none';
             document.getElementById('importerPanel').style.display = tab === 'importer' ? 'flex' : 'none';
 
             if (tab === 'importer' && (!cachedDbTables || cachedDbTables.length === 0)) {
                 loadDbTablesList();
+            }
+
+            if (tab === 'explorer' && document.getElementById('explorerParamsBody').children.length === 0 && !document.getElementById('explorerPath').value) {
+                explorerLoadEndpoint('GET', '/api/view/list', 'system', 'Catálogo Vistas');
             }
 
             renderSidebar();
@@ -960,6 +1167,85 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     `;
                     list.appendChild(item);
                 });
+            } else if (currentTab === 'explorer') {
+                const endpoints = [];
+                // Vistas
+                Object.keys(viewsCatalog).forEach(v => {
+                    endpoints.push({
+                        method: 'GET',
+                        path: `/api/view/${v}`,
+                        type: 'view',
+                        name: v,
+                        desc: `Vista (${Object.keys(viewsCatalog[v].fields || {}).length} campos)`
+                    });
+                });
+                // SPs
+                Object.keys(spCatalog).forEach(sp => {
+                    endpoints.push({
+                        method: 'POST',
+                        path: `/api/sp/${sp}`,
+                        type: 'sp',
+                        name: sp,
+                        desc: spCatalog[sp].sp_name || 'Stored Procedure'
+                    });
+                });
+                // Funciones
+                Object.keys(fnCatalog).forEach(fn => {
+                    endpoints.push({
+                        method: 'POST',
+                        path: `/api/fn/${fn}`,
+                        type: 'fn',
+                        name: fn,
+                        desc: fnCatalog[fn].fn_name || 'Función PL/SQL'
+                    });
+                });
+                // Reportes
+                Object.keys(repoCatalog).forEach(r => {
+                    endpoints.push({
+                        method: 'GET',
+                        path: `/api/repo/${r}`,
+                        type: 'repo',
+                        name: r,
+                        desc: 'Reporte dinámico'
+                    });
+                });
+                // Catálogos del Sistema
+                endpoints.push(
+                    { method: 'GET', path: '/api/view/list', type: 'system', name: 'Catálogo Vistas', desc: 'Listado completo de vistas' },
+                    { method: 'GET', path: '/api/sp/list', type: 'system', name: 'Catálogo SPs', desc: 'Listado de procedimientos' },
+                    { method: 'GET', path: '/api/fn/list', type: 'system', name: 'Catálogo Funciones', desc: 'Listado de funciones' },
+                    { method: 'GET', path: '/api/repo/list', type: 'system', name: 'Catálogo Reportes', desc: 'Listado de reportes' },
+                    { method: 'GET', path: '/api/en/list', type: 'system', name: 'Catálogo Entidades', desc: 'Listado de entidades CRUD' },
+                    { method: 'GET', path: '/api/admin/health', type: 'system', name: 'Health Check', desc: 'Estado de API y BD Oracle' }
+                );
+
+                const filtered = endpoints.filter(e => 
+                    e.path.toLowerCase().includes(search) || 
+                    e.name.toLowerCase().includes(search) || 
+                    e.desc.toLowerCase().includes(search)
+                );
+
+                if (filtered.length === 0) {
+                    list.innerHTML = `<div style="padding: 16px; font-size: 0.8rem; color: var(--text-muted);">No se encontraron endpoints con "${search}".</div>`;
+                } else {
+                    const currentPathVal = (document.getElementById('explorerPath')?.value || '').trim();
+                    filtered.forEach(ep => {
+                        const item = document.createElement('div');
+                        const isSelected = currentPathVal === ep.path;
+                        item.className = `list-item ${isSelected ? 'active' : ''}`;
+                        item.onclick = () => explorerLoadEndpoint(ep.method, ep.path, ep.type, ep.name);
+                        const methodColor = ep.method === 'GET' ? 'var(--success)' : (ep.method === 'POST' ? 'var(--primary)' : 'var(--danger)');
+                        const methodBg = ep.method === 'GET' ? 'rgba(34, 197, 94, 0.15)' : (ep.method === 'POST' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(239, 68, 68, 0.15)');
+                        item.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                                <div class="list-item-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${ep.name}</div>
+                                <span style="font-size: 0.65rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: ${methodBg}; color: ${methodColor}; flex-shrink: 0;">${ep.method}</span>
+                            </div>
+                            <div class="list-item-sub" style="font-family: monospace; font-size: 0.72rem; color: #94a3b8;">${ep.path}</div>
+                        `;
+                        list.appendChild(item);
+                    });
+                }
             } else if (currentTab === 'procedures') {
                 const keys = Object.keys(spCatalog).filter(k => k.toLowerCase().includes(search));
                 keys.forEach(name => {
@@ -1021,6 +1307,9 @@ ORDER BY p.apellido, p.nombre"></textarea>
             document.getElementById('btnExecuteView').disabled = false;
             document.getElementById('btnDeleteView').disabled = false;
 
+            const endpointBar = document.getElementById('viewEndpointBar');
+            if (endpointBar) endpointBar.style.display = 'flex';
+
             const filtersContainer = document.getElementById('viewFiltersContainer');
             filtersContainer.innerHTML = '';
 
@@ -1031,15 +1320,15 @@ ORDER BY p.apellido, p.nombre"></textarea>
             html += `
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label class="form-label">Columnas específicas (fields - opcional, separado por comas)</label>
-                    <input type="text" id="filter_fields" class="form-control" placeholder="Ej: ${Object.keys(config.fields || {}).slice(0, 3).join(', ')}">
+                    <input type="text" id="filter_fields" class="form-control" placeholder="Ej: ${Object.keys(config.fields || {}).slice(0, 3).join(', ')}" oninput="updateCurrentViewUrlPreview()">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Límite (limit)</label>
-                    <input type="number" id="filter_limit" class="form-control" value="50">
+                    <input type="number" id="filter_limit" class="form-control" value="50" oninput="updateCurrentViewUrlPreview()">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Offset</label>
-                    <input type="number" id="filter_offset" class="form-control" value="0">
+                    <input type="number" id="filter_offset" class="form-control" value="0" oninput="updateCurrentViewUrlPreview()">
                 </div>
             `;
 
@@ -1047,12 +1336,90 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 html += `
                     <div class="form-group">
                         <label class="form-label">${field}</label>
-                        <input type="text" id="filter_${field}" class="form-control" placeholder="Filtro ${field}">
+                        <input type="text" id="filter_${field}" class="form-control" placeholder="Filtro ${field}" oninput="updateCurrentViewUrlPreview()">
                     </div>
                 `;
             });
             html += '</div>';
             filtersContainer.innerHTML = html;
+            updateCurrentViewUrlPreview();
+        }
+
+        function updateCurrentViewUrlPreview() {
+            if (!currentSelectedView) return;
+            const config = viewsCatalog[currentSelectedView];
+            if (!config) return;
+            const whereFields = config.sql?.whereFields || {};
+            const params = new URLSearchParams();
+
+            const limit = document.getElementById('filter_limit')?.value;
+            const offset = document.getElementById('filter_offset')?.value;
+            const fieldsVal = document.getElementById('filter_fields')?.value?.trim();
+            if (limit) params.append('limit', limit);
+            if (offset && offset !== '0') params.append('offset', offset);
+            if (fieldsVal) params.append('fields', fieldsVal);
+
+            Object.keys(whereFields).forEach(field => {
+                const val = document.getElementById(`filter_${field}`)?.value?.trim();
+                if (val) params.append(field, val);
+            });
+
+            const queryString = params.toString();
+            const relUrl = `${API_BASE}/view/${currentSelectedView}${queryString ? '?' + queryString : ''}`;
+
+            const codeEl = document.getElementById('viewEndpointUrlPreview');
+            if (codeEl) codeEl.textContent = relUrl;
+
+            const linkEl = document.getElementById('viewOpenTabLink');
+            if (linkEl) linkEl.href = relUrl;
+        }
+
+        function copyCurrentViewUrl() {
+            if (!currentSelectedView) return;
+            updateCurrentViewUrlPreview();
+            const relUrl = document.getElementById('viewEndpointUrlPreview')?.textContent || '';
+            const fullUrl = `${window.location.origin}${relUrl}`;
+            navigator.clipboard.writeText(fullUrl);
+            showToast('URL copiada al portapapeles', 'success');
+        }
+
+        function copyCurrentViewCurl() {
+            if (!currentSelectedView) return;
+            updateCurrentViewUrlPreview();
+            const relUrl = document.getElementById('viewEndpointUrlPreview')?.textContent || '';
+            const fullUrl = `${window.location.origin}${relUrl}`;
+            navigator.clipboard.writeText(`curl "${fullUrl}"`);
+            showToast('Comando cURL copiado al portapapeles', 'success');
+        }
+
+        function openCurrentViewInExplorer() {
+            if (!currentSelectedView) return;
+            switchMainTab('explorer');
+            document.getElementById('explorerMethod').value = 'GET';
+            document.getElementById('explorerPath').value = `/api/view/${currentSelectedView}`;
+
+            const tbody = document.getElementById('explorerParamsBody');
+            tbody.innerHTML = '';
+            document.getElementById('explorerJsonBody').value = '';
+
+            const limit = document.getElementById('filter_limit')?.value || '50';
+            const offset = document.getElementById('filter_offset')?.value || '0';
+            const fieldsVal = document.getElementById('filter_fields')?.value?.trim() || '';
+
+            explorerAddParam('fields', fieldsVal, Boolean(fieldsVal));
+            explorerAddParam('limit', limit, true);
+            explorerAddParam('offset', offset, offset !== '0');
+
+            const config = viewsCatalog[currentSelectedView];
+            const whereFields = config.sql?.whereFields || {};
+            Object.keys(whereFields).forEach(wf => {
+                const val = document.getElementById(`filter_${wf}`)?.value?.trim() || '';
+                explorerAddParam(wf, val, Boolean(val));
+            });
+
+            explorerSwitchSubTab('params');
+            explorerUpdateState();
+            showToast(`Vista '${currentSelectedView}' cargada en API Explorer`, 'success');
         }
 
         let dbConnectionString = '';
@@ -1406,6 +1773,9 @@ ORDER BY p.apellido, p.nombre"></textarea>
             document.getElementById('selectedSpDesc').textContent = `Oracle Target: ${sp.sp_name || 'Procedimiento'}`;
             document.getElementById('btnExecuteSp').disabled = false;
 
+            const endpointBar = document.getElementById('spEndpointBar');
+            if (endpointBar) endpointBar.style.display = 'flex';
+
             const container = document.getElementById('spInputsContainer');
             const inParams = sp.in_param || [];
 
@@ -1414,12 +1784,490 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 html += `
                     <div class="form-group">
                         <label class="form-label">${param}</label>
-                        <input type="text" id="sp_in_${param}" class="form-control" placeholder="Valor para ${param}">
+                        <input type="text" id="sp_in_${param}" class="form-control" placeholder="Valor para ${param}" oninput="updateCurrentSpPreview()">
                     </div>
                 `;
             });
             html += '</div>';
             container.innerHTML = inParams.length > 0 ? html : '<p style="color:var(--text-muted); font-size:0.85rem;">Este procedimiento no requiere parámetros de entrada (IN).</p>';
+            updateCurrentSpPreview();
+        }
+
+        function updateCurrentSpPreview() {
+            if (!currentSelectedSp) return;
+            const relUrl = `${API_BASE}/sp/${currentSelectedSp}`;
+            const codeEl = document.getElementById('spEndpointUrlPreview');
+            if (codeEl) codeEl.textContent = relUrl;
+        }
+
+        function copyCurrentSpCurl() {
+            if (!currentSelectedSp) return;
+            const sp = spCatalog[currentSelectedSp] || {};
+            const inParams = sp.in_param || [];
+            const payload = {};
+            inParams.forEach(param => {
+                const val = document.getElementById(`sp_in_${param}`)?.value;
+                if (val !== undefined && val !== '') {
+                    payload[param] = !isNaN(val) && val.trim() !== '' ? Number(val) : val;
+                }
+            });
+            const url = `${window.location.origin}${API_BASE}/sp/${currentSelectedSp}`;
+            const curl = `curl -X POST "${url}" \\\n  -H "Content-Type: application/json"${currentAdminKey ? ` \\\n  -H "X-Admin-Key: ${currentAdminKey}"` : ''} \\\n  -d '${JSON.stringify(payload)}'`;
+            navigator.clipboard.writeText(curl);
+            showToast('Comando cURL copiado al portapapeles', 'success');
+        }
+
+        function openCurrentSpInExplorer() {
+            if (!currentSelectedSp) return;
+            const sp = spCatalog[currentSelectedSp] || {};
+            const inParams = sp.in_param || [];
+            const payload = {};
+            inParams.forEach(param => {
+                const val = document.getElementById(`sp_in_${param}`)?.value || '';
+                payload[param] = !isNaN(val) && val.trim() !== '' ? Number(val) : val;
+            });
+
+            switchMainTab('explorer');
+            document.getElementById('explorerMethod').value = 'POST';
+            document.getElementById('explorerPath').value = `/api/sp/${currentSelectedSp}`;
+            document.getElementById('explorerParamsBody').innerHTML = '';
+            document.getElementById('explorerJsonBody').value = JSON.stringify(payload, null, 2);
+            explorerSwitchSubTab('body');
+            explorerUpdateState();
+            showToast(`SP '${currentSelectedSp}' cargado en API Explorer`, 'success');
+        }
+
+        // --- API EXPLORER STATE & LOGIC ---
+        let explorerCurrentSubTab = 'params';
+
+        function explorerSwitchSubTab(subTab) {
+            explorerCurrentSubTab = subTab;
+            const tabParams = document.getElementById('expTabParams');
+            const tabBody = document.getElementById('expTabBody');
+            const tabHeaders = document.getElementById('expTabHeaders');
+            if (tabParams) tabParams.classList.toggle('active', subTab === 'params');
+            if (tabBody) tabBody.classList.toggle('active', subTab === 'body');
+            if (tabHeaders) tabHeaders.classList.toggle('active', subTab === 'headers');
+
+            const pParams = document.getElementById('expSubPanelParams');
+            const pBody = document.getElementById('expSubPanelBody');
+            const pHeaders = document.getElementById('expSubPanelHeaders');
+            if (pParams) pParams.style.display = subTab === 'params' ? 'block' : 'none';
+            if (pBody) pBody.style.display = subTab === 'body' ? 'block' : 'none';
+            if (pHeaders) pHeaders.style.display = subTab === 'headers' ? 'block' : 'none';
+        }
+
+        function explorerAddParam(key = '', val = '', enabled = true) {
+            const tbody = document.getElementById('explorerParamsBody');
+            if (!tbody) return;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align: center;">
+                    <input type="checkbox" class="exp-param-check" ${enabled ? 'checked' : ''} onchange="explorerUpdateState()">
+                </td>
+                <td>
+                    <input type="text" class="form-control exp-param-key" value="${escapeHtml(key)}" placeholder="Parámetro (ej: fields)" style="padding: 4px 8px; font-family: monospace; font-size: 0.8rem;" oninput="explorerUpdateState()">
+                </td>
+                <td>
+                    <input type="text" class="form-control exp-param-val" value="${escapeHtml(val)}" placeholder="Valor" style="padding: 4px 8px; font-family: monospace; font-size: 0.8rem;" oninput="explorerUpdateState()">
+                </td>
+                <td style="text-align: center;">
+                    <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove(); explorerUpdateState();" style="padding: 2px 6px;">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            explorerUpdateState();
+            if (explorerCurrentSubTab !== 'params') {
+                explorerSwitchSubTab('params');
+            }
+        }
+
+        function explorerGetParams() {
+            const rows = document.querySelectorAll('#explorerParamsBody tr');
+            const params = [];
+            rows.forEach(tr => {
+                const check = tr.querySelector('.exp-param-check');
+                const keyInput = tr.querySelector('.exp-param-key');
+                const valInput = tr.querySelector('.exp-param-val');
+                if (check && check.checked && keyInput && keyInput.value.trim()) {
+                    params.push({ key: keyInput.value.trim(), val: valInput ? valInput.value.trim() : '' });
+                }
+            });
+            return params;
+        }
+
+        function explorerBuildFullUrl() {
+            let rawPath = document.getElementById('explorerPath')?.value.trim() || '/api/view/list';
+            if (!rawPath.startsWith('/')) rawPath = '/' + rawPath;
+
+            const qIndex = rawPath.indexOf('?');
+            let basePath = qIndex !== -1 ? rawPath.substring(0, qIndex) : rawPath;
+            let urlParams = new URLSearchParams(qIndex !== -1 ? rawPath.substring(qIndex + 1) : '');
+
+            const params = explorerGetParams();
+            params.forEach(p => {
+                urlParams.set(p.key, p.val);
+            });
+
+            const queryString = urlParams.toString();
+            const finalPath = basePath + (queryString ? '?' + queryString : '');
+            const origin = window.location.origin;
+            return {
+                relative: finalPath,
+                absolute: origin + finalPath
+            };
+        }
+
+        function explorerUpdateState() {
+            const method = document.getElementById('explorerMethod')?.value || 'GET';
+            const badge = document.getElementById('explorerLiveMethodBadge');
+            if (badge) {
+                badge.textContent = method;
+                badge.style.color = method === 'GET' ? 'var(--success)' : (method === 'POST' ? 'var(--primary)' : 'var(--danger)');
+                badge.style.background = method === 'GET' ? 'rgba(34, 197, 94, 0.2)' : (method === 'POST' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)');
+            }
+
+            const countEl = document.getElementById('expParamsCount');
+            if (countEl) countEl.textContent = explorerGetParams().length;
+
+            const urls = explorerBuildFullUrl();
+            const previewEl = document.getElementById('explorerLiveUrlPreview');
+            if (previewEl) previewEl.textContent = urls.relative;
+        }
+
+        function explorerOnPathInput() {
+            explorerUpdateState();
+        }
+
+        function explorerReset() {
+            const methodEl = document.getElementById('explorerMethod');
+            if (methodEl) methodEl.value = 'GET';
+            const pathEl = document.getElementById('explorerPath');
+            if (pathEl) pathEl.value = '/api/view/list';
+            const tbody = document.getElementById('explorerParamsBody');
+            if (tbody) tbody.innerHTML = '';
+            const bodyEl = document.getElementById('explorerJsonBody');
+            if (bodyEl) bodyEl.value = '';
+            const presetEl = document.getElementById('explorerPresetSelect');
+            if (presetEl) presetEl.value = '';
+            const respCard = document.getElementById('explorerResponseCard');
+            if (respCard) respCard.style.display = 'none';
+            lastExplorerResultData = null;
+            explorerSwitchSubTab('params');
+            explorerUpdateState();
+        }
+
+        function explorerFormatJsonBody() {
+            const textarea = document.getElementById('explorerJsonBody');
+            if (!textarea) return;
+            const val = textarea.value.trim();
+            if (!val) return;
+            try {
+                const obj = JSON.parse(val);
+                textarea.value = JSON.stringify(obj, null, 2);
+                showToast('JSON formateado correctamente', 'success');
+            } catch (e) {
+                showToast(`JSON inválido: ${e.message}`, 'error');
+            }
+        }
+
+        function explorerBuildCurl() {
+            const method = document.getElementById('explorerMethod')?.value || 'GET';
+            const urls = explorerBuildFullUrl();
+            const includeAuth = document.getElementById('expIncludeAdminKey')?.checked && currentAdminKey;
+            const bodyVal = document.getElementById('explorerJsonBody')?.value.trim();
+
+            let cmd = `curl -X ${method} "${urls.absolute}"`;
+            if (includeAuth) {
+                cmd += ` \\\n  -H "X-Admin-Key: ${currentAdminKey}"`;
+            }
+            if (method === 'POST' || method === 'PUT') {
+                cmd += ` \\\n  -H "Content-Type: application/json"`;
+                if (bodyVal) {
+                    cmd += ` \\\n  -d '${bodyVal.replace(/'/g, "'\\''")}'`;
+                }
+            }
+            return cmd;
+        }
+
+        function explorerCopyUrl() {
+            const urls = explorerBuildFullUrl();
+            navigator.clipboard.writeText(urls.absolute);
+            showToast('URL copiada al portapapeles', 'success');
+        }
+
+        function explorerCopyCurl() {
+            const cmd = explorerBuildCurl();
+            navigator.clipboard.writeText(cmd);
+            showToast('Comando cURL copiado al portapapeles', 'success');
+        }
+
+        function explorerCopyResponse() {
+            if (!lastExplorerResultData) return;
+            navigator.clipboard.writeText(typeof lastExplorerResultData === 'string' ? lastExplorerResultData : JSON.stringify(lastExplorerResultData, null, 2));
+            showToast('Respuesta copiada al portapapeles', 'success');
+        }
+
+        async function explorerSendRequest() {
+            const btn = document.getElementById('btnExplorerSend');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinning">⏳</span> Enviando...';
+
+            const method = document.getElementById('explorerMethod')?.value || 'GET';
+            const urls = explorerBuildFullUrl();
+            const includeAuth = document.getElementById('expIncludeAdminKey')?.checked && currentAdminKey;
+            const bodyVal = document.getElementById('explorerJsonBody')?.value.trim();
+
+            const headers = {};
+            if (includeAuth) {
+                headers['X-Admin-Key'] = currentAdminKey;
+            }
+
+            const opts = { method, headers };
+            if (method === 'POST' || method === 'PUT') {
+                headers['Content-Type'] = 'application/json';
+                if (bodyVal) {
+                    try {
+                        JSON.parse(bodyVal);
+                        opts.body = bodyVal;
+                    } catch (err) {
+                        showToast('Error de sintaxis en el JSON del cuerpo', 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                        return;
+                    }
+                }
+            }
+
+            const startTime = performance.now();
+            try {
+                const res = await fetch(urls.relative, opts);
+                const latency = Math.round(performance.now() - startTime);
+                const text = await res.text();
+                const sizeKb = (text.length / 1024).toFixed(1);
+
+                let parsedJson = null;
+                try {
+                    parsedJson = JSON.parse(text);
+                } catch (e) {}
+
+                lastExplorerResultData = parsedJson !== null ? parsedJson : text;
+
+                const card = document.getElementById('explorerResponseCard');
+                card.style.display = 'block';
+
+                const statusBadge = document.getElementById('expStatusBadge');
+                statusBadge.textContent = `${res.status} ${res.statusText || (res.ok ? 'OK' : 'Error')}`;
+                if (res.ok) {
+                    statusBadge.style.background = 'rgba(34, 197, 94, 0.2)';
+                    statusBadge.style.color = 'var(--success)';
+                } else if (res.status >= 400 && res.status < 500) {
+                    statusBadge.style.background = 'rgba(234, 179, 8, 0.2)';
+                    statusBadge.style.color = 'var(--warning)';
+                } else {
+                    statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+                    statusBadge.style.color = 'var(--danger)';
+                }
+
+                document.getElementById('expResponseMeta').textContent = `${latency} ms • ${sizeKb} KB`;
+                document.getElementById('explorerJsonCode').textContent = parsedJson !== null ? JSON.stringify(parsedJson, null, 2) : text;
+
+                let tableRows = null;
+                if (Array.isArray(parsedJson)) {
+                    tableRows = parsedJson;
+                } else if (parsedJson && Array.isArray(parsedJson.rows)) {
+                    tableRows = parsedJson.rows;
+                }
+
+                const thead = document.getElementById('explorerTableHead');
+                const tbody = document.getElementById('explorerTableBody');
+                const btnTable = document.getElementById('btnExpViewTable');
+
+                if (tableRows && tableRows.length > 0 && typeof tableRows[0] === 'object' && tableRows[0] !== null) {
+                    btnTable.style.display = 'inline-flex';
+                    const cols = Object.keys(tableRows[0]);
+                    let headHtml = '<tr>';
+                    cols.forEach(c => headHtml += `<th>${escapeHtml(c)}</th>`);
+                    headHtml += '</tr>';
+                    thead.innerHTML = headHtml;
+
+                    let bodyHtml = '';
+                    tableRows.forEach(r => {
+                        bodyHtml += '<tr>';
+                        cols.forEach(c => {
+                            const val = r[c] !== null && r[c] !== undefined ? r[c] : '';
+                            bodyHtml += `<td>${escapeHtml(String(val))}</td>`;
+                        });
+                        bodyHtml += '</tr>';
+                    });
+                    tbody.innerHTML = bodyHtml;
+                    explorerSwitchViewFormat('table');
+                } else {
+                    btnTable.style.display = 'none';
+                    explorerSwitchViewFormat('json');
+                }
+
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                showToast(`Petición completada: HTTP ${res.status} (${latency} ms)`, res.ok ? 'success' : 'warning');
+            } catch (err) {
+                const latency = Math.round(performance.now() - startTime);
+                const card = document.getElementById('explorerResponseCard');
+                card.style.display = 'block';
+
+                const statusBadge = document.getElementById('expStatusBadge');
+                statusBadge.textContent = 'Error de Red';
+                statusBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusBadge.style.color = 'var(--danger)';
+
+                document.getElementById('expResponseMeta').textContent = `${latency} ms • Fallo`;
+                document.getElementById('explorerJsonCode').textContent = `Error: ${err.message}`;
+                document.getElementById('btnExpViewTable').style.display = 'none';
+                explorerSwitchViewFormat('json');
+                showToast('Fallo al conectar con el servidor', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function explorerSwitchViewFormat(format) {
+            document.getElementById('explorerTableWrapper').style.display = format === 'table' ? 'block' : 'none';
+            document.getElementById('explorerJsonWrapper').style.display = format === 'json' ? 'block' : 'none';
+        }
+
+        function explorerPopulatePresetSelect() {
+            const sel = document.getElementById('explorerPresetSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">-- Seleccionar endpoint del catálogo --</option>';
+
+            const optSys = document.createElement('optgroup');
+            optSys.label = '🔧 Catálogos y Sistema';
+            optSys.innerHTML = `
+                <option value="raw:GET:/api/view/list">GET /api/view/list (Catálogo de Vistas)</option>
+                <option value="raw:GET:/api/sp/list">GET /api/sp/list (Catálogo de SPs)</option>
+                <option value="raw:GET:/api/fn/list">GET /api/fn/list (Catálogo de Funciones)</option>
+                <option value="raw:GET:/api/repo/list">GET /api/repo/list (Catálogo de Reportes)</option>
+                <option value="raw:GET:/api/en/list">GET /api/en/list (Catálogo de Entidades)</option>
+                <option value="raw:GET:/api/import/tables">GET /api/import/tables (Tablas en Oracle)</option>
+                <option value="raw:GET:/api/admin/health">GET /api/admin/health (Health Check)</option>
+            `;
+            sel.appendChild(optSys);
+
+            const viewKeys = Object.keys(viewsCatalog);
+            if (viewKeys.length > 0) {
+                const optViews = document.createElement('optgroup');
+                optViews.label = `📋 Vistas (${viewKeys.length})`;
+                viewKeys.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = `view:${v}`;
+                    opt.textContent = `GET /api/view/${v}`;
+                    optViews.appendChild(opt);
+                });
+                sel.appendChild(optViews);
+            }
+
+            const spKeys = Object.keys(spCatalog);
+            if (spKeys.length > 0) {
+                const optSp = document.createElement('optgroup');
+                optSp.label = `⚡ Stored Procedures (${spKeys.length})`;
+                spKeys.forEach(sp => {
+                    const opt = document.createElement('option');
+                    opt.value = `sp:${sp}`;
+                    opt.textContent = `POST /api/sp/${sp}`;
+                    optSp.appendChild(opt);
+                });
+                sel.appendChild(optSp);
+            }
+
+            const fnKeys = Object.keys(fnCatalog);
+            if (fnKeys.length > 0) {
+                const optFn = document.createElement('optgroup');
+                optFn.label = `🔢 Funciones (${fnKeys.length})`;
+                fnKeys.forEach(fn => {
+                    const opt = document.createElement('option');
+                    opt.value = `fn:${fn}`;
+                    opt.textContent = `POST /api/fn/${fn}`;
+                    optFn.appendChild(opt);
+                });
+                sel.appendChild(optFn);
+            }
+
+            const repoKeys = Object.keys(repoCatalog);
+            if (repoKeys.length > 0) {
+                const optRepo = document.createElement('optgroup');
+                optRepo.label = `📊 Reportes (${repoKeys.length})`;
+                repoKeys.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = `repo:${r}`;
+                    opt.textContent = `GET /api/repo/${r}`;
+                    optRepo.appendChild(opt);
+                });
+                sel.appendChild(optRepo);
+            }
+        }
+
+        function explorerLoadPreset(val) {
+            if (!val) return;
+            if (val.startsWith('raw:')) {
+                const parts = val.split(':');
+                const method = parts[1];
+                const path = parts[2];
+                explorerLoadEndpoint(method, path, 'raw', path);
+            } else if (val.startsWith('view:')) {
+                const name = val.substring(5);
+                explorerLoadEndpoint('GET', `/api/view/${name}`, 'view', name);
+            } else if (val.startsWith('sp:')) {
+                const name = val.substring(3);
+                explorerLoadEndpoint('POST', `/api/sp/${name}`, 'sp', name);
+            } else if (val.startsWith('fn:')) {
+                const name = val.substring(3);
+                explorerLoadEndpoint('POST', `/api/fn/${name}`, 'fn', name);
+            } else if (val.startsWith('repo:')) {
+                const name = val.substring(5);
+                explorerLoadEndpoint('GET', `/api/repo/${name}`, 'repo', name);
+            }
+        }
+
+        function explorerLoadEndpoint(method, path, type, name) {
+            const methodEl = document.getElementById('explorerMethod');
+            if (methodEl) methodEl.value = method;
+            const pathEl = document.getElementById('explorerPath');
+            if (pathEl) pathEl.value = path;
+
+            const tbody = document.getElementById('explorerParamsBody');
+            if (tbody) tbody.innerHTML = '';
+            const bodyEl = document.getElementById('explorerJsonBody');
+            if (bodyEl) bodyEl.value = '';
+
+            if (type === 'view' && viewsCatalog[name]) {
+                const view = viewsCatalog[name];
+                explorerAddParam('fields', '', false);
+                explorerAddParam('limit', '50', true);
+                explorerAddParam('offset', '0', false);
+                const whereFields = view.sql?.whereFields || {};
+                Object.keys(whereFields).forEach(wf => {
+                    explorerAddParam(wf, '', false);
+                });
+                explorerSwitchSubTab('params');
+            } else if ((type === 'sp' && spCatalog[name]) || (type === 'fn' && fnCatalog[name])) {
+                const obj = type === 'sp' ? spCatalog[name] : fnCatalog[name];
+                const inParams = obj.in_param || [];
+                const template = {};
+                inParams.forEach(p => template[p] = "");
+                if (bodyEl) bodyEl.value = JSON.stringify(template, null, 2);
+                explorerSwitchSubTab('body');
+            } else if (type === 'repo' && repoCatalog[name]) {
+                explorerAddParam('fields', '', false);
+                explorerAddParam('limit', '50', true);
+                explorerAddParam('offset', '0', false);
+                explorerSwitchSubTab('params');
+            } else {
+                explorerSwitchSubTab(method === 'GET' ? 'params' : 'body');
+            }
+
+            explorerUpdateState();
+            renderSidebar();
         }
 
         async function executeCurrentSp() {

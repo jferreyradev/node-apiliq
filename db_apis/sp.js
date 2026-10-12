@@ -37,13 +37,24 @@ function getSQLcall(sp) {
 }
 
 function getSQLbinds(context, sp) {
-    const binds = context;
+    const binds = {};
 
-    for (const key in context) {
-        binds[key] = context[key];
+    if (sp && sp.in_param) {
+        sp.in_param.forEach(element => {
+            const val = context ? context[element] : undefined;
+            binds[element] = (val !== undefined && val !== '') ? val : null;
+        });
     }
 
-    if (sp['out_param']) {
+    if (context) {
+        for (const key in context) {
+            if (binds[key] === undefined) {
+                binds[key] = context[key];
+            }
+        }
+    }
+
+    if (sp && sp.out_param) {
         sp.out_param.forEach(element => {
             if (element != 'Cursor') {
                 binds[element] = { dir: oracledb.BIND_OUT };
@@ -61,17 +72,9 @@ async function execStoreProcedure(context, sp) {
     let binds = getSQLbinds(context, sp);
 
     let result = {};
-    let json = {};
-
-    const syncro = sp['opt'] ? sp.opt['sync'] : true;
-
     const start = Date.now();
 
-    if (syncro) {
-        result = await database.simpleExecute(query, binds);
-    } else {
-        result = database.simpleExecute(query, binds);
-    }
+    result = await database.simpleExecute(query, binds);
 
     const millis = Date.now() - start;
 

@@ -144,15 +144,22 @@
             flex: 1;
             height: calc(100vh - 61px);
             overflow: hidden;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
         }
 
         /* Sidebar Navigation */
         .sidebar {
             width: 320px;
+            min-width: 320px;
+            max-width: 320px;
+            flex-shrink: 0;
             background-color: var(--bg-card);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
         }
 
         .nav-tabs {
@@ -264,11 +271,15 @@
         /* Main Workspace */
         .workspace {
             flex: 1;
+            min-width: 0;
+            max-width: 100%;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            box-sizing: border-box;
         }
 
         .card {
@@ -276,6 +287,20 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 20px;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning {
+            display: inline-block;
+            animation: spin 1.4s linear infinite;
         }
 
         .card-header {
@@ -339,9 +364,13 @@
         /* Results Table */
         .table-container {
             overflow-x: auto;
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
             max-height: 450px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
+            box-sizing: border-box;
         }
 
         table {
@@ -624,12 +653,25 @@ ORDER BY p.apellido, p.nombre"></textarea>
                         <span class="card-title">Retorno del Procedimiento</span>
                         <span class="brand-badge" id="spResultsMeta">Respuesta</span>
                     </div>
-                    <pre><code id="spResultsCode"></code></pre>
+
+                    <!-- Estado de Carga / En Espera Activo -->
+                    <div id="spLoadingWrapper" style="display: none; text-align: center; padding: 36px 20px; background: rgba(15, 23, 42, 0.4); border-radius: var(--radius); border: 1px solid var(--border);">
+                        <div class="spinning" style="font-size: 36px; margin-bottom: 12px;">⏳</div>
+                        <div style="font-size: 15px; font-weight: 700; color: var(--text-main);">Ejecutando Stored Procedure en Oracle...</div>
+                        <div id="spElapsedTimer" style="font-size: 13px; font-weight: 600; color: var(--primary); margin-top: 8px;">Tiempo transcurrido: 0s</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Por favor aguarde, la conexión a la base de datos se mantiene abierta hasta finalizar el procedimiento.</div>
+                    </div>
+
+                    <!-- Mensaje de Error si falla -->
+                    <div id="spErrorWrapper" style="display: none; padding: 14px 16px; margin-bottom: 16px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius); color: #fca5a5;"></div>
+
+                    <!-- Visualización del resultado JSON -->
+                    <pre id="spResultsPre" style="display: none;"><code id="spResultsCode"></code></pre>
                 </div>
             </div>
 
             <!-- Panel Importador -->
-            <div id="importerPanel" style="display: none; flex-direction: column; gap: 20px;">
+            <div id="importerPanel" style="display: none; flex-direction: column; gap: 20px; width: 100%; min-width: 0;">
                 <div class="card">
                     <div class="card-header">
                         <div>
@@ -1377,12 +1419,13 @@ ORDER BY p.apellido, p.nombre"></textarea>
         async function executeCurrentSp() {
             if (!currentSelectedSp) return;
 
-            const sp = spCatalog[currentSelectedSp];
+            const sp = spCatalog[currentSelectedSp] || {};
             const inParams = sp.in_param || [];
             const body = {};
 
             inParams.forEach(p => {
-                const val = document.getElementById(`sp_in_${p}`)?.value;
+                const inputEl = document.getElementById(`sp_in_${p}`);
+                const val = inputEl ? inputEl.value : undefined;
                 if (val !== undefined && val !== '') {
                     body[p] = !isNaN(val) && val.trim() !== '' ? Number(val) : val;
                 }
@@ -1391,15 +1434,41 @@ ORDER BY p.apellido, p.nombre"></textarea>
             const btn = document.getElementById('btnExecuteSp');
             const originalBtnHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '⏳ Ejecutando en Oracle...';
+            btn.innerHTML = '<span class="spinning">⏳</span> Ejecutando en Oracle...';
 
-            document.getElementById('spResultsCard').style.display = 'block';
-            document.getElementById('spResultsMeta').textContent = 'Ejecutando en Oracle...';
-            document.getElementById('spResultsCode').textContent = 'Llamando al procedimiento en la base de datos... Por favor aguarde.';
+            // Bloquear inputs durante la ejecución para evitar ediciones concurrentes
+            const inputs = document.querySelectorAll('#spInputsContainer input');
+            inputs.forEach(input => input.disabled = true);
+
+            // Mostrar card de resultados y estado de carga activo
+            const resultsCard = document.getElementById('spResultsCard');
+            const loadingWrapper = document.getElementById('spLoadingWrapper');
+            const errorWrapper = document.getElementById('spErrorWrapper');
+            const resultsPre = document.getElementById('spResultsPre');
+            const metaBadge = document.getElementById('spResultsMeta');
+            const timerEl = document.getElementById('spElapsedTimer');
+
+            resultsCard.style.display = 'block';
+            loadingWrapper.style.display = 'block';
+            errorWrapper.style.display = 'none';
+            resultsPre.style.display = 'none';
+            metaBadge.textContent = 'En Ejecución...';
+            metaBadge.style.backgroundColor = 'rgba(56, 189, 248, 0.2)';
+
+            if (timerEl) timerEl.textContent = 'Tiempo transcurrido: 0s';
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            let elapsedSeconds = 0;
+            const timerInterval = setInterval(() => {
+                elapsedSeconds++;
+                if (timerEl) {
+                    timerEl.textContent = `Tiempo transcurrido: ${elapsedSeconds}s`;
+                }
+            }, 1000);
 
             const t0 = performance.now();
             try {
-                const res = await fetch(`${API_BASE}/sp/${currentSelectedSp}`, {
+                const res = await fetch(`${API_BASE}/sp/${encodeURIComponent(currentSelectedSp)}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1417,27 +1486,40 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     data = { error: await res.text() };
                 }
 
-                document.getElementById('spResultsCard').style.display = 'block';
-                document.getElementById('spResultsMeta').textContent = `Estado: ${res.status} (${latency} ms)`;
+                loadingWrapper.style.display = 'none';
+                resultsPre.style.display = 'block';
                 document.getElementById('spResultsCode').textContent = JSON.stringify(data, null, 2);
 
                 if (res.ok) {
-                    showToast('Procedimiento ejecutado con éxito', 'success');
+                    metaBadge.textContent = `✅ Exitoso (${latency} ms)`;
+                    metaBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.2)';
+                    showToast(`Procedimiento "${currentSelectedSp}" ejecutado con éxito`, 'success');
                 } else {
+                    metaBadge.textContent = `❌ Falló (${res.status} - ${latency} ms)`;
+                    metaBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                    errorWrapper.style.display = 'block';
+                    errorWrapper.innerHTML = `<strong>Error de ejecución en Oracle (${res.status}):</strong><br>${data.error || 'Fallo desconocido al invocar el procedimiento'}`;
                     showToast(`Error al ejecutar (${res.status}): ${data.error || 'Error'}`, 'error');
                 }
             } catch (err) {
                 const t1 = performance.now();
                 const latency = Math.round(t1 - t0);
-                document.getElementById('spResultsMeta').textContent = `Fallo (${latency} ms)`;
+                loadingWrapper.style.display = 'none';
+                resultsPre.style.display = 'block';
+                metaBadge.textContent = `Fallo de Red (${latency} ms)`;
+                metaBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                errorWrapper.style.display = 'block';
+                errorWrapper.innerHTML = `<strong>Error de conexión o red:</strong><br>${err.message}`;
                 document.getElementById('spResultsCode').textContent = JSON.stringify({
                     error: err.message,
                     diagnostic: 'Fallo de conexión o red con la API / Oracle'
                 }, null, 2);
                 showToast('Error de red ejecutando SP: ' + err.message, 'error');
             } finally {
+                clearInterval(timerInterval);
                 btn.disabled = false;
                 btn.innerHTML = originalBtnHtml;
+                inputs.forEach(input => input.disabled = false);
             }
         }
 

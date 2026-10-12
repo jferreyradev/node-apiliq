@@ -4,10 +4,11 @@ const database = require('../services/database');
 
 //private func
 
-function getSQLcomplexSelect(entity, parentEntity) {
+function getSQLcomplexSelect(entity, parentEntity, selectedKeys) {
     let sqlCab = 'SELECT ';
     let first = true;
-    for (const key in entity.fields) {
+    const keys = (selectedKeys && selectedKeys.length > 0) ? selectedKeys : Object.keys(entity.fields);
+    for (const key of keys) {
         if (first) {
             first = false;
         } else {
@@ -28,10 +29,11 @@ function getSQLcomplexSelect(entity, parentEntity) {
     return sqlCab;
 }
 
-function getSQLselect(entity) {
+function getSQLselect(entity, selectedKeys) {
     let sqlCab = 'SELECT ';
     let first = true;
-    for (const key in entity.fields) {
+    const keys = (selectedKeys && selectedKeys.length > 0) ? selectedKeys : Object.keys(entity.fields);
+    for (const key of keys) {
         if (first) {
             first = false;
         } else {
@@ -257,7 +259,7 @@ function getValidatedWhere(context, fields) {
     }
 
     for (const key of Object.keys(context)) {
-        if (['limit', 'offset', 'sort', 'search', 'greatereq', 'lesseq'].includes(key)) {
+        if (['limit', 'offset', 'sort', 'search', 'greatereq', 'lesseq', 'fields', 'columns'].includes(key)) {
             continue;
         }
 
@@ -326,6 +328,52 @@ function getValidatedWhere(context, fields) {
     };
 }
 
+function parseSelectedFields(context, fields) {
+    if (!context || !fields) {
+        return null;
+    }
+
+    const raw = context.fields !== undefined ? context.fields : context.columns;
+    if (raw === undefined || raw === null) {
+        return null;
+    }
+
+    if (typeof raw !== 'string' && !Array.isArray(raw)) {
+        throw badRequest('El parámetro fields/columns debe ser una lista separada por comas');
+    }
+
+    const items = (Array.isArray(raw) ? raw.join(',') : String(raw))
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    if (items.length === 0) {
+        return null;
+    }
+
+    const fieldKeys = Object.keys(fields);
+    const resolvedKeys = [];
+
+    for (const item of items) {
+        let matchedKey = null;
+        if (Object.prototype.hasOwnProperty.call(fields, item)) {
+            matchedKey = item;
+        } else {
+            matchedKey = fieldKeys.find(k => k.toLowerCase() === item.toLowerCase());
+        }
+
+        if (!matchedKey) {
+            throw badRequest(`Campo no permitido en selección: ${item}`);
+        }
+
+        if (!resolvedKeys.includes(matchedKey)) {
+            resolvedKeys.push(matchedKey);
+        }
+    }
+
+    return resolvedKeys;
+}
+
 function getWhere(context, entity) {
     const result = getValidatedWhere(context, entity.fields);
     return {
@@ -343,8 +391,8 @@ function getWhereFields(context, fields) {
 }
 
 async function find(context, entity) {
-
-    let query = getSQLcomplexSelect(entity);
+    const selectedKeys = parseSelectedFields(context, entity.fields);
+    let query = getSQLcomplexSelect(entity, undefined, selectedKeys);
 
     let queryWhere = getWhere(context, entity);
 
@@ -363,3 +411,6 @@ module.exports.modify = modify;
 module.exports.remove = remove;
 module.exports.getWhere = getWhere;
 module.exports.getWhereFields = getWhereFields;
+module.exports.parseSelectedFields = parseSelectedFields;
+module.exports.getSQLselect = getSQLselect;
+module.exports.getSQLcomplexSelect = getSQLcomplexSelect;

@@ -1,10 +1,11 @@
 const database = require('../services/database');
 const baseQuery = require('./baseQuery');
 
-function getSQLselect(entity) {
+function getSQLselect(entity, selectedKeys) {
     let sqlCab = 'SELECT ';
     let first = true;
-    for (const key in entity.fields) {
+    const keys = (selectedKeys && selectedKeys.length > 0) ? selectedKeys : Object.keys(entity.fields);
+    for (const key of keys) {
         if (first) {
             first = false;
         } else {
@@ -20,7 +21,8 @@ function getSQLselect(entity) {
 }
 
 async function getView(context, entity) {
-    let query = getSQLselect(entity);
+    const selectedKeys = baseQuery.parseSelectedFields(context, entity.fields);
+    let query = getSQLselect(entity, selectedKeys);
 
     let queryWhere = entity.sql.whereFields ? baseQuery.getWhereFields(context, entity.sql.whereFields) : baseQuery.getWhere(context, entity);
 
@@ -40,3 +42,4 @@ async function getView(context, entity) {
 }
 
 module.exports.getView = getView;
+module.exports.getSQLselect = getSQLselect;

@@ -128,7 +128,7 @@ Al ingresar, el estudio solicita la **Clave de Acceso de Administrador** configu
 | Método | Endpoint | Seguridad | Descripción |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/view/list` | Pública | Retorna el catálogo completo de vistas activas. |
-| `GET` | `/api/view/:name` | Pública | Ejecuta la vista con filtros y paginación en la URL (`?Campo=valor&limit=50&offset=0`). |
+| `GET` | `/api/view/:name` | Pública | Ejecuta la vista con filtros, selección de columnas y paginación en la URL (`?Campo=valor&fields=Col1,Col2&limit=50&offset=0`). |
 | `POST` | `/api/view/save` | `X-Admin-Key` | **Crea o actualiza una vista automáticamente** enviando un `SELECT` o vista Oracle. |
 | `DELETE` | `/api/view/:name` | `X-Admin-Key` | Desactiva lógicamente la vista en `API_VIEW_MAPPER`. |
 | `POST` | `/api/view/refresh` | `X-Admin-Key` | Reinicia la memoria RAM y recarga cambios desde Oracle. |
@@ -149,8 +149,18 @@ curl -X POST http://localhost:3005/api/view/save \
 
 #### Consumir la vista inmediatamente:
 ```bash
+# Traer todas las columnas
 curl "http://localhost:3005/api/view/empleadosPorRep?IdRep=1&limit=20"
+
+# Recuperar únicamente ciertas columnas específicas (ahorro de ancho de banda y memoria)
+curl "http://localhost:3005/api/view/empleadosPorRep?IdRep=1&fields=PersonaId,ApeNom,Documento&limit=20"
 ```
+
+> **Nota sobre selección de columnas (`fields` / `columns`):**
+> * Acepta nombres de campos separados por coma (ej. `fields=PersonaId,ApeNom`).
+> * Es case-insensitive (acepta tanto `PersonaId` como `personaid`).
+> * Valida estrictamente que los campos existan en el mapeo de la vista (devuelve `400 Bad Request` ante campos desconocidos).
+> * Si se omite, retorna todas las columnas por defecto (100% retrocompatible).
 
 ---
 

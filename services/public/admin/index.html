@@ -1029,6 +1029,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
 
             let html = '<div class="form-grid">';
             html += `
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Columnas específicas (fields - opcional, separado por comas)</label>
+                    <input type="text" id="filter_fields" class="form-control" placeholder="Ej: ${Object.keys(config.fields || {}).slice(0, 3).join(', ')}">
+                </div>
                 <div class="form-group">
                     <label class="form-label">Límite (limit)</label>
                     <input type="number" id="filter_limit" class="form-control" value="50">
@@ -1103,8 +1107,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
 
             const limit = document.getElementById('filter_limit')?.value;
             const offset = document.getElementById('filter_offset')?.value;
+            const fieldsVal = document.getElementById('filter_fields')?.value?.trim();
             if (limit) params.append('limit', limit);
             if (offset) params.append('offset', offset);
+            if (fieldsVal) params.append('fields', fieldsVal);
 
             Object.keys(whereFields).forEach(field => {
                 const val = document.getElementById(`filter_${field}`)?.value?.trim();

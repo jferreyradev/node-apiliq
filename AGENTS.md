@@ -108,12 +108,13 @@ api_liquid/
 ## ⚙️ 4. Flujos Clave de la API
 
 ### Flujo A: Consultas y Vistas Dinámicas (`GET /api/view/:name`)
-1. Llega la petición: `GET /api/view/empleadosPorRep?IdRep=1&limit=50&offset=0`.
+1. Llega la petición: `GET /api/view/empleadosPorRep?IdRep=1&fields=PersonaId,ApeNom&limit=50&offset=0`.
 2. `viewCatalog.getViewConfig(name)` busca en la **memoria RAM** (latencia 0 ms).
    - Si no está en RAM, consulta la tabla `API_VIEW_MAPPER` en Oracle.
    - Si la BD está caída, recurre al fallback local `config/mapperViews.js`.
-3. `baseQuery.buildQuery(config, params)` construye el `SELECT` con binds y paginación `ROWNUM`.
-4. `database.simpleExecute(sql, binds)` ejecuta en Oracle y retorna el JSON.
+3. `baseQuery.parseSelectedFields(context, config.fields)` resuelve las columnas solicitadas si se indicó `fields` o `columns` (con validación estricta y case-insensitive).
+4. `viewapi.getView()` / `baseQuery.getWhereFields()` construye el `SELECT` proyectando sólo los campos requeridos (o todos si se omite), aplicando filtros con binds y paginación `ROWNUM`.
+5. `database.simpleExecute(sql, binds)` ejecuta en Oracle y retorna el JSON.
 
 ### Flujo B: Creación Automática de Vistas (`POST /api/view/save`)
 1. Se envía: `{ "viewName": "miVista", "sql": "SELECT ... FROM ... WHERE ...", "description": "..." }`.

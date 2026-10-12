@@ -85,6 +85,13 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(res.statusCode, 400);
     });
 
+    await t.test('GET /api/view/configServer con campo no permitido en fields responde 400', async () => {
+        const res = await executeRequest({ url: '/api/view/configServer?fields=CampoInexistente' });
+        assert.equal(res.statusCode, 400);
+        const data = JSON.parse(res.body);
+        assert.match(data.error, /Campo no permitido en selección/);
+    });
+
     const adminHeaders = { 'x-admin-key': process.env.ADMIN_ACCESS_KEY || 'admin_liq_2026' };
 
     await t.test('POST /api/admin/verify valida clave de administración', async () => {

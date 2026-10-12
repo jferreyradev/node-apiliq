@@ -199,7 +199,7 @@ La API integra una suite web administrativa accesible en:
 | Endpoint | Método | Seguridad | Descripción |
 | :--- | :---: | :---: | :--- |
 | `/api/view/list` | `GET` | Pública | Retorna el catálogo completo de vistas activas. |
-| `/api/view/:name` | `GET` | Pública | Ejecuta una vista con filtros en URL (`?Campo=valor&limit=50&offset=0`). |
+| `/api/view/:name` | `GET` | Pública | Ejecuta una vista con filtros, selección de columnas y paginación (`?Campo=valor&fields=Col1,Col2&limit=50&offset=0`). |
 | `/api/view/save` | `POST` | `X-Admin-Key` | Crea o actualiza una vista a partir de un `SELECT` o vista de Oracle. |
 | `/api/view/:name` | `DELETE` | `X-Admin-Key` | Desactiva lógicamente una vista (`IS_ACTIVE = 0`). |
 | `/api/view/refresh` | `POST` | `X-Admin-Key` | Limpia la caché en RAM y recarga vistas y procedimientos. |

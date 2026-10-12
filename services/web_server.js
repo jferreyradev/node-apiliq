@@ -10,7 +10,7 @@ let httpServer;
 let httpsServer;
 
 function getTlsCredentials() {
-    if (process.env.ENABLE_HTTPS === 'false') {
+    if (process.env.ENABLE_HTTPS !== 'true') {
         return null;
     }
 

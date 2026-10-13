@@ -11,7 +11,9 @@ Asegúrate de contar con los siguientes elementos antes de comenzar:
 1. **Node.js**: Versión **18.x**, **20.x LTS** o superior.
    * Verificar en terminal: `node -v` y `npm -v`
 2. **Git**: Para clonar el repositorio (`git --version`).
-3. **Oracle Instant Client**: Versión **19c** o **23c** (Basic o Basic Light).
+3. **Oracle Instant Client (OPCIONAL)**:
+   * **Modo Thin (Puro JavaScript - Por Defecto)**: Si la base de datos es **Oracle 12c, 18c, 19c, 21c o 23c**, **NO necesitas instalar Oracle Instant Client**. La API funciona directamente sin binarios nativos ni librerías de sistema adicionales.
+   * **Modo Thick (Binarios Nativos)**: **Únicamente obligatorio** si te conectas a una base de datos **Oracle 11g Release 2 (11.2.x)**, debido a que 11g utiliza algoritmos de autenticación y red heredados que solo soporta la librería cliente C de Oracle.
 4. **Acceso de Red a Oracle**: Conectividad al host y puerto de la base de datos (por defecto `1521`).
    * Probar conectividad: `nc -zv <IP_ORACLE> 1521` o `telnet <IP_ORACLE> 1521`.
 5. **Usuario en Oracle con Privilegios**: Generalmente `US_SUELDO` (debe tener permisos para crear tablas, vistas y secuencias, y permisos `SELECT` sobre `ALL_ARGUMENTS` y `ALL_TAB_COLUMNS`).
@@ -34,9 +36,14 @@ npm install
 
 ---
 
-### Paso 3: Configurar Oracle Instant Client
+### Paso 3: ¿Cuándo configurar Oracle Instant Client? (Opcional)
 
-Node.js utiliza el controlador nativo de Oracle (`node-oracledb`). Se requiere que las librerías binarias del Instant Client estén disponibles en el sistema operativo:
+> 💡 **¿Tu base de datos es Oracle 12c, 18c, 19c, 21c o 23c?**
+> **¡PUEDES SALTEARTE ESTE PASO!**
+> La librería `node-oracledb` 7.x incluye un controlador nativo en **Modo Thin (100% JavaScript)**. No necesitas descargar archivos `.zip`, ni instalar `libaio`, ni compilar librerías nativas, ni configurar `LD_LIBRARY_PATH`. La API se conectará directamente a la base de datos sin requerir ningún cliente binario instalado.
+
+#### ¿Cuándo sí es necesario configurar Instant Client?
+Únicamente si la base de datos a la que te conectas es **Oracle 11g Release 2 (11.2.x)**. En ese caso se requiere habilitar **Modo Thick** proveyendo las librerías binarias de Oracle Instant Client (versión 19c o 23c):
 
 #### Opción A: En Linux (Ubuntu / Debian / CentOS / RHEL)
 1. Instalar la librería del sistema `libaio`:
@@ -61,17 +68,17 @@ Node.js utiliza el controlador nativo de Oracle (`node-oracledb`). Se requiere q
    ```
 
 #### Opción B: En macOS o Carpeta Local del Proyecto
-Si prefieres colocar el cliente dentro del propio proyecto:
+Si prefieres colocar el cliente dentro del propio proyecto sin tocar el sistema operativo:
 1. Descomprime Instant Client dentro de `./oracle-client/instantclient_23_3`.
 2. Indica la ruta en la variable `ORACLE_CLIENT_LIB_DIR` de tu `.env` (ver Paso 4).
 
-#### Verificar que Node detecta el Instant Client:
-Ejecuta el script de prueba incluido:
+#### Diagnóstico del Modo de Conexión:
+Ejecuta el script de diagnóstico incluido para verificar el estado:
 ```bash
 node scripts/test-oracle-client.js
 ```
-Debe responder:
-> `Oracle Client cargado correctamente. Versión: 23.x...`
+- **Si detecta Instant Client:** Informará `Oracle Client (Thick Mode) cargado correctamente` (apto para todas las versiones, incluyendo 11g).
+- **Si no detecta Instant Client:** Informará `Modo Thin (Puro JavaScript) ACTIVO` (listo para 12c, 19c, 21c, 23c).
 
 ---
 
@@ -90,10 +97,10 @@ nano .env   # o usa tu editor favorito (vim, code, etc.)
 | `USERDB` | `US_SUELDO` | Usuario del esquema de Oracle. |
 | `PASSWORD` | `MiClaveSegura2026` | Contraseña del usuario Oracle. |
 | `CONNECTIONSTRING` | `192.168.1.50:1521/ORCL` | Cadena de conexión TNS (`host:puerto/servicio` o `TNS_ALIAS`). |
-| `PORT` | `3005` | Puerto único en el que escucha la API (también soporta `HTTP_PORT`). |
+| `PORT` | `3005` | Puerto único HTTP en el que escucha la API (también soporta `HTTP_PORT`). En producción con SSL se usa un reverse proxy (Nginx). |
 | `ADMIN_ACCESS_KEY` | `admin_liq_2026` | **Clave maestra** para ingresar a `/admin` y autorizar importaciones/guardados. |
 | `ENABLE_ADMIN_STUDIO`| `true` | Habilita el Admin Studio visual en `/admin`. |
-| `ORACLE_CLIENT_LIB_DIR`| *(Comentado)* | Solo necesario si el Instant Client está en una carpeta local y no en el sistema. |
+| `ORACLE_CLIENT_LIB_DIR`| *(Comentado)* | Solo necesario si te conectas a Oracle 11g y el Instant Client está en una carpeta local no estándar. En Modo Thin (Oracle 12c+) déjalo comentado. |
 | `DB_QUEUE_TIMEOUT` | `10000` | Tiempo máximo de espera en cola de BD (10 seg) para evitar congelamientos. |
 
 ---
@@ -128,13 +135,14 @@ npm test
 ```
 **Resultado esperado:**
 ```text
-ℹ tests 73
+ℹ tests 86
 ℹ suites 0
-ℹ pass 72
+ℹ pass 85
 ℹ fail 0
 ℹ skipped 1
 ```
-*Si todas las pruebas pasan en verde, el entorno está 100% listo y compatible.*
+*(El test marcado como skipped corresponde al test de integración contra base de datos Oracle real, el cual se ejecuta opcionalmente mediante `RUN_INTEGRATION=1 npm test`).*
+*Si los 85 tests unitarios pasan en verde, el entorno está 100% verificado, listo y compatible.*
 
 ---
 
@@ -244,11 +252,16 @@ Abre en tu navegador:
 1. Ingresa la clave maestra configurada en `ADMIN_ACCESS_KEY`.
 2. Observa el indicador en la esquina superior derecha:
    - `DB: Conectado`: La conexión a Oracle está activa y lista.
-3. Explora las pestañas:
-   - **📋 Vistas:** Para ejecutar y consultar cualquiera de las 54 consultas con paginación y filtros.
-   - **➕ SQL Studio:** Para crear nuevas consultas al vuelo enviando sentencias `SELECT`.
-   - **⚡ SPs:** Para ejecutar Stored Procedures y Funciones.
-   - **📁 Importar:** Para subir archivos Excel (`.xlsx`) o CSV e insertarlos directamente en cualquier tabla de Oracle.
+3. Explora las pestañas interactivas:
+   - **🌐 API Explorer (¡Nuevo!):** Catálogo interactivo de todos los endpoints de la API (`/api/view/*`, `/api/sp/*`, `/api/fn/*`).
+     - **Inspección en tiempo real:** Visualiza la ruta, método HTTP y descripción de cada endpoint.
+     - **Proyección de Columnas Selectiva (`fields`):** Puedes marcar y elegir qué columnas específicas consultar vía query param `?fields=Columna1,Columna2` para optimizar payloads y rendimiento de red.
+     - **Filtros y Paginación:** Configura parámetros de búsqueda, `limit` y `offset` dinámicamente.
+     - **Acciones Rápidas:** Copia la URL completa del endpoint, copia el comando `cURL` listo para terminal/scripts, o presiona **Ejecutar Consulta** para previsualizar los datos en vivo.
+   - **📋 Vistas:** Listado, inspección y prueba directa de las consultas maestras configuradas en el mapper, con paginación `ROWNUM` nativa para Oracle.
+   - **➕ SQL Studio:** Permite crear nuevas vistas al vuelo simplemente enviando una sentencia SQL `SELECT`. Incluye botones para **Exportar vistas a JSON** y **Subir/Importar vistas JSON a BD** para migrar o respaldar configuraciones entre servidores sin consola.
+   - **⚡ SPs:** Introspección y ejecución interactiva de Stored Procedures y Funciones PL/SQL con detección automática de argumentos `IN`, `OUT` y cursores en tiempo real.
+   - **📁 Importar:** Carga masiva de planillas Excel (`.xlsx`, `.xls`) o CSV directamente a cualquier tabla de Oracle, con previsualización de datos, mapeo visual de columnas e inserción por lotes (`executeMany`) con opción atómica (`commit`/`rollback`).
 
 ---
 
@@ -322,11 +335,11 @@ Desde la pestaña **`➕ SQL Studio`** del Admin Studio:
 ## 🛠️ 8. Resolución de Problemas Frecuentes (Troubleshooting)
 
 ### Error 1: `DPI-1047: Cannot locate a 64-bit Oracle Client library`
-* **Causa:** El sistema no encuentra las librerías binarias de Oracle (`libclntsh.so` en Linux o `.dylib` en macOS).
+* **Causa:** Se intentó cargar el cliente binario (Thick Mode) pero el sistema no encuentra las librerías binarias nativas (`libclntsh.so` en Linux o `.dylib` en macOS).
 * **Solución:**
-  1. En Linux: Instala `libaio1` (`sudo apt-get install libaio1`).
-  2. Verifica que `ORACLE_CLIENT_LIB_DIR` en tu `.env` apunte a la carpeta real donde fue descomprimido el Instant Client.
-  3. Ejecuta `node scripts/test-oracle-client.js` para ver el diagnóstico exacto.
+  1. **Si tu BD es Oracle 12c, 19c, 21c o 23c:** ¡No necesitas Instant Client! Asegúrate de que la variable `ORACLE_CLIENT_LIB_DIR` esté comentada o vacía en tu archivo `.env`. La API operará automáticamente en **Modo Thin (Puro JavaScript)** sin requerir ninguna librería binaria ni arrojar este error.
+  2. **Si tu BD es Oracle 11g Release 2:** En 11g sí es obligatorio el Instant Client. Si estás en Linux instala `libaio1` (`sudo apt-get install -y libaio1`), verifica que descomprimiste el cliente 19c/23c y que `ORACLE_CLIENT_LIB_DIR` en tu `.env` apunte a esa carpeta.
+  3. Ejecuta `node scripts/test-oracle-client.js` para diagnosticar el estado exacto.
 
 ### Error 2: `ORA-12541: TNS:no listener` o `ORA-12170: Connect timeout occurred`
 * **Causa:** El servidor donde corre Node.js no puede alcanzar la IP/puerto de Oracle.

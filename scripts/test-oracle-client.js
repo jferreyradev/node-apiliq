@@ -26,10 +26,21 @@ try {
         oracledb.initOracleClient();
     }
 
-    console.log('Oracle Client cargado correctamente');
-    console.log('Versión:', oracledb.oracleClientVersionString || 'Detectada por sistema');
+    console.log('Oracle Client (Thick Mode) cargado correctamente');
+    console.log('Versión de Instant Client:', oracledb.oracleClientVersionString || 'Detectada por sistema');
+    console.log('-> Estado: Listo para conectar a cualquier versión de Oracle (incluyendo Oracle 11g R2, 12c, 19c, 21c, 23c).');
 } catch (error) {
-    console.error('No se pudo cargar Oracle Client:');
-    console.error(error.message);
-    process.exitCode = 1;
+    console.log('\nℹ Oracle Instant Client no detectado en el sistema o carpeta local:');
+    console.log('  ' + error.message);
+    console.log('\n💡 Diagnóstico de Modos de Conexión de node-oracledb:');
+    console.log('  • Modo Thin (100% JavaScript, sin binarios nativos):');
+    console.log('    Si tu base de datos es Oracle 12c, 18c, 19c, 21c o 23c, la API funciona');
+    console.log('    directamente sin necesidad de instalar Oracle Instant Client.');
+    console.log('  • Modo Thick (Requiere Oracle Instant Client):');
+    console.log('    Solo es obligatorio si te conectas a una base de datos Oracle 11g Release 2 (11.2).');
+    console.log('    Si usas 11g, consulta la guía de instalación en PUESTA_EN_MARCHA.md (Paso 3).');
+
+    if (customDir) {
+        process.exitCode = 1;
+    }
 }

@@ -16,16 +16,16 @@ API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19
 * **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends existentes (`HojaIns`, `novHaberesDel`, `cargoIns`, `verifConcepto`, etc.).
 * **Generación de Boletas PDF y Reportes XLSX**: Soporte para generación vectorial de recibos y exportación de planillas.
 * **Procesamiento de Novedades IPSST**: Flujo en dos pasos con `uploadId` único y aislado para evitar colisiones concurrentes.
-* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) para explorar y testear las 54 vistas, crear nuevas consultas SQL en tiempo real con auto-parser, testear Stored Procedures con binds dinámicos, cargar archivos masivos a tablas y reiniciar la memoria RAM.
-* **Seguridad y Producción**: CORS configurable con whitelist, protección de endpoints de modificación y Frontend Studio mediante clave maestra (`ADMIN_ACCESS_KEY`), clave interna `X-Internal-Key` para llamadas desde Deno, y soporte HTTPS con TLS.
+* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) con **API Explorer**, explorador interactivo de las 54 vistas, selector de columnas (`?fields=...`), creador SQL Studio en tiempo real, tester de Stored Procedures con binds dinámicos e importador masivo de Excel/CSV a Oracle.
+* **Seguridad y Producción**: CORS configurable con whitelist, protección de endpoints de modificación y Frontend Studio mediante clave maestra (`ADMIN_ACCESS_KEY`), clave interna `X-Internal-Key` para llamadas desde Deno, y arquitectura de puerto único optimizada para proxy inverso HTTPS (Nginx/Caddy).
 
 ---
 
 ## 📋 Requisitos Previos
 
 1. **Node.js**: Versión 18, 20 o superior.
-2. **Oracle Instant Client**: Versión 19c o 23c (configurado en `ORACLE_CLIENT_LIB_DIR`).
-3. **Oracle Database**: Compatible con Oracle 11g Release 2 (11.2.x), 12c, 19c o 21c.
+2. **Oracle Instant Client (Opcional)**: Únicamente necesario si la base de datos es **Oracle 11g Release 2** (Modo Thick). En Oracle 12c, 18c, 19c, 21c y 23c la API opera en **Modo Thin (Puro JavaScript)** sin necesidad de cliente binario instalado.
+3. **Oracle Database**: Compatible con Oracle 11g Release 2 (11.2.x), 12c, 19c, 21c o 23c.
 
 ---
 

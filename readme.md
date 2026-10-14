@@ -24,7 +24,7 @@ API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19
 ## 📋 Requisitos Previos
 
 1. **Node.js**: Versión 18, 20 o superior.
-2. **Oracle Instant Client (Opcional)**: Únicamente necesario si la base de datos es **Oracle 11g Release 2** (Modo Thick). En Oracle 12c, 18c, 19c, 21c y 23c la API opera en **Modo Thin (Puro JavaScript)** sin necesidad de cliente binario instalado.
+2. **Oracle Instant Client (Recomendado para Máxima Compatibilidad)**: Versión 19c o 23c. Se recomienda para garantizar compatibilidad total con todas las versiones de Oracle (incluyendo Oracle 11g R2, 12c, 19c, 21c y 23c). La API cuenta además con fallback automático a Modo Thin.
 3. **Oracle Database**: Compatible con Oracle 11g Release 2 (11.2.x), 12c, 19c, 21c o 23c.
 
 ---

@@ -47,7 +47,52 @@ function resolveOracleClientDir() {
         }
     }
 
-    // 4. Búsqueda en rutas habituales de Windows
+    // 4. Búsqueda en PATH del sistema (donde los instaladores de Oracle agregan el directorio bin)
+    if (process.env.PATH) {
+        const pathDirs = process.env.PATH.split(path.delimiter);
+        for (const dir of pathDirs) {
+            const cleanDir = dir.trim();
+            if (!cleanDir) continue;
+            try {
+                if (process.platform === 'win32') {
+                    if (fs.existsSync(path.join(cleanDir, 'oci.dll'))) {
+                        return cleanDir;
+                    }
+                } else {
+                    if (fs.existsSync(path.join(cleanDir, 'libclntsh.so'))) {
+                        return cleanDir;
+                    }
+                }
+            } catch {
+                // ignore
+            }
+        }
+    }
+
+    // 5. Búsqueda en Registro de Windows (HKLM\SOFTWARE\ORACLE)
+    if (process.platform === 'win32') {
+        try {
+            const { execSync } = require('child_process');
+            const regOutput = execSync('reg query HKLM\\SOFTWARE\\ORACLE /s 2>nul', { encoding: 'utf8', timeout: 1500 });
+            const matches = regOutput.match(/ORACLE_HOME\s+REG_SZ\s+([^\r\n]+)/gi);
+            if (matches) {
+                for (const m of matches) {
+                    const matchParts = m.split(/REG_SZ\s+/i);
+                    if (matchParts[1]) {
+                        const hDir = matchParts[1].trim();
+                        const bDir = path.join(hDir, 'bin');
+                        if (fs.existsSync(path.join(bDir, 'oci.dll'))) {
+                            return bDir;
+                        }
+                    }
+                }
+            }
+        } catch {
+            // ignore
+        }
+    }
+
+    // 6. Búsqueda en rutas habituales de Windows
     if (process.platform === 'win32') {
         const commonWinPaths = [
             'C:\\oracle\\instantclient_19_23',

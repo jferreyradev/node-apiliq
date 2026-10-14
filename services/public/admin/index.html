@@ -6,47 +6,83 @@
     <title>Liquid API Studio - Consola de Administración</title>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #334155;
-            --bg-hover: #475569;
-            --border: #334155;
-            --primary: #38bdf8;
-            --primary-hover: #0ea5e9;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            /* Tipografía */
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+
+            /* Superficies y Fondos Institucionales (Modo Claro) */
+            --bg-app: #F5F5F5;
+            --bg-main: #F5F5F5;
+            --bg-surface: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-input: #FFFFFF;
+            --bg-hover: #F0F4F8;
+            --bg-alt: #FAFAFA;
+            --border-color: #E0E0E0;
+            --border: #E0E0E0;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
             --radius: 8px;
+
+            /* Textos */
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --text-main: #212121;
+            --text-muted: #757575;
+
+            /* Estados Semánticos (GUIA_ESTILO.md) */
+            --color-success: #2E7D32;
+            --color-success-bg: #E8F5E9;
+            --color-warning: #FB8C00;
+            --color-warning-bg: #FFF3E0;
+            --color-error: #D32F2F;
+            --color-error-bg: #FFEBEE;
+            --color-info: #0288D1;
+            --color-info-bg: #E1F5FE;
+
+            --success: #2E7D32;
+            --warning: #FB8C00;
+            --danger: #D32F2F;
+
+            /* Identidad Dinámica por Municipio (Por defecto Concepción #1976D2 o Trancas #6A1B9A) */
+            --color-primary: #1976D2;
+            --color-primary-hover: #1565C0;
+            --primary: var(--color-primary);
+            --primary-hover: var(--color-primary-hover);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-main);
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
+            background-color: var(--bg-app);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Header */
+        /* Header Institucional con Color del Municipio */
         header {
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+            min-height: 56px;
+            max-height: 64px;
+            padding: 0 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            transition: background-color 0.3s ease;
         }
 
         .brand {
@@ -55,22 +91,23 @@
             gap: 12px;
             font-size: 1.15rem;
             font-weight: 700;
-            color: var(--primary);
+            color: #FFFFFF;
         }
 
         .brand-badge {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
             font-size: 0.75rem;
-            padding: 2px 8px;
+            padding: 2px 10px;
             border-radius: 999px;
             font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .status-pill {
@@ -78,26 +115,29 @@
             align-items: center;
             gap: 6px;
             font-size: 0.8rem;
-            color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 4px 10px;
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px 12px;
             border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--success);
+            background-color: #69F0AE;
+            box-shadow: 0 0 6px #69F0AE;
         }
 
-        /* Buttons */
+        /* Botones */
         .btn {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border);
+            background-color: #FFFFFF;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
             padding: 8px 14px;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
@@ -105,32 +145,47 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .btn:hover {
-            background-color: var(--bg-hover);
+            background-color: #F5F5F5;
+            border-color: #BDBDBD;
+        }
+
+        .header-actions .btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        .header-actions .btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .btn-primary {
-            background-color: var(--primary);
-            color: #0f172a;
-            border-color: var(--primary);
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+            border-color: var(--color-primary);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
+            background-color: var(--color-primary-hover);
+            border-color: var(--color-primary-hover);
         }
 
         .btn-danger {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.3);
+            background-color: var(--color-error-bg);
+            color: var(--color-error);
+            border-color: #FFCDD2;
         }
 
         .btn-danger:hover {
-            background-color: var(--danger);
-            color: white;
+            background-color: var(--color-error);
+            color: #FFFFFF;
+            border-color: var(--color-error);
         }
 
         .btn-sm {
@@ -147,6 +202,7 @@
             width: 100%;
             max-width: 100vw;
             box-sizing: border-box;
+            background-color: var(--bg-app);
         }
 
         /* Sidebar Navigation */
@@ -155,17 +211,18 @@
             min-width: 320px;
             max-width: 320px;
             flex-shrink: 0;
-            background-color: var(--bg-card);
-            border-right: 1px solid var(--border);
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.03);
         }
 
         .nav-tabs {
             display: flex;
-            border-bottom: 1px solid var(--border);
-            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid var(--border-color);
+            background: #FAFAFA;
             overflow-x: auto;
             scrollbar-width: none;
         }
@@ -177,10 +234,10 @@
         .nav-tab {
             flex: 1;
             min-width: 58px;
-            padding: 9px 3px;
+            padding: 10px 4px;
             font-size: 0.72rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             text-align: center;
             cursor: pointer;
             border-bottom: 2px solid transparent;
@@ -189,25 +246,26 @@
         }
 
         .nav-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: var(--bg-card);
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            background: var(--bg-surface);
+            font-weight: 700;
         }
 
         /* Dropzone */
         .dropzone {
-            border: 2px dashed var(--border);
-            border-radius: var(--radius);
+            border: 2px dashed #BDBDBD;
+            border-radius: var(--radius-md);
             padding: 36px 20px;
             text-align: center;
-            background: rgba(30, 41, 59, 0.4);
+            background: #FAFAFA;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
         .dropzone:hover, .dropzone.dragover {
-            border-color: var(--primary);
-            background: rgba(56, 189, 248, 0.08);
+            border-color: var(--color-primary);
+            background: rgba(25, 118, 210, 0.04);
         }
 
         .dropzone-icon {
@@ -217,59 +275,64 @@
 
         .search-box {
             padding: 12px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-surface);
         }
 
         .search-input {
             width: 100%;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-main);
+            background-color: #FAFAFA;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 8px 12px;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             font-size: 0.85rem;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         .search-input:focus {
-            border-color: var(--primary);
+            border-color: var(--color-primary);
+            background-color: #FFFFFF;
         }
 
         .item-list {
             flex: 1;
             overflow-y: auto;
             padding: 8px;
+            background-color: var(--bg-surface);
         }
 
         .list-item {
             padding: 10px 12px;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             margin-bottom: 4px;
             transition: background 0.15s ease;
             display: flex;
             flex-direction: column;
             gap: 2px;
+            border: 1px solid transparent;
         }
 
         .list-item:hover {
-            background-color: var(--bg-input);
+            background-color: var(--bg-hover);
         }
 
         .list-item.active {
-            background-color: rgba(56, 189, 248, 0.15);
-            border-left: 3px solid var(--primary);
+            background-color: rgba(25, 118, 210, 0.08);
+            border-left: 3px solid var(--color-primary);
         }
 
         .list-item-title {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-main);
+            color: var(--text-primary);
         }
 
         .list-item-sub {
             font-size: 0.72rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -287,17 +350,19 @@
             flex-direction: column;
             gap: 20px;
             box-sizing: border-box;
+            background-color: var(--bg-app);
         }
 
         .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             padding: 20px;
             width: 100%;
             min-width: 0;
             max-width: 100%;
             box-sizing: border-box;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
         }
 
         @keyframes spin {
@@ -316,12 +381,13 @@
             justify-content: space-between;
             margin-bottom: 16px;
             padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .card-title {
             font-size: 1.05rem;
             font-weight: 700;
+            color: var(--text-primary);
         }
 
         /* Forms */
@@ -341,83 +407,97 @@
         .form-label {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .form-control {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-main);
+            background-color: #FFFFFF;
+            border: 1px solid #CCCCCC;
+            color: var(--text-primary);
             padding: 8px 12px;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             font-size: 0.85rem;
             outline: none;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
-            border-color: var(--primary);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
         }
 
         textarea.form-control {
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-family: var(--font-mono);
             font-size: 0.85rem;
             line-height: 1.4;
             min-height: 140px;
             resize: vertical;
         }
 
-        /* Results Table */
+        /* Results Table (Alta Densidad y Legibilidad según GUIA_ESTILO.md) */
         .table-container {
             overflow-x: auto;
             width: 100%;
             min-width: 0;
             max-width: 100%;
             max-height: 450px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
             box-sizing: border-box;
+            background-color: #FFFFFF;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             text-align: left;
         }
 
         th {
-            background-color: var(--bg-input);
-            color: var(--text-muted);
+            background-color: #FAFAFA;
+            color: #424242;
             padding: 10px 14px;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             position: sticky;
             top: 0;
             z-index: 10;
             white-space: nowrap;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
 
         td {
             padding: 8px 14px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #EEEEEE;
             white-space: nowrap;
+            color: var(--text-primary);
+            height: 38px;
         }
 
         tr:hover td {
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: var(--bg-hover);
+        }
+
+        .table-amount {
+            font-family: var(--font-mono);
+            text-align: right;
+            font-weight: 500;
         }
 
         /* JSON Pre */
         pre {
-            background-color: #0b1120;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+            background-color: #263238;
+            border: 1px solid #37474F;
+            border-radius: var(--radius-md);
             padding: 16px;
-            font-family: "SFMono-Regular", Consolas, monospace;
+            font-family: var(--font-mono);
             font-size: 0.8rem;
-            color: #38bdf8;
+            color: #80D8FF;
             overflow: auto;
             max-height: 450px;
         }
@@ -429,8 +509,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -438,13 +518,13 @@
         }
 
         .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             padding: 32px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -457,20 +537,20 @@
         .auth-header h2 {
             font-size: 1.4rem;
             margin-bottom: 8px;
-            color: var(--text-main);
+            color: var(--text-primary);
         }
 
         .auth-header p {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--text-secondary);
         }
 
         .auth-error {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
+            background: var(--color-error-bg);
+            border: 1px solid #FFCDD2;
+            color: var(--color-error);
             padding: 10px;
-            border-radius: var(--radius);
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
             display: none;
         }
@@ -480,21 +560,22 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 12px 20px;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             font-size: 0.85rem;
+            font-weight: 500;
             display: none;
             z-index: 1000;
         }
 
-        .toast.success { border-color: var(--success); }
-        .toast.error { border-color: var(--danger); }
-        .toast.warning { border-color: var(--warning); }
-        .toast.info { border-color: var(--primary); }
+        .toast.success { border-left: 4px solid var(--color-success); }
+        .toast.error { border-left: 4px solid var(--color-error); }
+        .toast.warning { border-left: 4px solid var(--color-warning); }
+        .toast.info { border-left: 4px solid var(--color-info); }
     </style>
 </head>
 <body>
@@ -560,10 +641,10 @@
                     </div>
 
                     <!-- Barra interactiva de Endpoint y Query Preview -->
-                    <div id="viewEndpointBar" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <div id="viewEndpointBar" style="display: none; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; overflow: hidden;">
-                            <span style="background: rgba(34, 197, 94, 0.2); color: var(--success); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">GET</span>
-                            <code id="viewEndpointUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/view/...</code>
+                            <span style="background: var(--color-success-bg); color: var(--color-success); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">GET</span>
+                            <code id="viewEndpointUrlPreview" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--color-primary); word-break: break-all;">/api/view/...</code>
                         </div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                             <button class="btn btn-sm" onclick="copyCurrentViewUrl()" title="Copiar URL completa">📋 Copiar URL</button>
@@ -703,10 +784,10 @@
                     </div>
 
                     <!-- Vista previa en vivo de URL y cURL -->
-                    <div style="margin-top: 14px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <div style="margin-top: 14px; padding: 10px 14px; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 240px; overflow: hidden;">
-                            <span id="explorerLiveMethodBadge" style="font-weight: 700; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; background: rgba(34, 197, 94, 0.2); color: var(--success);">GET</span>
-                            <code id="explorerLiveUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/...</code>
+                            <span id="explorerLiveMethodBadge" style="font-weight: 700; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; background: var(--color-success-bg); color: var(--color-success);">GET</span>
+                            <code id="explorerLiveUrlPreview" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--color-primary); word-break: break-all;">/api/...</code>
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <button class="btn btn-sm" onclick="explorerCopyUrl()">📋 Copiar URL</button>
@@ -801,10 +882,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     </div>
 
                     <!-- Barra interactiva de Endpoint SP -->
-                    <div id="spEndpointBar" style="display: none; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                    <div id="spEndpointBar" style="display: none; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 260px; overflow: hidden;">
-                            <span style="background: rgba(59, 130, 246, 0.2); color: var(--primary); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">POST</span>
-                            <code id="spEndpointUrlPreview" style="font-family: monospace; font-size: 0.82rem; color: #38bdf8; word-break: break-all;">/api/sp/...</code>
+                            <span style="background: var(--color-info-bg); color: var(--color-info); font-weight: 700; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px;">POST</span>
+                            <code id="spEndpointUrlPreview" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--color-primary); word-break: break-all;">/api/sp/...</code>
                         </div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                             <button class="btn btn-sm" onclick="copyCurrentSpCurl()" title="Copiar comando cURL">📋 Copiar cURL</button>
@@ -820,15 +901,15 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 <div class="card" id="spResultsCard" style="display: none;">
                     <div class="card-header">
                         <span class="card-title">Retorno del Procedimiento</span>
-                        <span class="brand-badge" id="spResultsMeta">Respuesta</span>
+                        <span class="brand-badge" id="spResultsMeta" style="background: var(--color-info-bg); color: var(--color-info); border: 1px solid var(--color-info);">Respuesta</span>
                     </div>
 
                     <!-- Estado de Carga / En Espera Activo -->
-                    <div id="spLoadingWrapper" style="display: none; text-align: center; padding: 36px 20px; background: rgba(15, 23, 42, 0.4); border-radius: var(--radius); border: 1px solid var(--border);">
+                    <div id="spLoadingWrapper" style="display: none; text-align: center; padding: 36px 20px; background: #FAFAFA; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                         <div class="spinning" style="font-size: 36px; margin-bottom: 12px;">⏳</div>
-                        <div style="font-size: 15px; font-weight: 700; color: var(--text-main);">Ejecutando Stored Procedure en Oracle...</div>
-                        <div id="spElapsedTimer" style="font-size: 13px; font-weight: 600; color: var(--primary); margin-top: 8px;">Tiempo transcurrido: 0s</div>
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Por favor aguarde, la conexión a la base de datos se mantiene abierta hasta finalizar el procedimiento.</div>
+                        <div style="font-size: 15px; font-weight: 700; color: var(--text-primary);">Ejecutando Stored Procedure en Oracle...</div>
+                        <div id="spElapsedTimer" style="font-size: 13px; font-weight: 600; color: var(--color-primary); margin-top: 8px;">Tiempo transcurrido: 0s</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">Por favor aguarde, la conexión a la base de datos se mantiene abierta hasta finalizar el procedimiento.</div>
                     </div>
 
                     <!-- Mensaje de Error si falla -->
@@ -923,7 +1004,7 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     </div>
 
                     <!-- Opciones de Carga -->
-                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 10px;">
                         <div style="font-size: 0.85rem; font-weight: 600;">Opciones de Inserción:</div>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
                             <input type="checkbox" id="importerTruncateCheck">

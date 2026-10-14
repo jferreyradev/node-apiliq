@@ -5,31 +5,113 @@ const dbConfig = require('../config/database');
 
 let oracleClientInitialized = false;
 
+function resolveOracleClientDir() {
+    // 1. Variable explícita ORACLE_CLIENT_LIB_DIR
+    if (process.env.ORACLE_CLIENT_LIB_DIR) {
+        const customPath = path.resolve(process.env.ORACLE_CLIENT_LIB_DIR);
+        if (fs.existsSync(customPath)) {
+            return customPath;
+        }
+        console.warn(`Aviso: ORACLE_CLIENT_LIB_DIR configurado pero la ruta no existe: ${customPath}`);
+    }
+
+    // 2. Carpeta local del proyecto oracle-client/instantclient_*
+    const localDir = path.resolve(__dirname, '..', 'oracle-client');
+    if (fs.existsSync(localDir)) {
+        try {
+            const entries = fs.readdirSync(localDir);
+            for (const entry of entries) {
+                const fullEntry = path.join(localDir, entry);
+                if (fs.statSync(fullEntry).isDirectory() && entry.startsWith('instantclient')) {
+                    return fullEntry;
+                }
+            }
+        } catch {
+            // ignore
+        }
+    }
+
+    // 3. Cliente Oracle instalado en el host vía ORACLE_HOME
+    if (process.env.ORACLE_HOME) {
+        const oracleHome = path.resolve(process.env.ORACLE_HOME);
+        const winBin = path.join(oracleHome, 'bin');
+        if (process.platform === 'win32' && fs.existsSync(path.join(winBin, 'oci.dll'))) {
+            return winBin;
+        }
+        const unixLib = path.join(oracleHome, 'lib');
+        if (fs.existsSync(unixLib)) {
+            return unixLib;
+        }
+        if (fs.existsSync(oracleHome)) {
+            return oracleHome;
+        }
+    }
+
+    // 4. Búsqueda en rutas habituales de Windows
+    if (process.platform === 'win32') {
+        const commonWinPaths = [
+            'C:\\oracle\\instantclient_19_23',
+            'C:\\oracle\\instantclient_19_24',
+            'C:\\oracle\\instantclient_19_8',
+            'C:\\oracle\\instantclient_23_3',
+            'C:\\oracle\\instantclient_23_4',
+            'C:\\instantclient',
+            'C:\\oracle\\instantclient'
+        ];
+        for (const p of commonWinPaths) {
+            if (fs.existsSync(path.join(p, 'oci.dll'))) {
+                return p;
+            }
+        }
+    }
+
+    // 5. Búsqueda en rutas habituales de Linux
+    if (process.platform === 'linux') {
+        const commonLinuxPaths = [
+            '/usr/lib/oracle/23/client64/lib',
+            '/usr/lib/oracle/21/client64/lib',
+            '/usr/lib/oracle/19.23/client64/lib',
+            '/usr/lib/oracle/19.22/client64/lib',
+            '/usr/lib/oracle/19.21/client64/lib',
+            '/usr/lib/oracle/19.20/client64/lib',
+            '/usr/lib/oracle/19.19/client64/lib',
+            '/opt/oracle/instantclient_23_4',
+            '/opt/oracle/instantclient_23_3',
+            '/opt/oracle/instantclient_21_13',
+            '/opt/oracle/instantclient_19_23',
+            '/opt/oracle/instantclient_19_8'
+        ];
+        for (const p of commonLinuxPaths) {
+            if (fs.existsSync(p)) {
+                return p;
+            }
+        }
+    }
+
+    return null;
+}
+
 function initializeOracleClient() {
     if (oracleClientInitialized) {
         return;
     }
 
-    const customPath = process.env.ORACLE_CLIENT_LIB_DIR ? path.resolve(process.env.ORACLE_CLIENT_LIB_DIR) : null;
-    const defaultLocalPath = path.resolve(__dirname, '..', 'oracle-client', 'instantclient_23_3');
+    const resolvedLibDir = resolveOracleClientDir();
 
     try {
-        if (customPath) {
-            if (!fs.existsSync(customPath)) {
-                throw new Error(`La ruta configurada en ORACLE_CLIENT_LIB_DIR no existe: ${customPath}`);
-            }
-            oracledb.initOracleClient({ libDir: customPath });
-            console.log(`Oracle Client cargado desde: ${customPath}`);
-        } else if (fs.existsSync(defaultLocalPath)) {
-            oracledb.initOracleClient({ libDir: defaultLocalPath });
-            console.log(`Oracle Client cargado desde carpeta local: ${defaultLocalPath}`);
+        if (resolvedLibDir) {
+            oracledb.initOracleClient({ libDir: resolvedLibDir });
+            console.log(`Oracle Client (Thick Mode) cargado desde: ${resolvedLibDir} (${oracledb.oracleClientVersionString || 'detectado'})`);
         } else {
             // Intentar cargar librerías del sistema operativo (LD_LIBRARY_PATH, ldconfig, PATH)
             try {
                 oracledb.initOracleClient();
                 console.log(`Oracle Client cargado desde librerías del sistema (${oracledb.oracleClientVersionString || 'sistema'})`);
             } catch (sysErr) {
-                console.warn('Aviso: No se inicializó Oracle Instant Client local ni de sistema.');
+                console.warn('Aviso: No se inicializó Oracle Instant Client ni librerías nativas.');
+                console.warn(`  Detalle del error del sistema: ${sysErr.message}`);
+                console.warn(`  Plataforma: ${process.platform} (${process.arch})`);
+                console.warn(`  ORACLE_HOME: ${process.env.ORACLE_HOME || 'no definido'}`);
                 console.warn('Se intentará conectar en modo Thin (Puro JS). Nota: Si la BD es Oracle 11g se requiere Instant Client.');
             }
         }

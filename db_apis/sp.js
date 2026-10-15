@@ -2,61 +2,74 @@ const database = require('../services/database');
 const oracledb = require('oracledb');
 
 function getSQLcall(sp) {
-    let sqlCab = 'BEGIN ' + sp.sp_name;
-    let first = true;
+    const spName = (sp && sp.sp_name ? sp.sp_name : '').trim();
+    const params = [];
 
-    if (sp['in_param']) {
+    if (sp && sp.in_param && Array.isArray(sp.in_param)) {
         sp.in_param.forEach(element => {
-            if (first) {
-                sqlCab += '(';
-                first = false;
-            } else {
-                sqlCab += ', ';
-            }
-            sqlCab += ':' + element;
+            params.push(':' + element);
         });
-    } else {
-        sqlCab += '(';
-        first = true;
     }
 
-    if (sp['out_param']) {
+    if (sp && sp.out_param && Array.isArray(sp.out_param)) {
         sp.out_param.forEach(element => {
-            if (first) {
-                sqlCab += ' :' + element;
-                first = false;
-            } else {
-                sqlCab += ', :' + element;
-            }
+            params.push(':' + element);
         });
     }
 
-    sqlCab += '); END;';
+    return `BEGIN ${spName}(${params.join(', ')}); END;`;
+}
 
-    return sqlCab;
+function normalizeParamName(str) {
+    if (!str) return '';
+    return str
+        .toLowerCase()
+        .replace(/^v_?id_?/, '')
+        .replace(/^v_?/, '')
+        .replace(/_?id$/, '')
+        .replace(/[^a-z0-9]/g, '');
 }
 
 function getSQLbinds(context, sp) {
     const binds = {};
+    const ctx = context || {};
 
-    if (sp && sp.in_param) {
+    function findContextValue(paramName) {
+        if (ctx[paramName] !== undefined) return ctx[paramName];
+
+        const lowerName = paramName.toLowerCase();
+        for (const k of Object.keys(ctx)) {
+            if (k.toLowerCase() === lowerName) {
+                return ctx[k];
+            }
+        }
+
+        const normParam = normalizeParamName(paramName);
+        for (const k of Object.keys(ctx)) {
+            const normK = normalizeParamName(k);
+            if (normK === normParam) {
+                return ctx[k];
+            }
+            if (normK.length >= 4 && normParam.length >= 4) {
+                if (normParam.startsWith(normK) || normK.startsWith(normParam)) {
+                    return ctx[k];
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+    if (sp && sp.in_param && Array.isArray(sp.in_param)) {
         sp.in_param.forEach(element => {
-            const val = context ? context[element] : undefined;
+            const val = findContextValue(element);
             binds[element] = (val !== undefined && val !== '') ? val : null;
         });
     }
 
-    if (context) {
-        for (const key in context) {
-            if (binds[key] === undefined) {
-                binds[key] = context[key];
-            }
-        }
-    }
-
-    if (sp && sp.out_param) {
+    if (sp && sp.out_param && Array.isArray(sp.out_param)) {
         sp.out_param.forEach(element => {
-            if (element != 'Cursor') {
+            if (element !== 'Cursor') {
                 binds[element] = { dir: oracledb.BIND_OUT };
             } else {
                 binds[element] = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
@@ -68,19 +81,31 @@ function getSQLbinds(context, sp) {
 }
 
 async function execStoreProcedure(context, sp) {
-    let query = getSQLcall(sp);
-    let binds = getSQLbinds(context, sp);
+    const query = getSQLcall(sp);
+    const binds = getSQLbinds(context, sp);
 
     let result = {};
     const start = Date.now();
 
-    result = await database.simpleExecute(query, binds);
+    try {
+        result = await database.simpleExecute(query, binds);
+    } catch (err) {
+        err.call = query;
+        err.statement = query;
+        err.params = binds;
+        err.sp = sp && sp.sp_name ? sp.sp_name.trim() : undefined;
+        throw err;
+    }
 
     const millis = Date.now() - start;
 
-    json = { status: 200, params: binds, out: result.outBinds, elapsed: Math.floor(millis / 1000) };
-
-    return json;
+    return {
+        status: 200,
+        call: query,
+        params: binds,
+        out: result.outBinds,
+        elapsed: Math.floor(millis / 1000)
+    };
 }
 
 module.exports.getSQLcall = getSQLcall;

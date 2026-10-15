@@ -135,12 +135,12 @@ module.exports.jsonStoreProcedure = {
         in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId']
     },
     archivoIPSSTddjj: {
-        sp_name: 'mod_exportacion.GENERA_ARCHIVO_IPSST_DDJJ ',
+        sp_name: 'mod_exportacion.GENERA_ARCHIVO_IPSST_DDJJ',
         in_param: ['Periodo']
     },
     generaArchivoAcred: {
-        sp_name: 'mod_exportacion.GENERA_ARCHIVO_ACRED ',
-        in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId']
+        sp_name: 'mod_exportacion.GENERA_ARCHIVO_ACRED',
+        in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId', 'Ley']
     },
     estableceNoLey: {
         sp_name: 'MOD_FUNCIONES.ESTABLECE_NOLEY',

@@ -82,8 +82,41 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         assert.strictEqual(procedureCatalog._fnCache.size, 0);
     });
 
-    await t.test('retorna null si un SP no existe y no está en la base', async () => {
-        const config = await procedureCatalog.getSpConfig('procedimiento_absolutamente_inexistente');
-        assert.strictEqual(config, null);
+    await t.test('obtiene SP desde spmapper.generated cuando no está en legacy spmapper', async () => {
+        const config = await procedureCatalog.getSpConfig('exportacion_generaArchivoAcred');
+        assert.ok(config, 'Debe resolver SP desde generated mapper');
+        assert.strictEqual(config.sp_name, 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED');
+        assert.ok(config.in_param.includes('vLEY'));
+    });
+
+    await t.test('spapi.getSQLcall genera bloque PL/SQL válido y limpio', () => {
+        const spapi = require('../db_apis/sp');
+        const spConfig = {
+            sp_name: 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED ',
+            in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId', 'Ley']
+        };
+        const sql = spapi.getSQLcall(spConfig);
+        assert.strictEqual(sql, 'BEGIN MOD_EXPORTACION.GENERA_ARCHIVO_ACRED(:Periodo, :TipoLiquidacionId, :GrupoAdicionalId, :Ley); END;');
+    });
+
+    await t.test('spapi.getSQLbinds resuelve campos de forma insensible a mayúsculas y prefijos', () => {
+        const spapi = require('../db_apis/sp');
+        const spConfig = {
+            sp_name: 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED',
+            in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId', 'Ley'],
+            out_param: ['ValorSalida']
+        };
+        const context = {
+            periodo: 202401,
+            tipoliquidacionid: 2,
+            vIDGRUPOADI: 0
+        };
+        const binds = spapi.getSQLbinds(context, spConfig);
+        assert.strictEqual(binds.Periodo, 202401);
+        assert.strictEqual(binds.TipoLiquidacionId, 2);
+        assert.strictEqual(binds.GrupoAdicionalId, 0);
+        assert.strictEqual(binds.Ley, null);
+        assert.ok(binds.ValorSalida && binds.ValorSalida.dir !== undefined);
     });
 });
+

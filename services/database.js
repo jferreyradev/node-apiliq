@@ -226,6 +226,8 @@ function simpleExecute(statement, binds = [], opts = {}) {
             const result = await conn.execute(query, binds, opts);
             resolve(result);
         } catch (err) {
+            err.statement = query || statement;
+            err.binds = binds;
             reject(err);
         } finally {
             if (conn) {
@@ -253,6 +255,8 @@ function simpleExecuteNoLimit(statement, binds = [], opts = {}) {
             const result = await conn.execute(statement, binds, opts);
             resolve(result);
         } catch (err) {
+            err.statement = statement;
+            err.binds = binds;
             reject(err);
         } finally {
             if (conn) {

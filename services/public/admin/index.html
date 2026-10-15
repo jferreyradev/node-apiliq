@@ -73,8 +73,7 @@
             background-color: var(--color-primary);
             color: #FFFFFF;
             min-height: 56px;
-            max-height: 64px;
-            padding: 0 20px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -83,6 +82,8 @@
             z-index: 100;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
             transition: background-color 0.3s ease;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .brand {
@@ -108,6 +109,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .status-pill {
@@ -654,6 +656,24 @@
                         </div>
                     </div>
 
+                    <!-- Card de Consulta SQL (Lo que hace la vista) -->
+                    <div id="viewSqlCard" style="display: none; background: #1E293B; border: 1px solid #334155; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #0F172A; border-bottom: 1px solid #334155; color: #F8FAFC; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;" onclick="toggleViewSqlCollapse()">
+                                <span id="viewSqlChevron" style="font-size: 0.75rem; color: #94A3B8; transition: transform 0.2s;">▼</span>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #F8FAFC;">📜 Sentencia SQL Ejecutada en Oracle</span>
+                                <span class="brand-badge" id="viewSqlMetaBadge" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); font-size: 0.72rem;">0 campos</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn btn-sm" onclick="copyCurrentViewSql()" style="background: rgba(255,255,255,0.08); color: #F8FAFC; border: 1px solid rgba(255,255,255,0.2);" title="Copiar sentencia SQL completa">📋 Copiar SQL</button>
+                                <button class="btn btn-sm" onclick="openCurrentViewInSqlStudio()" style="background: rgba(255,255,255,0.08); color: #F8FAFC; border: 1px solid rgba(255,255,255,0.2);" title="Abrir y editar en SQL Studio">✏️ Editar en SQL Studio</button>
+                            </div>
+                        </div>
+                        <div id="viewSqlBody" style="padding: 14px 16px; max-height: 280px; overflow-y: auto; background: #1E293B;">
+                            <pre id="viewSqlCode" style="margin: 0; padding: 0; background: transparent; border: none; font-size: 0.82rem; color: #7DD3FC; line-height: 1.5; white-space: pre-wrap; font-family: var(--font-mono);"></pre>
+                        </div>
+                    </div>
+
                     <!-- Filtros dinámicos -->
                     <div id="viewFiltersContainer">
                         <p style="font-size: 0.85rem; color: var(--text-muted);">Sin filtros seleccionados.</p>
@@ -890,6 +910,23 @@ ORDER BY p.apellido, p.nombre"></textarea>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                             <button class="btn btn-sm" onclick="copyCurrentSpCurl()" title="Copiar comando cURL">📋 Copiar cURL</button>
                             <button class="btn btn-sm" onclick="openCurrentSpInExplorer()" title="Abrir en API Explorer">🚀 Probar en Explorer</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta interactiva con la llamada PL/SQL del SP -->
+                    <div id="spCallCard" style="display: none; background: #0F172A; color: #E2E8F0; border-radius: var(--radius-md); border: 1px solid #1E293B; margin-bottom: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: #1E293B; border-bottom: 1px solid #334155; font-size: 0.8rem; font-weight: 600;">
+                            <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="toggleSpCallCollapse()">
+                                <span id="spCallChevron" style="transition: transform 0.2s;">▼</span>
+                                <span style="color: #94A3B8;">Cuerpo de la Llamada PL/SQL (Oracle)</span>
+                                <span id="spCallMetaBadge" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; font-weight: 500;"></span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn btn-sm" onclick="copyCurrentSpSql()" style="background: #334155; color: #F1F5F9; border: 1px solid #475569; padding: 3px 8px; font-size: 0.75rem;">📋 Copiar PL/SQL</button>
+                                <button class="btn btn-sm" onclick="openCurrentSpInSqlStudio()" style="background: #2563EB; color: #FFFFFF; border: none; padding: 3px 8px; font-size: 0.75rem;">⚡ Abrir en SQL Studio</button>
+                            </div>
+                        </div>
+                        <div id="spCallBody" style="padding: 12px 14px; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; max-height: 260px; overflow-y: auto; color: #38BDF8;">
                         </div>
                     </div>
 
@@ -1373,8 +1410,117 @@ ORDER BY p.apellido, p.nombre"></textarea>
             }
         }
 
-        function filterSidebarItems() {
-            renderSidebar();
+        let isViewSqlCollapsed = false;
+
+        function toggleViewSqlCollapse() {
+            isViewSqlCollapsed = !isViewSqlCollapsed;
+            const body = document.getElementById('viewSqlBody');
+            const chevron = document.getElementById('viewSqlChevron');
+            if (body) body.style.display = isViewSqlCollapsed ? 'none' : 'block';
+            if (chevron) chevron.textContent = isViewSqlCollapsed ? '▶' : '▼';
+        }
+
+        function buildSqlFromViewConfig(config) {
+            if (!config) return '';
+            if (config.rawSql) return config.rawSql;
+
+            const fields = config.fields || {};
+            const fieldEntries = Object.entries(fields);
+            let sql = 'SELECT\n';
+            if (fieldEntries.length === 0) {
+                sql += '    *\n';
+            } else {
+                const fieldLines = fieldEntries.map(([alias, expr]) => {
+                    const cleanExpr = String(expr || '').trim();
+                    const cleanAlias = String(alias || '').trim();
+                    if (cleanExpr.toLowerCase() === cleanAlias.toLowerCase() || cleanExpr.endsWith('.' + cleanAlias)) {
+                        return '    ' + cleanExpr;
+                    }
+                    return '    ' + cleanExpr + ' AS ' + cleanAlias;
+                });
+                sql += fieldLines.join(',\n') + '\n';
+            }
+
+            const fromClause = Array.isArray(config.sql?.fromClause)
+                ? config.sql.fromClause
+                : (config.sql?.fromClause ? [config.sql.fromClause] : []);
+
+            if (fromClause.length > 0) {
+                fromClause.forEach((line, idx) => {
+                    const trimmed = String(line || '').trim();
+                    if (idx === 0 && !trimmed.toUpperCase().startsWith('FROM')) {
+                        sql += 'FROM ' + trimmed + '\n';
+                    } else {
+                        sql += trimmed + '\n';
+                    }
+                });
+            }
+
+            const whereFields = config.sql?.whereFields || {};
+            const whereEntries = Object.entries(whereFields);
+            if (whereEntries.length > 0) {
+                sql += 'WHERE\n';
+                const whereLines = whereEntries.map(([param, col]) => String(col || '').trim() + ' = :' + String(param || '').trim());
+                sql += '    ' + whereLines.join('\n    AND ') + '\n';
+            }
+
+            const groupClause = Array.isArray(config.sql?.groupClause)
+                ? config.sql.groupClause
+                : (config.sql?.groupClause ? [config.sql.groupClause] : []);
+            if (groupClause.length > 0) {
+                groupClause.forEach(line => {
+                    sql += String(line || '').trim() + '\n';
+                });
+            }
+
+            return sql.trim();
+        }
+
+        function renderViewSqlDefinition(config, name) {
+            const sqlCard = document.getElementById('viewSqlCard');
+            const sqlCode = document.getElementById('viewSqlCode');
+            const sqlBadge = document.getElementById('viewSqlMetaBadge');
+            if (!sqlCard || !sqlCode) return;
+
+            const fieldKeys = Object.keys(config.fields || {});
+            const tableCount = Array.isArray(config.sql?.fromClause) ? config.sql.fromClause.length : 1;
+            const whereKeys = Object.keys(config.sql?.whereFields || {});
+
+            const sqlText = buildSqlFromViewConfig(config);
+            sqlCode.textContent = sqlText;
+
+            if (sqlBadge) {
+                const parts = [`${fieldKeys.length} columnas`];
+                if (tableCount > 0) parts.push(`${tableCount} ${tableCount === 1 ? 'origen' : 'joins/tablas'}`);
+                if (whereKeys.length > 0) parts.push(`${whereKeys.length} filtros WHERE`);
+                sqlBadge.textContent = parts.join(' • ');
+            }
+
+            sqlCard.style.display = 'block';
+        }
+
+        function copyCurrentViewSql() {
+            if (!currentSelectedView) return;
+            const config = viewsCatalog[currentSelectedView];
+            if (!config) return;
+            const sql = buildSqlFromViewConfig(config);
+            navigator.clipboard.writeText(sql);
+            showToast('Sentencia SQL copiada al portapapeles', 'success');
+        }
+
+        function openCurrentViewInSqlStudio() {
+            if (!currentSelectedView) return;
+            const config = viewsCatalog[currentSelectedView];
+            if (!config) return;
+            const sql = buildSqlFromViewConfig(config);
+            switchMainTab('sqlStudio');
+            const nameEl = document.getElementById('sqlViewName');
+            const descEl = document.getElementById('sqlViewDesc');
+            const sqlEl = document.getElementById('sqlQueryText');
+            if (nameEl) nameEl.value = currentSelectedView;
+            if (descEl) descEl.value = `Consulta basada en ${currentSelectedView}`;
+            if (sqlEl) sqlEl.value = sql;
+            showToast(`Consulta '${currentSelectedView}' cargada en SQL Studio`, 'success');
         }
 
         // Selección y ejecución de Vistas
@@ -1405,6 +1551,8 @@ ORDER BY p.apellido, p.nombre"></textarea>
 
             const endpointBar = document.getElementById('viewEndpointBar');
             if (endpointBar) endpointBar.style.display = 'flex';
+
+            renderViewSqlDefinition(config, name);
 
             const filtersContainer = document.getElementById('viewFiltersContainer');
             filtersContainer.innerHTML = '';
@@ -1787,6 +1935,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     delete viewsCatalog[currentSelectedView];
                     currentSelectedView = null;
                     document.getElementById('resultsCard').style.display = 'none';
+                    const sqlCard = document.getElementById('viewSqlCard');
+                    if (sqlCard) sqlCard.style.display = 'none';
+                    const endpointBar = document.getElementById('viewEndpointBar');
+                    if (endpointBar) endpointBar.style.display = 'none';
                     document.getElementById('selectedViewTitle').textContent = 'Selecciona una vista';
                     document.getElementById('btnExecuteView').disabled = true;
                     document.getElementById('btnDeleteView').disabled = true;
@@ -1913,7 +2065,100 @@ ORDER BY p.apellido, p.nombre"></textarea>
             });
             html += '</div>';
             container.innerHTML = inParams.length > 0 ? html : '<p style="color:var(--text-muted); font-size:0.85rem;">Este procedimiento no requiere parámetros de entrada (IN).</p>';
+            renderSpCallDefinition(sp, name);
             updateCurrentSpPreview();
+        }
+
+        function buildPlSqlFromSpConfig(sp, values = {}) {
+            if (!sp) return '';
+            const spName = (sp.sp_name || '').trim();
+            const inParams = sp.in_param || [];
+            const outParams = sp.out_param || [];
+            const allArgs = [];
+
+            inParams.forEach(p => {
+                const val = values[p];
+                if (val !== undefined && val !== '') {
+                    allArgs.push(`  :${p} /* ${JSON.stringify(val)} */`);
+                } else {
+                    allArgs.push(`  :${p}`);
+                }
+            });
+
+            outParams.forEach(p => {
+                allArgs.push(`  :${p} /* (OUT) */`);
+            });
+
+            if (allArgs.length === 0) {
+                return `BEGIN\n  ${spName}();\nEND;`;
+            }
+
+            return `BEGIN\n  ${spName}(\n${allArgs.join(',\n')}\n  );\nEND;`;
+        }
+
+        function renderSpCallDefinition(sp, name) {
+            const card = document.getElementById('spCallCard');
+            const body = document.getElementById('spCallBody');
+            const badge = document.getElementById('spCallMetaBadge');
+            if (!card || !body) return;
+
+            if (!sp) {
+                card.style.display = 'none';
+                return;
+            }
+
+            const inParams = sp.in_param || [];
+            const outParams = sp.out_param || [];
+            const currentValues = {};
+            inParams.forEach(p => {
+                const inputEl = document.getElementById(`sp_in_${p}`);
+                if (inputEl && inputEl.value !== '') {
+                    currentValues[p] = !isNaN(inputEl.value) && inputEl.value.trim() !== '' ? Number(inputEl.value) : inputEl.value;
+                }
+            });
+
+            const plsql = buildPlSqlFromSpConfig(sp, currentValues);
+            body.textContent = plsql;
+            card.style.display = 'block';
+
+            if (badge) {
+                badge.textContent = `${inParams.length} IN | ${outParams.length} OUT`;
+            }
+        }
+
+        let spCallCollapsed = false;
+        function toggleSpCallCollapse() {
+            spCallCollapsed = !spCallCollapsed;
+            const body = document.getElementById('spCallBody');
+            const chevron = document.getElementById('spCallChevron');
+            if (body) body.style.display = spCallCollapsed ? 'none' : 'block';
+            if (chevron) chevron.style.transform = spCallCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+        }
+
+        function copyCurrentSpSql() {
+            if (!currentSelectedSp) return;
+            const sp = spCatalog[currentSelectedSp] || {};
+            const body = document.getElementById('spCallBody');
+            const sql = body ? body.textContent : buildPlSqlFromSpConfig(sp);
+            if (!sql) return;
+            navigator.clipboard.writeText(sql);
+            showToast('Llamada PL/SQL copiada al portapapeles', 'success');
+        }
+
+        function openCurrentSpInSqlStudio() {
+            if (!currentSelectedSp) return;
+            const sp = spCatalog[currentSelectedSp] || {};
+            const body = document.getElementById('spCallBody');
+            const sql = body ? body.textContent : buildPlSqlFromSpConfig(sp);
+            if (!sql) return;
+
+            switchMainTab('sqlStudio');
+            const editor = document.getElementById('sqlEditor');
+            if (editor) {
+                editor.value = sql;
+                editor.dispatchEvent(new Event('input'));
+            }
+            showToast(`Llamada a '${currentSelectedSp}' cargada en SQL Studio`, 'success');
         }
 
         function updateCurrentSpPreview() {
@@ -1921,6 +2166,11 @@ ORDER BY p.apellido, p.nombre"></textarea>
             const relUrl = `${API_BASE}/sp/${currentSelectedSp}`;
             const codeEl = document.getElementById('spEndpointUrlPreview');
             if (codeEl) codeEl.textContent = relUrl;
+
+            const sp = spCatalog[currentSelectedSp];
+            if (sp) {
+                renderSpCallDefinition(sp, currentSelectedSp);
+            }
         }
 
         function copyCurrentSpCurl() {
@@ -2475,7 +2725,25 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     metaBadge.textContent = `❌ Falló (${res.status} - ${latency} ms)`;
                     metaBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                     errorWrapper.style.display = 'block';
-                    errorWrapper.innerHTML = `<strong>Error de ejecución en Oracle (${res.status}):</strong><br>${data.error || 'Fallo desconocido al invocar el procedimiento'}`;
+
+                    let errorHtml = `<div style="font-weight: 700; margin-bottom: 6px;">❌ Error de ejecución en Oracle (${res.status}):</div>`;
+                    errorHtml += `<div style="margin-bottom: 10px; font-family: var(--font-mono); font-size: 0.82rem; white-space: pre-wrap; word-break: break-all;">${escapeHtml(data.error || 'Fallo desconocido al invocar el procedimiento')}</div>`;
+
+                    if (data.call) {
+                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #E2E8F0;">Cuerpo de la llamada / Sentencia PL/SQL:</div>`;
+                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #38BDF8; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 8px 0; user-select: all;"><code>${escapeHtml(data.call)}</code></pre>`;
+                    }
+
+                    if (data.params) {
+                        errorHtml += `<div style="margin-top: 6px; font-size: 0.75rem; font-weight: 600; color: #E2E8F0;">Parámetros / Binds enviados a Oracle:</div>`;
+                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #A5B4FC; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 0 0; user-select: all;"><code>${escapeHtml(JSON.stringify(data.params, null, 2))}</code></pre>`;
+                    }
+
+                    if (data.code === 'ORA-06550' || (data.error && data.error.includes('PLS-00306'))) {
+                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; color: #FCD34D; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 4px; padding: 6px 10px;">💡 <strong>Diagnóstico PLS-00306:</strong> El número, orden o tipo de parámetros enviados no coincide con la firma del procedimiento en Oracle. Comprueba que todos los parámetros requeridos estén definidos en la llamada.</div>`;
+                    }
+
+                    errorWrapper.innerHTML = errorHtml;
                     showToast(`Error al ejecutar (${res.status}): ${data.error || 'Error'}`, 'error');
                 }
             } catch (err) {

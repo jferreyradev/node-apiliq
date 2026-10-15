@@ -30,7 +30,16 @@ async function execFn(context, fn) {
 
     binds[fn.out_param.varName] = { dir: oracledb.BIND_OUT, type: oracledb.NUMBER };
 
-    let result = await database.simpleExecute(query, binds);
+    let result;
+    try {
+        result = await database.simpleExecute(query, binds);
+    } catch (err) {
+        err.call = query;
+        err.statement = query;
+        err.params = binds;
+        err.fn = fn && fn.fn_name ? fn.fn_name.trim() : undefined;
+        throw err;
+    }
 
     return result.outBinds;
 }

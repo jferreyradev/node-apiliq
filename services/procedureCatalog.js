@@ -2,6 +2,16 @@ const database = require('./database');
 const spmapper = require('../config/spmapper');
 const fnmapper = require('../config/fnmapper');
 
+let spmapperGenerated = null;
+try {
+    spmapperGenerated = require('../config/spmapper.generated');
+} catch (_) {}
+
+let fnmapperGenerated = null;
+try {
+    fnmapperGenerated = require('../config/fnmapper.generated');
+} catch (_) {}
+
 // Caché en memoria RAM para SPs y FNs (0ms de latencia)
 const spCache = new Map();
 const fnCache = new Map();
@@ -262,7 +272,14 @@ async function getSpConfig(spName) {
         return legacyConfig;
     }
 
-    // 3. Introspección en vivo desde Oracle
+    // 3. Mapeo generado desde Oracle (715 SPs)
+    if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure && spmapperGenerated.jsonStoreProcedure[spName]) {
+        const genConfig = spmapperGenerated.jsonStoreProcedure[spName];
+        spCache.set(spName, genConfig);
+        return genConfig;
+    }
+
+    // 4. Introspección en vivo desde Oracle
     const discovered = await introspectFromOracle(spName);
     if (discovered && !discovered.isFunction && discovered.config) {
         spCache.set(spName, discovered.config);
@@ -293,7 +310,14 @@ async function getFnConfig(fnName) {
         return legacyConfig;
     }
 
-    // 3. Introspección en vivo desde Oracle
+    // 3. Mapeo generado desde Oracle
+    if (fnmapperGenerated && fnmapperGenerated.jsonStoreFunction && fnmapperGenerated.jsonStoreFunction[fnName]) {
+        const genConfig = fnmapperGenerated.jsonStoreFunction[fnName];
+        fnCache.set(fnName, genConfig);
+        return genConfig;
+    }
+
+    // 4. Introspección en vivo desde Oracle
     const discovered = await introspectFromOracle(fnName);
     if (discovered && discovered.isFunction && discovered.config) {
         fnCache.set(fnName, discovered.config);

@@ -161,10 +161,25 @@ app.use((err, req, res, next) => {
         'Internal server error' :
         (err.message || 'Request failed');
 
-    res.status(safeStatusCode).json({
+    const responsePayload = {
         error: message,
         code: err.code || err.errorNum || undefined
-    });
+    };
+
+    if (err.call || err.statement) {
+        responsePayload.call = err.call || err.statement;
+    }
+    if (err.params || err.binds) {
+        responsePayload.params = err.params || err.binds;
+    }
+    if (err.sp) {
+        responsePayload.sp = err.sp;
+    }
+    if (err.fn) {
+        responsePayload.fn = err.fn;
+    }
+
+    res.status(safeStatusCode).json(responsePayload);
 });
 
 module.exports = app;

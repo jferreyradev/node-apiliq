@@ -139,8 +139,8 @@ module.exports.jsonStoreProcedure = {
         in_param: ['Periodo']
     },
     generaArchivoAcred: {
-        sp_name: 'mod_exportacion.GENERA_ARCHIVO_ACRED',
-        in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId', 'Ley']
+        sp_name: 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED',
+        in_param: ['vPERIODO', 'vIDTIPOLIQ', 'vIDGRUPOADI', 'vLEY']
     },
     estableceNoLey: {
         sp_name: 'MOD_FUNCIONES.ESTABLECE_NOLEY',

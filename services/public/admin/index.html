@@ -2726,21 +2726,32 @@ ORDER BY p.apellido, p.nombre"></textarea>
                     metaBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
                     errorWrapper.style.display = 'block';
 
+                    const plsqlCall = data.call || (typeof buildPlSqlFromSpConfig === 'function' ? buildPlSqlFromSpConfig(sp, body) : '');
+                    const paramsSent = data.params || body;
+
+                    if (!data.call && plsqlCall) data.call = plsqlCall;
+                    if (!data.params && paramsSent) data.params = paramsSent;
+                    document.getElementById('spResultsCode').textContent = JSON.stringify(data, null, 2);
+
                     let errorHtml = `<div style="font-weight: 700; margin-bottom: 6px;">❌ Error de ejecución en Oracle (${res.status}):</div>`;
                     errorHtml += `<div style="margin-bottom: 10px; font-family: var(--font-mono); font-size: 0.82rem; white-space: pre-wrap; word-break: break-all;">${escapeHtml(data.error || 'Fallo desconocido al invocar el procedimiento')}</div>`;
 
-                    if (data.call) {
-                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #E2E8F0;">Cuerpo de la llamada / Sentencia PL/SQL:</div>`;
-                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #38BDF8; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 8px 0; user-select: all;"><code>${escapeHtml(data.call)}</code></pre>`;
+                    if (plsqlCall) {
+                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #E2E8F0;">Cuerpo de la llamada / Sentencia PL/SQL enviada:</div>`;
+                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #38BDF8; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 8px 0; user-select: all;"><code>${escapeHtml(plsqlCall)}</code></pre>`;
                     }
 
-                    if (data.params) {
+                    if (paramsSent && Object.keys(paramsSent).length > 0) {
                         errorHtml += `<div style="margin-top: 6px; font-size: 0.75rem; font-weight: 600; color: #E2E8F0;">Parámetros / Binds enviados a Oracle:</div>`;
-                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #A5B4FC; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 0 0; user-select: all;"><code>${escapeHtml(JSON.stringify(data.params, null, 2))}</code></pre>`;
+                        errorHtml += `<pre style="background: #0B1120; border: 1px solid #334155; padding: 8px 10px; border-radius: 4px; color: #A5B4FC; font-size: 0.78rem; overflow-x: auto; margin: 4px 0 0 0; user-select: all;"><code>${escapeHtml(JSON.stringify(paramsSent, null, 2))}</code></pre>`;
                     }
 
                     if (data.code === 'ORA-06550' || (data.error && data.error.includes('PLS-00306'))) {
-                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; color: #FCD34D; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 4px; padding: 6px 10px;">💡 <strong>Diagnóstico PLS-00306:</strong> El número, orden o tipo de parámetros enviados no coincide con la firma del procedimiento en Oracle. Comprueba que todos los parámetros requeridos estén definidos en la llamada.</div>`;
+                        errorHtml += `<div style="margin-top: 10px; font-size: 0.75rem; color: #FCD34D; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 4px; padding: 8px 12px; line-height: 1.5;">
+                            💡 <strong>Diagnóstico PLS-00306:</strong> Error de número o tipo de argumentos.<br>
+                            Oracle rechazó la llamada a <code>${escapeHtml(sp.sp_name || currentSelectedSp)}</code> porque se enviaron ${Object.keys(paramsSent).length} argumento(s) y no coinciden con la firma del paquete en Oracle.<br>
+                            <em>Nota: En <code>MOD_EXPORTACION.GENERA_ARCHIVO_ACRED</code> se requieren 4 argumentos (<code>vPERIODO</code>, <code>vIDTIPOLIQ</code>, <code>vIDGRUPOADI</code>, <code>vLEY</code>). Si tu servidor backend remoto no tiene la última actualización, ejecuta <code>git pull</code> y reinicia el servicio.</em>
+                        </div>`;
                     }
 
                     errorWrapper.innerHTML = errorHtml;

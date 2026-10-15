@@ -120,7 +120,7 @@ app.route('/txt/*').get(control.getTXT);
 
 app.route('/txtfromsp/*').post(control.getCursorFromSP);
 
-app.route('/adduser').post(controlUser.post);
+app.route('/adduser').post(adminAuth.adminAuthMiddleware, controlUser.post);
 
 app.route('/boleta').get(control.getBoletaPDF2);
 
@@ -166,11 +166,13 @@ app.use((err, req, res, next) => {
         code: err.code || err.errorNum || undefined
     };
 
-    if (err.call || err.statement) {
-        responsePayload.call = err.call || err.statement;
-    }
-    if (err.params || err.binds) {
-        responsePayload.params = err.params || err.binds;
+    if (isDevOrAdmin) {
+        if (err.call || err.statement) {
+            responsePayload.call = err.call || err.statement;
+        }
+        if (err.params || err.binds) {
+            responsePayload.params = err.params || err.binds;
+        }
     }
     if (err.sp) {
         responsePayload.sp = err.sp;

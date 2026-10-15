@@ -9,6 +9,7 @@ let httpServer;
 function initialize() {
     return new Promise((resolve, reject) => {
         const app = express();
+        app.disable('x-powered-by');
 
         const enableAdminStudio = process.env.ENABLE_ADMIN_STUDIO !== 'false';
         if (enableAdminStudio) {

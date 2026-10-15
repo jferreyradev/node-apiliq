@@ -230,5 +230,24 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         const data = JSON.parse(res.body);
         assert.equal(data.status, 'ok');
     });
+
+    await t.test('POST /api/adduser rechaza solicitud sin clave de admin (401)', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/adduser',
+            body: { usr: 'test', pws: '123', email: 'test@example.com' }
+        });
+        assert.equal(res.statusCode, 401);
+    });
+
+    await t.test('POST /api/adduser con clave de admin pero sin campos requeridos responde 400', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/adduser',
+            headers: adminHeaders,
+            body: {}
+        });
+        assert.equal(res.statusCode, 400);
+    });
 });
 

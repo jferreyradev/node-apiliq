@@ -23,7 +23,16 @@ function createCorsOptions() {
             return callback(error);
         },
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-File-Name', 'X-Internal-Key']
+        allowedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'X-File-Name',
+            'X-Internal-Key',
+            'X-Admin-Key',
+            'x-admin-key',
+            'x-project-key',
+            'x-project-port'
+        ]
     };
 }
 

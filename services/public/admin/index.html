@@ -1383,8 +1383,23 @@ ORDER BY p.apellido, p.nombre"></textarea>
             renderSidebar();
 
             const config = viewsCatalog[name];
-            document.getElementById('selectedViewTitle').textContent = name;
-            document.getElementById('selectedViewDesc').textContent = `Mapeo: ${Object.keys(config.fields || {}).length} campos | Base: ${config.sql?.fromClause?.[0] || ''}`;
+            const hasWhereFields = Boolean(config.sql?.whereFields && Object.keys(config.sql.whereFields).length > 0);
+            const whereKeys = hasWhereFields ? Object.keys(config.sql.whereFields) : [];
+            const fieldKeys = Object.keys(config.fields || {});
+
+            document.getElementById('selectedViewTitle').innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span>${name}</span>
+                    <span class="brand-badge" style="${hasWhereFields ? 'background: var(--color-info-bg); color: var(--color-info); border: 1px solid #B3E5FC;' : 'background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082;'}">
+                        ${hasWhereFields ? `🎯 Parámetros Fijos (${whereKeys.length})` : `🌐 Filtros Abiertos (${fieldKeys.length} columnas)`}
+                    </span>
+                </div>
+            `;
+
+            document.getElementById('selectedViewDesc').innerHTML = hasWhereFields 
+                ? `Esta consulta filtra obligatoria/preferentemente por <code>${whereKeys.join(', ')}</code> sobre <code>${config.sql?.fromClause?.[0] || 'Oracle'}</code>.`
+                : `Esta consulta no restringe parámetros en WHERE: la API permite filtrar por <strong>cualquiera de sus ${fieldKeys.length} columnas</strong>.`;
+
             document.getElementById('btnExecuteView').disabled = false;
             document.getElementById('btnDeleteView').disabled = false;
 
@@ -1394,14 +1409,11 @@ ORDER BY p.apellido, p.nombre"></textarea>
             const filtersContainer = document.getElementById('viewFiltersContainer');
             filtersContainer.innerHTML = '';
 
-            const whereFields = config.sql?.whereFields || {};
-            const keys = Object.keys(whereFields);
-
             let html = '<div class="form-grid">';
             html += `
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label class="form-label">Columnas específicas (fields - opcional, separado por comas)</label>
-                    <input type="text" id="filter_fields" class="form-control" placeholder="Ej: ${Object.keys(config.fields || {}).slice(0, 3).join(', ')}" oninput="updateCurrentViewUrlPreview()">
+                    <input type="text" id="filter_fields" class="form-control" placeholder="Ej: ${fieldKeys.slice(0, 3).join(', ')}" oninput="updateCurrentViewUrlPreview()">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Límite (limit)</label>
@@ -1413,14 +1425,38 @@ ORDER BY p.apellido, p.nombre"></textarea>
                 </div>
             `;
 
-            keys.forEach(field => {
+            if (hasWhereFields) {
                 html += `
-                    <div class="form-group">
-                        <label class="form-label">${field}</label>
-                        <input type="text" id="filter_${field}" class="form-control" placeholder="Filtro ${field}" oninput="updateCurrentViewUrlPreview()">
+                    <div style="grid-column: 1 / -1; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--color-primary);">⚡ PARÁMETROS DE CONSULTA (WHEREFIELDS):</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">Mapeados a columnas indexadas</span>
                     </div>
                 `;
-            });
+                whereKeys.forEach(field => {
+                    html += `
+                        <div class="form-group">
+                            <label class="form-label">${field}</label>
+                            <input type="text" id="filter_${field}" class="form-control" placeholder="Filtro ${field}" oninput="updateCurrentViewUrlPreview()">
+                        </div>
+                    `;
+                });
+            } else {
+                html += `
+                    <div style="grid-column: 1 / -1; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.78rem; font-weight: 700; color: var(--color-primary);">🔍 FILTROS POR COLUMNA (OPCIONALES):</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">Deja en blanco para no filtrar</span>
+                    </div>
+                `;
+                fieldKeys.forEach(field => {
+                    html += `
+                        <div class="form-group">
+                            <label class="form-label">${field}</label>
+                            <input type="text" id="filter_${field}" class="form-control" placeholder="Filtrar por ${field}..." oninput="updateCurrentViewUrlPreview()">
+                        </div>
+                    `;
+                });
+            }
+
             html += '</div>';
             filtersContainer.innerHTML = html;
             updateCurrentViewUrlPreview();
@@ -1430,7 +1466,6 @@ ORDER BY p.apellido, p.nombre"></textarea>
             if (!currentSelectedView) return;
             const config = viewsCatalog[currentSelectedView];
             if (!config) return;
-            const whereFields = config.sql?.whereFields || {};
             const params = new URLSearchParams();
 
             const limit = document.getElementById('filter_limit')?.value;
@@ -1440,7 +1475,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
             if (offset && offset !== '0') params.append('offset', offset);
             if (fieldsVal) params.append('fields', fieldsVal);
 
-            Object.keys(whereFields).forEach(field => {
+            const hasWhereFields = Boolean(config.sql?.whereFields && Object.keys(config.sql.whereFields).length > 0);
+            const filterableKeys = hasWhereFields ? Object.keys(config.sql.whereFields) : Object.keys(config.fields || {});
+
+            filterableKeys.forEach(field => {
                 const val = document.getElementById(`filter_${field}`)?.value?.trim();
                 if (val) params.append(field, val);
             });
@@ -1492,8 +1530,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
             explorerAddParam('offset', offset, offset !== '0');
 
             const config = viewsCatalog[currentSelectedView];
-            const whereFields = config.sql?.whereFields || {};
-            Object.keys(whereFields).forEach(wf => {
+            const hasWhereFields = Boolean(config.sql?.whereFields && Object.keys(config.sql.whereFields).length > 0);
+            const filterableKeys = hasWhereFields ? Object.keys(config.sql.whereFields) : Object.keys(config.fields || {});
+
+            filterableKeys.forEach(wf => {
                 const val = document.getElementById(`filter_${wf}`)?.value?.trim() || '';
                 explorerAddParam(wf, val, Boolean(val));
             });
@@ -1550,7 +1590,6 @@ ORDER BY p.apellido, p.nombre"></textarea>
             btn.innerHTML = '⏳ Consultando Oracle...';
 
             const config = viewsCatalog[currentSelectedView];
-            const whereFields = config.sql?.whereFields || {};
             const params = new URLSearchParams();
 
             const limit = document.getElementById('filter_limit')?.value;
@@ -1560,7 +1599,10 @@ ORDER BY p.apellido, p.nombre"></textarea>
             if (offset) params.append('offset', offset);
             if (fieldsVal) params.append('fields', fieldsVal);
 
-            Object.keys(whereFields).forEach(field => {
+            const hasWhereFields = Boolean(config.sql?.whereFields && Object.keys(config.sql.whereFields).length > 0);
+            const filterableKeys = hasWhereFields ? Object.keys(config.sql.whereFields) : Object.keys(config.fields || {});
+
+            filterableKeys.forEach(field => {
                 const val = document.getElementById(`filter_${field}`)?.value?.trim();
                 if (val) params.append(field, val);
             });

@@ -246,7 +246,7 @@ function buildConfigFromRows(rows) {
         config: {
             sp_name: fullName,
             in_param: inParams,
-            out_param: outParams.length > 0 ? outParams : ['ValorSalida']
+            out_param: outParams.length > 0 ? outParams : []
         }
     };
 }

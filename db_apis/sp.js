@@ -30,6 +30,72 @@ function normalizeParamName(str) {
         .replace(/[^a-z0-9]/g, '');
 }
 
+function coerceValueForBind(val, paramName) {
+    if (val === undefined || val === null || val === '') {
+        return null;
+    }
+    if (val instanceof Date) {
+        return val;
+    }
+
+    if (typeof val === 'boolean') {
+        return val ? 1 : 0;
+    }
+
+    const lower = String(paramName || '').toLowerCase();
+    const isDateField = lower.includes('periodo') || lower.includes('fecha') || lower.includes('fec');
+
+    if (typeof val === 'string') {
+        const trimmed = val.trim();
+
+        // 1. Fecha ISO YYYY-MM-DD
+        const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch) {
+            const year = parseInt(isoMatch[1], 10);
+            const month = parseInt(isoMatch[2], 10) - 1;
+            const day = parseInt(isoMatch[3], 10);
+            const d = new Date(Date.UTC(year, month, day));
+            if (!isNaN(d.getTime())) return d;
+        }
+
+        // 2. Fecha DD/MM/YYYY o D/M/YYYY
+        const dmyMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (dmyMatch) {
+            const day = parseInt(dmyMatch[1], 10);
+            const month = parseInt(dmyMatch[2], 10) - 1;
+            const year = parseInt(dmyMatch[3], 10);
+            const d = new Date(Date.UTC(year, month, day));
+            if (!isNaN(d.getTime())) return d;
+        }
+
+        // 3. Periodo YYYY-MM
+        if (isDateField && /^\d{4}-\d{2}$/.test(trimmed)) {
+            const parts = trimmed.split('-');
+            const d = new Date(Date.UTC(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1));
+            if (!isNaN(d.getTime())) return d;
+        }
+
+        // 4. Periodo MM/YYYY
+        const myMatch = trimmed.match(/^(\d{1,2})\/(\d{4})$/);
+        if (isDateField && myMatch) {
+            const month = parseInt(myMatch[1], 10) - 1;
+            const year = parseInt(myMatch[2], 10);
+            const d = new Date(Date.UTC(year, month, 1));
+            if (!isNaN(d.getTime())) return d;
+        }
+
+        // 5. Numéricos para parámetros que indican ID, tipo, grupo, ley, cuota, nro, valor, cant, lote
+        const isNumericParam = lower.includes('id') || lower.includes('tipo') || lower.includes('grupo') || 
+                               lower.includes('ley') || lower.includes('cuota') || lower.includes('nro') || 
+                               lower.includes('valor') || lower.includes('cant') || lower.includes('lote');
+        if (isNumericParam && /^-?\d+(\.\d+)?$/.test(trimmed)) {
+            return Number(trimmed);
+        }
+    }
+
+    return val;
+}
+
 function getSQLbinds(context, sp) {
     const binds = {};
     const ctx = context || {};
@@ -62,7 +128,8 @@ function getSQLbinds(context, sp) {
 
     if (sp && sp.in_param && Array.isArray(sp.in_param)) {
         sp.in_param.forEach(element => {
-            const val = findContextValue(element);
+            const rawVal = findContextValue(element);
+            const val = coerceValueForBind(rawVal, element);
             binds[element] = (val !== undefined && val !== '') ? val : null;
         });
     }

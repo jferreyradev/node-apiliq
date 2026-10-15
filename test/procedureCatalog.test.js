@@ -118,5 +118,36 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         assert.strictEqual(binds.Ley, null);
         assert.ok(binds.ValorSalida && binds.ValorSalida.dir !== undefined);
     });
+
+    await t.test('spapi.getSQLbinds convierte fechas y números a tipos compatibles con Oracle', () => {
+        const spapi = require('../db_apis/sp');
+        const spConfig = {
+            sp_name: 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED',
+            in_param: ['Periodo', 'TipoLiquidacionId', 'GrupoAdicionalId', 'Ley']
+        };
+        const context = {
+            vPERIODO: '2026-09-01',
+            vIDTIPOLIQ: '1',
+            vIDGRUPOADI: '0',
+            vLEY: '0'
+        };
+        const binds = spapi.getSQLbinds(context, spConfig);
+        assert.ok(binds.Periodo instanceof Date, 'Periodo debe convertirse a Date');
+        assert.strictEqual(binds.TipoLiquidacionId, 1, 'TipoLiquidacionId debe ser Number');
+        assert.strictEqual(binds.GrupoAdicionalId, 0, 'GrupoAdicionalId debe ser Number');
+        assert.strictEqual(binds.Ley, 0, 'Ley debe ser Number');
+    });
+
+    await t.test('buildConfigFromRows no agrega out_param si el procedimiento de Oracle no tiene argumentos OUT', () => {
+        const rows = [
+            { PACKAGE_NAME: 'MOD_EXPORTACION', OBJECT_NAME: 'GENERA_ARCHIVO_ACRED', ARGUMENT_NAME: 'VPERIODO', POSITION: 1, DATA_TYPE: 'DATE', IN_OUT: 'IN' },
+            { PACKAGE_NAME: 'MOD_EXPORTACION', OBJECT_NAME: 'GENERA_ARCHIVO_ACRED', ARGUMENT_NAME: 'VIDTIPOLIQ', POSITION: 2, DATA_TYPE: 'NUMBER', IN_OUT: 'IN' },
+            { PACKAGE_NAME: 'MOD_EXPORTACION', OBJECT_NAME: 'GENERA_ARCHIVO_ACRED', ARGUMENT_NAME: 'VIDGRUPOADI', POSITION: 3, DATA_TYPE: 'NUMBER', IN_OUT: 'IN' },
+            { PACKAGE_NAME: 'MOD_EXPORTACION', OBJECT_NAME: 'GENERA_ARCHIVO_ACRED', ARGUMENT_NAME: 'VLEY', POSITION: 4, DATA_TYPE: 'NUMBER', IN_OUT: 'IN' }
+        ];
+        const built = procedureCatalog.buildConfigFromRows(rows);
+        assert.strictEqual(built.isFunction, false);
+        assert.deepStrictEqual(built.config.out_param, []);
+    });
 });
 

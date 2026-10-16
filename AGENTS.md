@@ -48,10 +48,10 @@ Cualquier agente que modifique este código **DEBE** respetar estas reglas:
   - `POST /api/fileUpload`
   - `GET /api/view/:name`
 
-### Regla 4: Admin Studio 100% Autónomo y Offline (Cero CDNs)
-* El archivo `services/public/admin/index.html` es una Single Page Application nativa en **Vanilla JavaScript y CSS puro**.
-* ❌ **NUNCA** agregues `<script src="https://cdn...">` ni fuentes externas como Google Fonts.
-* La API corre en redes municipales y VPNs privadas sin acceso a internet; los CDNs causarán bloqueos o pantallas en blanco.
+### Regla 4: Arquitectura Headless (Frontend de Gestión Desacoplado)
+* La API `node-apiliq` opera exclusivamente como un servicio REST headless de alta velocidad.
+* El frontend y consola de administración se gestiona de forma desacoplada en el proyecto `dno-admin-bridge` (o clientes como `liq-panel`).
+* ❌ **NUNCA** reintroduzcas archivos HTML/CSS pesados ni dependencias de interfaz en este backend.
 
 ### Regla 5: Suite de Tests Siempre en Verde
 * Antes de dar por finalizada una tarea, corre:
@@ -90,8 +90,7 @@ api_liquid/
 │   ├── procedureCatalog.js  # Introspección en vivo de SPs/FNs desde ALL_ARGUMENTS
 │   ├── sqlViewParser.js     # Auto-parser de sentencias SELECT planas
 │   ├── tableImporter.js     # Parseo Excel/CSV y executeMany por lotes en Oracle
-│   ├── adminAuth.js         # Middleware de autenticación X-Admin-Key (timing-safe)
-│   └── public/admin/        # Developer & Admin Studio (index.html)
+│   └── adminAuth.js         # Middleware de autenticación X-Admin-Key (timing-safe)
 ├── scripts/
 │   ├── oracle_api_view_mapper.sql  # DDL de la tabla de catálogo en Oracle
 │   ├── seed_views.sql              # Inserción de las 54 consultas iniciales

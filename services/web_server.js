@@ -11,21 +11,22 @@ function initialize() {
         const app = express();
         app.disable('x-powered-by');
 
-        const enableAdminStudio = process.env.ENABLE_ADMIN_STUDIO !== 'false';
-        if (enableAdminStudio) {
-            const adminPath = path.resolve(__dirname, 'public', 'admin');
-            app.use('/admin', (req, res, next) => {
-                res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-                next();
-            }, express.static(adminPath));
-            app.get('/admin', (req, res) => {
-                res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-                res.sendFile(path.join(adminPath, 'index.html'));
+        app.get('/', (req, res) => {
+            res.json({
+                service: 'node-apiliq',
+                status: 'online',
+                api: '/api',
+                admin: 'dno-admin-bridge'
             });
-            app.get('/', (req, res) => {
-                res.redirect('/admin');
+        });
+
+        app.get('/admin', (req, res) => {
+            res.status(200).json({
+                service: 'node-apiliq',
+                status: 'online',
+                message: 'Admin UI desacoplada. Utilice dno-admin-bridge para gestionar la API.'
             });
-        }
+        });
 
         app.use('/api', router);
 
@@ -35,9 +36,6 @@ function initialize() {
                 const address = httpServer.address();
                 const port = typeof address === 'object' && address ? address.port : address;
                 console.log(`Web server listening on http://localhost:${port}/api`);
-                if (enableAdminStudio) {
-                    console.log(`Admin Studio disponible en: http://localhost:${port}/admin`);
-                }
                 resolve();
             })
             .on('error', reject);

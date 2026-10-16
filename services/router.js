@@ -45,8 +45,6 @@ app.use(helmet());
 
 app.use(createInternalAccessMiddleware());
 
-app.use(express.static(__dirname + '/public'));
-
 /*
 const whitelist = ['http//localhost:3005',
     'https//localhost:3003',

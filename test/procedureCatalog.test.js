@@ -149,5 +149,35 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         assert.strictEqual(built.isFunction, false);
         assert.deepStrictEqual(built.config.out_param, []);
     });
+
+    await t.test('getSpConfig resuelve alias abreviados y case-insensitive (persUpd, persIns, hojaIns)', async () => {
+        procedureCatalog.clearCache();
+        const persUpd = await procedureCatalog.getSpConfig('persUpd');
+        assert.ok(persUpd, 'Debe resolver persUpd');
+        assert.strictEqual(persUpd.sp_name, 'MOD_PERSONAS.SPU_PERSONA');
+        assert.ok(persUpd.in_param.includes('vIDPERS'));
+
+        const persIns = await procedureCatalog.getSpConfig('persIns');
+        assert.ok(persIns, 'Debe resolver persIns');
+        assert.strictEqual(persIns.sp_name, 'MOD_PERSONAS.SPI_PERSONA');
+
+        const hojaIns = await procedureCatalog.getSpConfig('hojains');
+        assert.ok(hojaIns, 'Debe resolver hojains case-insensitive');
+        assert.strictEqual(hojaIns.sp_name, 'MOD_NOV.SPI_HOJA_NOV');
+    });
+
+    await t.test('resolveNameParts detecta CRUD abreviados como persUpd -> MOD_PERSONAS.SPU_PERSONA', () => {
+        const r1 = procedureCatalog.resolveNameParts('persUpd');
+        assert.strictEqual(r1.pkgName, 'MOD_PERSONAS');
+        assert.strictEqual(r1.procName, 'SPU_PERSONA');
+
+        const r2 = procedureCatalog.resolveNameParts('persIns');
+        assert.strictEqual(r2.pkgName, 'MOD_PERSONAS');
+        assert.strictEqual(r2.procName, 'SPI_PERSONA');
+
+        const r3 = procedureCatalog.resolveNameParts('cargafamDel');
+        assert.strictEqual(r3.pkgName, 'PKG_CARGA_FAMILIAR');
+        assert.strictEqual(r3.procName, 'SPD_CARGA_FAMILIAR');
+    });
 });
 

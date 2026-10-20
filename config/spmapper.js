@@ -308,6 +308,37 @@ module.exports.jsonStoreProcedure = {
         in_param:["vIDPERS"],
         out_param: ["vSALIDA","vError", "vErrorMsg"]
     },
+    // Alias para compatibilidad con llamados de frontends (persUpd, persIns, persDel, etc.)
+    persIns:{
+        sp_name: "MOD_PERSONAS.SPI_PERSONA",
+        in_param:["vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
+    persUpd:{
+        sp_name: "MOD_PERSONAS.SPU_PERSONA",
+        in_param:["vIDPERS","vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
+    persDel:{
+        sp_name: "MOD_PERSONAS.SPD_PERSONA",
+        in_param:["vIDPERS"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
+    personaIns:{
+        sp_name: "MOD_PERSONAS.SPI_PERSONA",
+        in_param:["vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
+    personaUpd:{
+        sp_name: "MOD_PERSONAS.SPU_PERSONA",
+        in_param:["vIDPERS","vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
+    personaDel:{
+        sp_name: "MOD_PERSONAS.SPD_PERSONA",
+        in_param:["vIDPERS"],
+        out_param: ["vSALIDA","vError", "vErrorMsg"]
+    },
     ddjjIns :{
         sp_name: "PKG_PARAM_DDJJ.SPI_PARAM_DDJJ",
         in_param:["vPERIODO", "vPERIODO_HASTA", "vAPJUB_MIN", "vAPJUB_MAX", "vAPJUB_PORC", "vCONTJUB_MAX", "vCONTJUB_PORC", "vAPOS_MIN", "vAPOS_MAX", "vCONTOS_MIN", "vCONTOS_MAX"],

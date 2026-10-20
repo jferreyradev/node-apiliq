@@ -27,12 +27,53 @@ const PACKAGE_PREFIXES = {
     'acred': 'MOD_ACREDITACION',
     'param': 'MOD_PARAM',
     'personas': 'MOD_PERSONAS',
+    'persona': 'MOD_PERSONAS',
+    'pers': 'MOD_PERSONAS',
     'cargos': 'MOD_CARGOS',
+    'cargo': 'MOD_CARGOS',
     'cargosfam': 'PKG_CARGA_FAMILIAR',
     'cargafam': 'PKG_CARGA_FAMILIAR',
+    'cargafamiliar': 'PKG_CARGA_FAMILIAR',
     'djprev': 'PKG_DDJJ_PREVISIONAL',
     'cambioperiodo': 'MOD_CAMBIO_PERIODO',
-    'transnov': 'MOD_TRANS_NOV'
+    'transnov': 'MOD_TRANS_NOV',
+    'exportacion': 'MOD_EXPORTACION',
+    'exp': 'MOD_EXPORTACION',
+    'maestros': 'MOD_MAESTROS',
+    'seg': 'MOD_SEG',
+    'sac': 'MOD_SAC',
+    'postliq': 'MOD_POST_LIQ',
+    'doc': 'MOD_DOC',
+    'paramddjj': 'PKG_PARAM_DDJJ',
+    'ddjj': 'PKG_PARAM_DDJJ',
+    'conceptoliq': 'PKG_CONCEPTOLIQ',
+    'hojanov': 'MOD_HOJA_NOV',
+    'hoja': 'MOD_NOV'
+};
+
+// Aliases rápidos a nombres canónicos en spmapper (latencia 0 ms)
+const SP_ALIASES = {
+    'persupd': 'PersonaUpd',
+    'persins': 'PersonaIns',
+    'persdel': 'PersonaDel',
+    'personaupd': 'PersonaUpd',
+    'personains': 'PersonaIns',
+    'personadel': 'PersonaDel',
+    'hojains': 'HojaIns',
+    'hojaupd': 'HojaUpd',
+    'hojadel': 'HojaDel',
+    'hojaupdestado': 'HojaUpdEstado',
+    'cargafamins': 'CargaFamIns',
+    'cargafamupd': 'CargaFamUpd',
+    'cargafamdel': 'CargaFamDel',
+    'novvariasins': 'NovVariasIns',
+    'novvariasupd': 'NovVariasUpd',
+    'novvariasdel': 'NovVariasDel',
+    'novvariasestado': 'NovVariasEstado',
+    'novaltasins': 'NovAltasIns',
+    'novaltasupd': 'NovAltasUpd',
+    'novaltasdel': 'NovAltasDel',
+    'novaltasestado': 'NovAltasEstado',
 };
 
 function clearCache() {
@@ -121,6 +162,26 @@ function resolveNameParts(rawName) {
         return {
             pkgName: mappedPkg,
             procName: toSnakeCase(proc)
+        };
+    }
+
+    const crudMatch = cleaned.match(/^(pers|persona|cargafam|cargo|hoja|novvarias|novaltas)(ins|upd|del)$/i);
+    if (crudMatch) {
+        const prefix = crudMatch[1].toLowerCase();
+        const op = crudMatch[2].toLowerCase();
+        const opPrefix = op === 'ins' ? 'SPI' : op === 'upd' ? 'SPU' : 'SPD';
+
+        let entityName = prefix.toUpperCase();
+        if (prefix === 'pers' || prefix === 'persona') entityName = 'PERSONA';
+        if (prefix === 'cargafam') entityName = 'CARGA_FAMILIAR';
+        if (prefix === 'hoja') entityName = 'HOJA_NOV';
+        if (prefix === 'novvarias') entityName = 'NOV_VARIAS';
+        if (prefix === 'novaltas') entityName = 'NOV_ALTAS';
+
+        const mappedPkg = PACKAGE_PREFIXES[prefix] || `MOD_${prefix.toUpperCase()}`;
+        return {
+            pkgName: mappedPkg,
+            procName: `${opPrefix}_${entityName}`
         };
     }
 
@@ -260,10 +321,12 @@ function buildConfigFromRows(rows) {
 async function getSpConfig(spName) {
     if (!spName) return null;
 
-    // 1. Caché en RAM
+    // 1. Caché en RAM (0ms)
     if (spCache.has(spName)) {
         return spCache.get(spName);
     }
+
+    const lowerName = spName.toLowerCase();
 
     // 2. Mapeo histórico en spmapper.js (Garantía retrocompatible de nombres existentes)
     if (spmapper && spmapper.jsonStoreProcedure && spmapper.jsonStoreProcedure[spName]) {
@@ -272,11 +335,39 @@ async function getSpConfig(spName) {
         return legacyConfig;
     }
 
+    // 2.1 Alias conocidos a nombres canónicos (ej: persUpd -> PersonaUpd)
+    const aliasTarget = SP_ALIASES[lowerName];
+    if (aliasTarget && spmapper && spmapper.jsonStoreProcedure && spmapper.jsonStoreProcedure[aliasTarget]) {
+        const aliasConfig = spmapper.jsonStoreProcedure[aliasTarget];
+        spCache.set(spName, aliasConfig);
+        return aliasConfig;
+    }
+
+    // 2.2 Búsqueda insensible a mayúsculas/minúsculas en spmapper.js
+    if (spmapper && spmapper.jsonStoreProcedure) {
+        for (const [k, v] of Object.entries(spmapper.jsonStoreProcedure)) {
+            if (k.toLowerCase() === lowerName) {
+                spCache.set(spName, v);
+                return v;
+            }
+        }
+    }
+
     // 3. Mapeo generado desde Oracle (715 SPs)
     if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure && spmapperGenerated.jsonStoreProcedure[spName]) {
         const genConfig = spmapperGenerated.jsonStoreProcedure[spName];
         spCache.set(spName, genConfig);
         return genConfig;
+    }
+
+    // 3.1 Búsqueda insensible a mayúsculas/minúsculas en spmapperGenerated
+    if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure) {
+        for (const [k, v] of Object.entries(spmapperGenerated.jsonStoreProcedure)) {
+            if (k.toLowerCase() === lowerName) {
+                spCache.set(spName, v);
+                return v;
+            }
+        }
     }
 
     // 4. Introspección en vivo desde Oracle
@@ -303,6 +394,8 @@ async function getFnConfig(fnName) {
         return fnCache.get(fnName);
     }
 
+    const lowerName = fnName.toLowerCase();
+
     // 2. Mapeo histórico en fnmapper.js
     if (fnmapper && fnmapper.jsonStoreFunction && fnmapper.jsonStoreFunction[fnName]) {
         const legacyConfig = fnmapper.jsonStoreFunction[fnName];
@@ -310,11 +403,31 @@ async function getFnConfig(fnName) {
         return legacyConfig;
     }
 
+    // 2.1 Búsqueda insensible a mayúsculas/minúsculas en fnmapper.js
+    if (fnmapper && fnmapper.jsonStoreFunction) {
+        for (const [k, v] of Object.entries(fnmapper.jsonStoreFunction)) {
+            if (k.toLowerCase() === lowerName) {
+                fnCache.set(fnName, v);
+                return v;
+            }
+        }
+    }
+
     // 3. Mapeo generado desde Oracle
     if (fnmapperGenerated && fnmapperGenerated.jsonStoreFunction && fnmapperGenerated.jsonStoreFunction[fnName]) {
         const genConfig = fnmapperGenerated.jsonStoreFunction[fnName];
         fnCache.set(fnName, genConfig);
         return genConfig;
+    }
+
+    // 3.1 Búsqueda insensible a mayúsculas/minúsculas en fnmapperGenerated
+    if (fnmapperGenerated && fnmapperGenerated.jsonStoreFunction) {
+        for (const [k, v] of Object.entries(fnmapperGenerated.jsonStoreFunction)) {
+            if (k.toLowerCase() === lowerName) {
+                fnCache.set(fnName, v);
+                return v;
+            }
+        }
     }
 
     // 4. Introspección en vivo desde Oracle

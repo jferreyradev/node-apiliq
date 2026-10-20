@@ -154,7 +154,7 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         procedureCatalog.clearCache();
         const persUpd = await procedureCatalog.getSpConfig('persUpd');
         assert.ok(persUpd, 'Debe resolver persUpd');
-        assert.strictEqual(persUpd.sp_name, 'MOD_PERSONAS.SPU_PERSONA');
+        assert.strictEqual(persUpd.sp_name, 'PKG_PERSONAS.SPU_PERSONA');
         assert.ok(persUpd.in_param.includes('vIDPERS'));
 
         const persIns = await procedureCatalog.getSpConfig('persIns');
@@ -166,13 +166,13 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         assert.strictEqual(hojaIns.sp_name, 'MOD_NOV.SPI_HOJA_NOV');
     });
 
-    await t.test('resolveNameParts detecta CRUD abreviados como persUpd -> MOD_PERSONAS.SPU_PERSONA', () => {
+    await t.test('resolveNameParts detecta CRUD abreviados como persUpd -> PKG_PERSONAS.SPU_PERSONA', () => {
         const r1 = procedureCatalog.resolveNameParts('persUpd');
-        assert.strictEqual(r1.pkgName, 'MOD_PERSONAS');
+        assert.strictEqual(r1.pkgName, 'PKG_PERSONAS');
         assert.strictEqual(r1.procName, 'SPU_PERSONA');
 
         const r2 = procedureCatalog.resolveNameParts('persIns');
-        assert.strictEqual(r2.pkgName, 'MOD_PERSONAS');
+        assert.strictEqual(r2.pkgName, 'PKG_PERSONAS');
         assert.strictEqual(r2.procName, 'SPI_PERSONA');
 
         const r3 = procedureCatalog.resolveNameParts('cargafamDel');

@@ -299,9 +299,14 @@ module.exports.jsonStoreProcedure = {
         out_param: ["vSALIDA","vError", "vErrorMsg"]
     },   
     PersonaUpd:{
-        sp_name: "MOD_PERSONAS.SPU_PERSONA",
-        in_param:["vIDPERS","vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
-        out_param: ["vSALIDA","vError", "vErrorMsg"]
+        sp_name: "PKG_PERSONAS.SPU_PERSONA",
+        in_param:[
+            "vIDPERS", "vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC",
+            "vDOMICILIO", "vNRO", "vFECHAINGRESO", "vTELEFONO", "vEMAIL",
+            "vNOMBRE", "vIDTIPODOC", "vIDESTCIVIL", "vLOCALIDAD_ID",
+            "vPISO", "vDPTO", "vCUENTA", "vCBU"
+        ],
+        out_param: ["vSALIDA", "vError", "vErrorMsg"]
     },
     PersonaDel:{
         sp_name: "MOD_PERSONAS.SPD_PERSONA",
@@ -315,9 +320,14 @@ module.exports.jsonStoreProcedure = {
         out_param: ["vSALIDA","vError", "vErrorMsg"]
     },
     persUpd:{
-        sp_name: "MOD_PERSONAS.SPU_PERSONA",
-        in_param:["vIDPERS","vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
-        out_param: ["vSALIDA","vError", "vErrorMsg"]
+        sp_name: "PKG_PERSONAS.SPU_PERSONA",
+        in_param:[
+            "vIDPERS", "vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC",
+            "vDOMICILIO", "vNRO", "vFECHAINGRESO", "vTELEFONO", "vEMAIL",
+            "vNOMBRE", "vIDTIPODOC", "vIDESTCIVIL", "vLOCALIDAD_ID",
+            "vPISO", "vDPTO", "vCUENTA", "vCBU"
+        ],
+        out_param: ["vSALIDA", "vError", "vErrorMsg"]
     },
     persDel:{
         sp_name: "MOD_PERSONAS.SPD_PERSONA",
@@ -330,9 +340,14 @@ module.exports.jsonStoreProcedure = {
         out_param: ["vSALIDA","vError", "vErrorMsg"]
     },
     personaUpd:{
-        sp_name: "MOD_PERSONAS.SPU_PERSONA",
-        in_param:["vIDPERS","vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC", "vDOMICILIO", "vNRO", "vLOCALIDAD", "vPROVINCIA", "vCODPOSTAL", "vFECHAINGRESO", "vTELEFONO", "vEMAIL", "vNOMBRE",  "vIDTIPODOC", "vIDESTCIVIL", "vPAIS", "vPROVINCIA", "vLOCALIDAD", "vPISO", "vDPTO", "vCUENTA", "vCBU"],
-        out_param: ["vSALIDA","vError", "vErrorMsg"]
+        sp_name: "PKG_PERSONAS.SPU_PERSONA",
+        in_param:[
+            "vIDPERS", "vDNI", "vAPELLIDO", "vCUIL", "vSEXO", "vFECHANAC",
+            "vDOMICILIO", "vNRO", "vFECHAINGRESO", "vTELEFONO", "vEMAIL",
+            "vNOMBRE", "vIDTIPODOC", "vIDESTCIVIL", "vLOCALIDAD_ID",
+            "vPISO", "vDPTO", "vCUENTA", "vCBU"
+        ],
+        out_param: ["vSALIDA", "vError", "vErrorMsg"]
     },
     personaDel:{
         sp_name: "MOD_PERSONAS.SPD_PERSONA",

@@ -82,42 +82,22 @@ pm2 save
 
 ---
 
-## 💻 Developer & Admin Studio
+## 💻 Consola de Administración Multi-Host (`liq-admin-studio`)
 
-La API incluye un estudio web integrado para desarrolladores y administradores accesible directamente en tu navegador:
-👉 **`http://localhost:3005/admin`** *(o simplemente `http://localhost:3005/`)*
+La gestión visual del catálogo de vistas, SQL Studio, Stored Procedures, API Explorer e Importador Excel/CSV se realiza mediante el frontend desacoplado **`liq-admin-studio`** (Vue 3 + Vite), capaz de conectarse tanto a `http://localhost:3005` como a múltiples municipios a través de la pasarela Deno Bridge.
 
 ### 🛡️ Seguridad y Autenticación
-Al ingresar, el estudio solicita la **Clave de Acceso de Administrador** configurada en `ADMIN_ACCESS_KEY` (`.env`).
-* La autenticación utiliza comparación criptográfica en tiempo constante (`crypto.timingSafeEqual`) para prevenir ataques de temporización (timing attacks).
-* Para llamadas vía API o curl, se envía en la cabecera `X-Admin-Key: <clave>` o `Authorization: Bearer <clave>`.
-* Todos los endpoints de modificación de esquema (`/view/save`, `DELETE /view/:name`, `/view/refresh`) están protegidos con esta clave.
+* La autenticación administrativa utiliza comparación criptográfica en tiempo constante (`crypto.timingSafeEqual`) mediante la variable `ADMIN_ACCESS_KEY` (`.env`).
+* Para llamadas vía API o `curl`, se envía en la cabecera `X-Admin-Key: <clave>` o `Authorization: Bearer <clave>`.
+* Todos los endpoints de modificación de esquema (`/api/view/save`, `DELETE /api/view/:name`, `/api/view/refresh`, `/api/view/import-json`, `/api/sp/import-json`, `/api/sp/sync-oracle`, `/api/import/*`) están protegidos con esta clave.
 
-### 🎛️ Funcionalidades del Studio
-1. **Explorador & Tester de Vistas**:
-   * Buscador interactivo de las 54 consultas disponibles.
-   * Generación automática de formularios con los filtros `WHERE` permitidos para cada vista.
-   * Visualización de resultados en **Tabla Dinámica** y **JSON formateado**.
-   * Medición de latencia de ejecución en milisegundos y conteo de registros devueltos.
-   * Botón de desactivación de vistas obsoletas en `API_VIEW_MAPPER`.
-2. **SQL Studio (Creador de Consultas con Auto-Parser)**:
-   * Permite escribir consultas `SELECT ... FROM ... WHERE ...` en texto plano.
-   * Vista previa sintáctica en vivo (detecta columnas, alias, cláusula `FROM` y parámetros bind).
-   * Guardado directo en la base de datos `API_VIEW_MAPPER` y actualización inmediata en la memoria RAM sin reiniciar el servidor.
-3. **Tester de Stored Procedures y Funciones**:
-   * Descubre y lista automáticamente los procedimientos y funciones de los paquetes Oracle.
-   * Formulario inteligente para parámetros `IN` (`NUMBER`, `VARCHAR2`, `DATE`).
-   * Ejecución en vivo con visualización de cursores de salida o valores retornados.
-4. **Cargador Masivo de Archivos a Tablas Oracle (`📁 Importar`)**:
-   * Pestaña visual con arrastrar y soltar para archivos Excel (`.xlsx`, `.xls`) y delimitados (`.csv`, `.tsv`, `.txt`).
-   * Previsualización instantánea de registros y selector de hojas de cálculo.
-   * Detección automática y sugerencia de tablas destino existentes en Oracle.
-   * Mapeo inteligente columna-a-columna (coincidencias por nombre y visualización de tipos Oracle `NUMBER`, `VARCHAR2`, `DATE`).
-   * Opciones de vaciado previo (`TRUNCATE`) y modo transaccional atómico (`ROLLBACK` automático ante cualquier fila inválida).
-5. **Recarga de Memoria RAM**:
-   * Botón en la barra superior para reiniciar la caché de vistas y SPs en memoria sin reiniciar el proceso Node.js.
-6. **Zero Dependencias & 100% Offline**:
-   * SPA nativa sin frameworks externos ni CDNs de internet; funciona de manera completamente autónoma en redes municipales y VPNs cerradas.
+---
+
+## 📅 Regla de Dominio Obligatoria para Períodos (Siempre Día `01`)
+
+Para trabajar con cualquier endpoint de esta API, **el día del período es siempre `01`** y **solamente cambian el mes y el año**:
+* **En Vistas y Consultas (`GET /api/view/:name`)**: Todo filtro de período (`Periodo`, `PeriodoLiq`, `vPERIODO`, `vPER`) se normaliza automáticamente a `'01/MM/YYYY'` (ej. `'01/09/2026'`), sin importar si se envía `'09/2026'`, `'2026-09'`, `'202609'` o `'15/09/2026'`.
+* **En Stored Procedures y Funciones (`POST /api/sp/:name`, `POST /api/fn/:name`)**: Todo parámetro de período se vincula como objeto `Date` en medianoche de hora local en el **día 1 del mes** (`01/MM/YYYY 00:00:00` local), evitando desfases de zona horaria UTC-3 con el tipo `DATE` de Oracle.
 
 ---
 
@@ -166,14 +146,17 @@ curl "http://localhost:3005/api/view/empleadosPorRep?IdRep=1&fields=PersonaId,Ap
 
 ### 2. Stored Procedures y Funciones (`/api/sp/*` y `/api/fn/*`)
 
-La API introspecciona los parámetros `IN` y `OUT` en tiempo real desde Oracle.
+La API unifica el catálogo completo (715+ procedimientos generados + históricos legacy + personalizados locales) e introspecciona los parámetros `IN` y `OUT` en tiempo real desde Oracle (`ALL_ARGUMENTS`).
 
-| Método | Endpoint | Descripción |
-| :--- | :--- | :--- |
-| `GET` | `/api/sp/list` | Lista los procedimientos disponibles. |
-| `POST` | `/api/sp/:name` | Ejecuta un SP enviando un JSON en el body. |
-| `GET` | `/api/fn/list` | Lista las funciones disponibles. |
-| `POST` | `/api/fn/:name` | Ejecuta una función y retorna `{ "value": resultado }`. |
+| Método | Endpoint | Seguridad | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/sp/list` | Pública | Lista todos los procedimientos disponibles (permite descargarlos a JSON desde el Studio). |
+| `POST` | `/api/sp/:name` | Pública | Ejecuta un SP enviando un JSON en el body. |
+| `POST` | `/api/sp/import-json` | `X-Admin-Key` | Importa un lote JSON de SPs y/o Funciones en la caché RAM y en `config/spmapper.local.json`. |
+| `POST` | `/api/sp/sync-oracle` | `X-Admin-Key` | Introspecciona `ALL_ARGUMENTS` en Oracle en vivo y actualiza el catálogo de SPs y Funciones. |
+| `GET` | `/api/fn/list` | Pública | Lista todas las funciones disponibles. |
+| `POST` | `/api/fn/:name` | Pública | Ejecuta una función y retorna `{ "value": resultado }`. |
+| `POST` | `/api/fn/import-json` | `X-Admin-Key` | Importa definiciones JSON de funciones en caché RAM y `config/fnmapper.local.json`. |
 
 #### Ejemplo de invocación de Stored Procedure:
 ```bash
@@ -182,7 +165,7 @@ curl -X POST http://localhost:3005/api/sp/hojaIns \
      -d '{
        "vIDREP": 1,
        "vORDEN": 10,
-       "vPERIODO": 202603
+       "vPERIODO": "01/03/2026"
      }'
 ```
 

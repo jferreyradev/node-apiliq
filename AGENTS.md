@@ -60,6 +60,11 @@ Cualquier agente que modifique este código **DEBE** respetar estas reglas:
   ```
   Todas las pruebas (72+ tests) deben pasar con 0 fallos.
 
+### Regla 6: Regla de Dominio para Períodos (Siempre Día `01`)
+* 📅 **SIEMPRE el día es `01`** al trabajar con períodos de liquidación en toda la API (`Periodo`, `vPERIODO`, `PeriodoLiq`, `PeriodoDDJJ`, `vPERIODO_HASTA`, `vPER`). **Solamente cambian el mes y el año**.
+* En **Vistas y Reportes (`GET /api/view/:name`)**: Todo filtro de período se normaliza a `'01/MM/YYYY'` (ej. `'01/09/2026'`), incluso si el usuario ingresa `'09/2026'`, `'2026-09'`, `'202609'` o cualquier otro día del mes (`'15/09/2026'`).
+* En **Stored Procedures y Funciones (`POST /api/sp/:name`, `POST /api/fn/:name`)**: Todo parámetro de período se vincula como objeto `Date` en medianoche de hora local en el **día 1 del mes** (`new Date(year, month - 1, 1, 0, 0, 0)` -> `01/MM/YYYY 00:00:00` local), evitando desfases de zona horaria UTC-3 y garantizando coincidencia exacta con la columna `PERIODO` en Oracle.
+
 ---
 
 ## 🗺️ 3. Mapa de la Arquitectura del Código

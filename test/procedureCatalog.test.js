@@ -179,5 +179,53 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         assert.strictEqual(r3.pkgName, 'PKG_CARGA_FAMILIAR');
         assert.strictEqual(r3.procName, 'SPD_CARGA_FAMILIAR');
     });
+
+    await t.test('spapi.getSQLbinds fuerza siempre el día 01 en parámetros de Periodo (MM/YYYY, YYYY-MM, YYYYMM, DD/MM/YYYY, YYYY-MM-DD)', () => {
+        const spapi = require('../db_apis/sp');
+        const spConfig = {
+            sp_name: 'MOD_EXPORTACION.GENERA_ARCHIVO_ACRED',
+            in_param: ['vPERIODO']
+        };
+
+        for (const input of ['09/2026', '9/2026', '2026-09', '202609', '092026', '15/09/2026', '2026-09-25']) {
+            const binds = spapi.getSQLbinds({ vPERIODO: input }, spConfig);
+            assert.ok(binds.vPERIODO instanceof Date, `Para '${input}' debe ser Date`);
+            assert.strictEqual(binds.vPERIODO.getFullYear(), 2026, `Año 2026 para '${input}'`);
+            assert.strictEqual(binds.vPERIODO.getMonth(), 8, `Mes septiembre (8) para '${input}'`);
+            assert.strictEqual(binds.vPERIODO.getDate(), 1, `Día siempre debe ser 1 para '${input}'`);
+            assert.strictEqual(binds.vPERIODO.getHours(), 0, `Hora local 00:00:00 para '${input}'`);
+        }
+    });
+
+    await t.test('getAllSp incluye mappers generados e importProceduresFromObject registra nuevos SPs y FNs', async () => {
+        const fs = require('fs');
+        const path = require('path');
+        const allSp = await procedureCatalog.getAllSp();
+        assert.ok(allSp.exportacion_generaArchivoAcred, 'Debe incluir SPs de spmapper.generated');
+        assert.ok(allSp.cambioPeriodo, 'Debe incluir SPs de spmapper legacy');
+
+        const res = procedureCatalog.importProceduresFromObject({
+            spTestImportado: {
+                sp_name: 'MOD_TEST.SP_PRUEBA',
+                in_param: ['vPERIODO']
+            },
+            fnTestImportada: {
+                fn_name: 'MOD_TEST.FN_PRUEBA',
+                in_param: { Periodo: 'VPERIODO' },
+                out_param: { varName: 'value' }
+            }
+        });
+        assert.strictEqual(res.importedSp, 1);
+        assert.strictEqual(res.importedFn, 1);
+
+        const cfgSp = await procedureCatalog.getSpConfig('spTestImportado');
+        assert.strictEqual(cfgSp.sp_name, 'MOD_TEST.SP_PRUEBA');
+        const cfgFn = await procedureCatalog.getFnConfig('fnTestImportada');
+        assert.strictEqual(cfgFn.fn_name, 'MOD_TEST.FN_PRUEBA');
+
+        // Limpiar archivos .local.json de prueba
+        try { fs.unlinkSync(path.resolve(__dirname, '..', 'config', 'spmapper.local.json')); } catch (_) {}
+        try { fs.unlinkSync(path.resolve(__dirname, '..', 'config', 'fnmapper.local.json')); } catch (_) {}
+    });
 });
 

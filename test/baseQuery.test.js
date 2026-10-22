@@ -144,3 +144,16 @@ test('viewapi.getSQLselect proyecta solo columnas solicitadas', () => {
     assert.match(sqlSubset, /c\.ambiente as Ambiente/);
     assert.doesNotMatch(sqlSubset, /c\.descripcion as Descripcion/);
 });
+
+test('normaliza filtros Periodo siempre al día 01 (01/MM/YYYY)', () => {
+    const whereFields = {
+        Periodo: 'l.periodo',
+        IdRep: 'l.idrep'
+    };
+
+    for (const rawInput of ['09/2026', '9/2026', '2026-09', '202609', '092026', '15/09/2026', '2026-09-25', '01/09/2026']) {
+        const res = baseQuery.getWhereFields({ Periodo: rawInput, IdRep: '18' }, whereFields);
+        assert.equal(res.binds.Periodo, '01/09/2026', `Input '${rawInput}' debe normalizarse a '01/09/2026'`);
+        assert.equal(res.binds.IdRep, '18');
+    }
+});

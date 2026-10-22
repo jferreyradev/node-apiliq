@@ -24,15 +24,32 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 const options = {
     limit: '50mb',
     reviver: (key, value) => {
-        //console.log('reviver');
-        let dateTimeRegExp = /^\d{4}-\d{2}-\d{2}/;
-        // T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
-        if (typeof value === 'string' && dateTimeRegExp.test(value)) {
-            console.log('dateeee')
-            return new Date(value);
-        } else {
-            return value;
+        if (typeof value === 'string') {
+            const isoDateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (isoDateOnly) {
+                return new Date(
+                    parseInt(isoDateOnly[1], 10),
+                    parseInt(isoDateOnly[2], 10) - 1,
+                    parseInt(isoDateOnly[3], 10),
+                    0, 0, 0
+                );
+            }
+            if (/^\d{4}-\d{2}-\d{2}T/.test(value)) {
+                const d = new Date(value);
+                if (!isNaN(d.getTime())) {
+                    if (
+                        d.getUTCHours() === 0 &&
+                        d.getUTCMinutes() === 0 &&
+                        d.getUTCSeconds() === 0 &&
+                        d.getHours() !== 0
+                    ) {
+                        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0);
+                    }
+                    return d;
+                }
+            }
         }
+        return value;
     }
 };
 
@@ -92,8 +109,11 @@ app.route('/view/seed-from-file').post(adminAuth.adminAuthMiddleware, control.se
 app.route('/view/import-json').post(adminAuth.adminAuthMiddleware, control.importViewsJson);
 
 app.route('/sp/list').get(control.getProc);
+app.route('/sp/import-json').post(adminAuth.adminAuthMiddleware, control.importProceduresJson);
+app.route('/sp/sync-oracle').post(adminAuth.adminAuthMiddleware, control.syncProceduresFromOracle);
 
 app.route('/fn/list').get(control.getFunc);
+app.route('/fn/import-json').post(adminAuth.adminAuthMiddleware, control.importProceduresJson);
 
 app.route('/en/list').get(control.getEntities);
 

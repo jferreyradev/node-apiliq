@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const database = require('./database');
 const spmapper = require('../config/spmapper');
 const fnmapper = require('../config/fnmapper');
@@ -11,6 +13,17 @@ let fnmapperGenerated = null;
 try {
     fnmapperGenerated = require('../config/fnmapper.generated');
 } catch (_) {}
+
+function loadLocalJsonMapper(fileName) {
+    try {
+        const filePath = path.resolve(__dirname, '..', 'config', fileName);
+        if (fs.existsSync(filePath)) {
+            const raw = fs.readFileSync(filePath, 'utf-8');
+            return JSON.parse(raw);
+        }
+    } catch (_) {}
+    return {};
+}
 
 // Caché en memoria RAM para SPs y FNs (0ms de latencia)
 const spCache = new Map();
@@ -279,7 +292,7 @@ function buildConfigFromRows(rows) {
         if (!r.ARGUMENT_NAME) continue;
 
         const io = (r.IN_OUT || 'IN').toUpperCase();
-        if (io === 'IN' || io === 'IN/OUT') {
+        if (io === 'IN' || (isFunction && io === 'IN/OUT')) {
             const formatted = formatInParam(r.ARGUMENT_NAME);
             inParams.push(formatted);
             inMap[formatted] = r.ARGUMENT_NAME;
@@ -441,12 +454,19 @@ async function getFnConfig(fnName) {
 }
 
 /**
- * Retorna todos los procedimientos conocidos (históricos + descubiertos en RAM).
+ * Retorna todos los procedimientos conocidos (generados + históricos + locales + descubiertos en RAM).
  */
 async function getAllSp() {
     const all = {};
+    if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure) {
+        Object.assign(all, spmapperGenerated.jsonStoreProcedure);
+    }
     if (spmapper && spmapper.jsonStoreProcedure) {
         Object.assign(all, spmapper.jsonStoreProcedure);
+    }
+    const localSp = loadLocalJsonMapper('spmapper.local.json');
+    if (localSp && typeof localSp === 'object') {
+        Object.assign(all, localSp);
     }
     for (const [key, val] of spCache.entries()) {
         all[key] = val;
@@ -455,17 +475,160 @@ async function getAllSp() {
 }
 
 /**
- * Retorna todas las funciones conocidas (históricas + descubiertas en RAM).
+ * Retorna todas las funciones conocidas (generadas + históricas + locales + descubiertas en RAM).
  */
 async function getAllFn() {
     const all = {};
+    if (fnmapperGenerated && fnmapperGenerated.jsonStoreFunction) {
+        Object.assign(all, fnmapperGenerated.jsonStoreFunction);
+    }
     if (fnmapper && fnmapper.jsonStoreFunction) {
         Object.assign(all, fnmapper.jsonStoreFunction);
+    }
+    const localFn = loadLocalJsonMapper('fnmapper.local.json');
+    if (localFn && typeof localFn === 'object') {
+        Object.assign(all, localFn);
     }
     for (const [key, val] of fnCache.entries()) {
         all[key] = val;
     }
     return all;
+}
+
+/**
+ * Importa definiciones de SPs y/o Funciones desde un objeto JSON hacia la caché RAM y archivos locales (.local.json).
+ */
+function importProceduresFromObject(payload) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+        throw new Error('Se esperaba un objeto JSON con las definiciones de procedimientos o funciones');
+    }
+
+    const spSource = payload.jsonStoreProcedure || payload.sp || null;
+    const fnSource = payload.jsonStoreFunction || payload.fn || null;
+
+    let importedSp = 0;
+    let importedFn = 0;
+    const localSp = loadLocalJsonMapper('spmapper.local.json');
+    const localFn = loadLocalJsonMapper('fnmapper.local.json');
+
+    if (spSource || fnSource) {
+        if (spSource && typeof spSource === 'object') {
+            for (const [name, cfg] of Object.entries(spSource)) {
+                if (cfg && typeof cfg === 'object' && cfg.sp_name) {
+                    spCache.set(name, cfg);
+                    localSp[name] = cfg;
+                    importedSp++;
+                }
+            }
+        }
+        if (fnSource && typeof fnSource === 'object') {
+            for (const [name, cfg] of Object.entries(fnSource)) {
+                if (cfg && typeof cfg === 'object' && cfg.fn_name) {
+                    fnCache.set(name, cfg);
+                    localFn[name] = cfg;
+                    importedFn++;
+                }
+            }
+        }
+    } else {
+        for (const [name, cfg] of Object.entries(payload)) {
+            if (!cfg || typeof cfg !== 'object') continue;
+            if (cfg.sp_name) {
+                spCache.set(name, cfg);
+                localSp[name] = cfg;
+                importedSp++;
+            } else if (cfg.fn_name) {
+                fnCache.set(name, cfg);
+                localFn[name] = cfg;
+                importedFn++;
+            }
+        }
+    }
+
+    try {
+        const configDir = path.resolve(__dirname, '..', 'config');
+        if (importedSp > 0) {
+            fs.writeFileSync(path.join(configDir, 'spmapper.local.json'), JSON.stringify(localSp, null, 2), 'utf-8');
+        }
+        if (importedFn > 0) {
+            fs.writeFileSync(path.join(configDir, 'fnmapper.local.json'), JSON.stringify(localFn, null, 2), 'utf-8');
+        }
+    } catch (_) {}
+
+    return {
+        importedSp,
+        importedFn,
+        totalImported: importedSp + importedFn
+    };
+}
+
+/**
+ * Introspecciona todos los procedimientos y funciones disponibles en Oracle (ALL_ARGUMENTS)
+ * y actualiza el catálogo en memoria.
+ */
+async function syncAllFromOracle(targetSchema = 'US_SUELDO', targetPackage = null) {
+    const generator = require('../scripts/generate_mappers');
+    const schema = (targetSchema || process.env.TARGET_SCHEMA || 'US_SUELDO').toUpperCase();
+    const binds = { targetSchema: schema };
+    let pkgFilter = '';
+
+    if (targetPackage && String(targetPackage).trim()) {
+        const cleanPkg = String(targetPackage).trim().toUpperCase();
+        if (cleanPkg.includes('%')) {
+            pkgFilter = ' AND UPPER(package_name) LIKE :targetPackage';
+        } else {
+            pkgFilter = ' AND UPPER(package_name) = :targetPackage';
+        }
+        binds.targetPackage = cleanPkg;
+    }
+
+    const query = `
+        SELECT 
+            package_name,
+            object_name,
+            NVL(overload, '0') AS overload,
+            argument_name,
+            position,
+            sequence,
+            data_type,
+            in_out
+        FROM all_arguments
+        WHERE owner = :targetSchema
+          AND data_level = 0
+          ${pkgFilter}
+        ORDER BY 
+            NVL(package_name, object_name),
+            object_name,
+            NVL(overload, '0'),
+            sequence
+    `;
+
+    const result = await database.simpleExecute(query, binds);
+    const rows = (result && result.rows) ? result.rows : [];
+    const objects = generator.groupObjects(rows);
+    const procedures = objects.filter(o => !o.isFunction);
+    const functions = objects.filter(o => o.isFunction);
+
+    const existingSp = (spmapper && spmapper.jsonStoreProcedure) ? spmapper.jsonStoreProcedure : {};
+    const existingFn = (fnmapper && fnmapper.jsonStoreFunction) ? fnmapper.jsonStoreFunction : {};
+
+    const generatedSp = generator.generateSpMapper(procedures, existingSp);
+    const generatedFn = generator.generateFnMapper(functions, existingFn);
+
+    for (const [k, v] of Object.entries(generatedSp)) {
+        spCache.set(k, v);
+    }
+    for (const [k, v] of Object.entries(generatedFn)) {
+        fnCache.set(k, v);
+    }
+
+    return {
+        schema,
+        spCount: Object.keys(generatedSp).length,
+        fnCount: Object.keys(generatedFn).length,
+        sp: generatedSp,
+        fn: generatedFn
+    };
 }
 
 module.exports = {
@@ -476,6 +639,8 @@ module.exports = {
     clearCache,
     resolveNameParts,
     buildConfigFromRows,
+    importProceduresFromObject,
+    syncAllFromOracle,
     _spCache: spCache,
     _fnCache: fnCache
 };

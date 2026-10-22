@@ -1,15 +1,32 @@
 const database = require('../services/database');
 const oracledb = require('oracledb');
 
+function getEffectiveInParams(sp) {
+    if (!sp || !Array.isArray(sp.in_param)) return [];
+    const outParams = Array.isArray(sp.out_param) ? sp.out_param : [];
+    if (outParams.length === 0) return sp.in_param;
+
+    const outNorms = new Set(outParams.map(o => {
+        const u = String(o).toUpperCase();
+        if (u === 'VALORSALIDA') return 'SALIDA';
+        if (u === 'VALORERROR') return 'ERROR';
+        return normalizeParamName(o).toUpperCase();
+    }));
+
+    return sp.in_param.filter(inP => {
+        const normIn = normalizeParamName(inP).toUpperCase();
+        return !outNorms.has(normIn);
+    });
+}
+
 function getSQLcall(sp) {
     const spName = (sp && sp.sp_name ? sp.sp_name : '').trim();
     const params = [];
 
-    if (sp && sp.in_param && Array.isArray(sp.in_param)) {
-        sp.in_param.forEach(element => {
-            params.push(':' + element);
-        });
-    }
+    const inParams = getEffectiveInParams(sp);
+    inParams.forEach(element => {
+        params.push(':' + element);
+    });
 
     if (sp && sp.out_param && Array.isArray(sp.out_param)) {
         sp.out_param.forEach(element => {
@@ -34,60 +51,122 @@ function coerceValueForBind(val, paramName) {
     if (val === undefined || val === null || val === '') {
         return null;
     }
+
+    const lower = String(paramName || '').toLowerCase();
+    const isPeriodoField = lower.includes('periodo') || lower === 'vper' || lower === 'per';
+    const isDateField = isPeriodoField || lower.includes('fecha') || lower.includes('fec') || lower.includes('vto');
+
     if (val instanceof Date) {
-        return val;
+        let year = val.getFullYear();
+        let month = val.getMonth();
+        let day = val.getDate();
+        if (
+            val.getUTCHours() === 0 &&
+            val.getUTCMinutes() === 0 &&
+            val.getUTCSeconds() === 0 &&
+            val.getHours() !== 0
+        ) {
+            year = val.getUTCFullYear();
+            month = val.getUTCMonth();
+            day = val.getUTCDate();
+        }
+        if (isPeriodoField) {
+            return new Date(year, month, 1, 0, 0, 0);
+        }
+        return new Date(year, month, day, 0, 0, 0);
     }
 
     if (typeof val === 'boolean') {
         return val ? 1 : 0;
     }
 
-    const lower = String(paramName || '').toLowerCase();
-    const isDateField = lower.includes('periodo') || lower.includes('fecha') || lower.includes('fec');
-
     if (typeof val === 'string') {
         const trimmed = val.trim();
 
-        // 1. Fecha ISO YYYY-MM-DD
-        const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (isoMatch) {
-            const year = parseInt(isoMatch[1], 10);
-            const month = parseInt(isoMatch[2], 10) - 1;
-            const day = parseInt(isoMatch[3], 10);
-            const d = new Date(Date.UTC(year, month, day));
+        // 1. Fecha ISO YYYY-MM-DD (sin hora -> medianoche local; si es periodo, día siempre 01)
+        const isoDateOnly = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (isoDateOnly) {
+            const year = parseInt(isoDateOnly[1], 10);
+            const month = parseInt(isoDateOnly[2], 10) - 1;
+            const day = isPeriodoField ? 1 : parseInt(isoDateOnly[3], 10);
+            const d = new Date(year, month, day, 0, 0, 0);
             if (!isNaN(d.getTime())) return d;
         }
 
-        // 2. Fecha DD/MM/YYYY o D/M/YYYY
+        // 1b. Fecha ISO con hora YYYY-MM-DDTHH:mm...
+        if (/^\d{4}-\d{2}-\d{2}T/.test(trimmed)) {
+            const d = new Date(trimmed);
+            if (!isNaN(d.getTime())) {
+                let year = d.getFullYear();
+                let month = d.getMonth();
+                let day = d.getDate();
+                if (
+                    d.getUTCHours() === 0 &&
+                    d.getUTCMinutes() === 0 &&
+                    d.getUTCSeconds() === 0 &&
+                    d.getHours() !== 0
+                ) {
+                    year = d.getUTCFullYear();
+                    month = d.getUTCMonth();
+                    day = d.getUTCDate();
+                }
+                if (isPeriodoField) {
+                    return new Date(year, month, 1, 0, 0, 0);
+                }
+                return new Date(year, month, day, 0, 0, 0);
+            }
+        }
+
+        // 2. Fecha DD/MM/YYYY o D/M/YYYY (si es periodo, día siempre 01)
         const dmyMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
         if (dmyMatch) {
-            const day = parseInt(dmyMatch[1], 10);
+            const day = isPeriodoField ? 1 : parseInt(dmyMatch[1], 10);
             const month = parseInt(dmyMatch[2], 10) - 1;
             const year = parseInt(dmyMatch[3], 10);
-            const d = new Date(Date.UTC(year, month, day));
+            const d = new Date(year, month, day, 0, 0, 0);
             if (!isNaN(d.getTime())) return d;
         }
 
-        // 3. Periodo YYYY-MM
-        if (isDateField && /^\d{4}-\d{2}$/.test(trimmed)) {
-            const parts = trimmed.split('-');
-            const d = new Date(Date.UTC(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1));
+        // 3. Periodo YYYY-MM -> Día 01 fijo
+        const ymMatch = trimmed.match(/^(\d{4})-(\d{1,2})$/);
+        if (isDateField && ymMatch) {
+            const year = parseInt(ymMatch[1], 10);
+            const month = parseInt(ymMatch[2], 10) - 1;
+            const d = new Date(year, month, 1, 0, 0, 0);
             if (!isNaN(d.getTime())) return d;
         }
 
-        // 4. Periodo MM/YYYY
+        // 4. Periodo MM/YYYY o M/YYYY -> Día 01 fijo
         const myMatch = trimmed.match(/^(\d{1,2})\/(\d{4})$/);
         if (isDateField && myMatch) {
             const month = parseInt(myMatch[1], 10) - 1;
             const year = parseInt(myMatch[2], 10);
-            const d = new Date(Date.UTC(year, month, 1));
+            const d = new Date(year, month, 1, 0, 0, 0);
             if (!isNaN(d.getTime())) return d;
         }
 
-        // 5. Numéricos para parámetros que indican ID, tipo, grupo, ley, cuota, nro, valor, cant, lote
-        const isNumericParam = lower.includes('id') || lower.includes('tipo') || lower.includes('grupo') || 
-                               lower.includes('ley') || lower.includes('cuota') || lower.includes('nro') || 
-                               lower.includes('valor') || lower.includes('cant') || lower.includes('lote');
+        // 4b. Periodo compacto YYYYMM (ej: 202609) o MMYYYY (ej: 092026) -> Día 01 fijo
+        if (isPeriodoField && /^\d{6}$/.test(trimmed)) {
+            const firstFour = parseInt(trimmed.slice(0, 4), 10);
+            const lastTwo = parseInt(trimmed.slice(4, 6), 10);
+            if (firstFour >= 1990 && firstFour <= 2100 && lastTwo >= 1 && lastTwo <= 12) {
+                return new Date(firstFour, lastTwo - 1, 1, 0, 0, 0);
+            }
+            const firstTwo = parseInt(trimmed.slice(0, 2), 10);
+            const lastFour = parseInt(trimmed.slice(2, 6), 10);
+            if (lastFour >= 1990 && lastFour <= 2100 && firstTwo >= 1 && firstTwo <= 12) {
+                return new Date(lastFour, firstTwo - 1, 1, 0, 0, 0);
+            }
+        }
+
+        // 5. Numéricos para parámetros que indican ID, tipo, grupo, ley, cuota, nro, valor, cant, lote, rep, ord, cod
+        const isNumericParam = !isDateField && (
+            lower.includes('id') || lower.includes('tipo') || lower.includes('grupo') || 
+            lower.includes('ley') || lower.includes('cuota') || lower.includes('nro') || 
+            lower.includes('valor') || lower.includes('cant') || lower.includes('lote') ||
+            lower.includes('rep') || lower.includes('ord') || lower.includes('cod') ||
+            lower.includes('cat') || lower.includes('imp')
+        );
         if (isNumericParam && /^-?\d+(\.\d+)?$/.test(trimmed)) {
             return Number(trimmed);
         }
@@ -116,7 +195,7 @@ function getSQLbinds(context, sp) {
             if (normK === normParam) {
                 return ctx[k];
             }
-            if (normK.length >= 4 && normParam.length >= 4) {
+            if (normK.length >= 3 && normParam.length >= 3) {
                 if (normParam.startsWith(normK) || normK.startsWith(normParam)) {
                     return ctx[k];
                 }
@@ -126,13 +205,12 @@ function getSQLbinds(context, sp) {
         return undefined;
     }
 
-    if (sp && sp.in_param && Array.isArray(sp.in_param)) {
-        sp.in_param.forEach(element => {
-            const rawVal = findContextValue(element);
-            const val = coerceValueForBind(rawVal, element);
-            binds[element] = (val !== undefined && val !== '') ? val : null;
-        });
-    }
+    const inParams = getEffectiveInParams(sp);
+    inParams.forEach(element => {
+        const rawVal = findContextValue(element);
+        const val = coerceValueForBind(rawVal, element);
+        binds[element] = (val !== undefined && val !== '') ? val : null;
+    });
 
     if (sp && sp.out_param && Array.isArray(sp.out_param)) {
         sp.out_param.forEach(element => {

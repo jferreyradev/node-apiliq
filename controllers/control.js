@@ -919,9 +919,46 @@ async function importViewsJson(req, res, next) {
     }
 }
 
+async function importProceduresJson(req, res, next) {
+    try {
+        const body = req.body;
+        if (!body || typeof body !== 'object' || Array.isArray(body)) {
+            return res.status(400).json({ error: 'Formato inválido: se esperaba un objeto JSON con las definiciones de procedimientos o funciones' });
+        }
+
+        const result = procedureCatalog.importProceduresFromObject(body);
+        res.status(200).json({
+            status: 'ok',
+            message: `Importación finalizada: ${result.importedSp} SP(s) y ${result.importedFn} Función(es) registradas`,
+            ...result
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+async function syncProceduresFromOracle(req, res, next) {
+    try {
+        const schema = (req.body && req.body.schema) || (req.query && req.query.schema) || process.env.TARGET_SCHEMA || 'US_SUELDO';
+        const targetPackage = (req.body && req.body.packageName) || (req.query && req.query.packageName) || null;
+        const result = await procedureCatalog.syncAllFromOracle(schema, targetPackage);
+        res.status(200).json({
+            status: 'ok',
+            message: `Sincronización desde Oracle (${result.schema}) completada: ${result.spCount} SPs y ${result.fnCount} Funciones descubiertas`,
+            schema: result.schema,
+            spCount: result.spCount,
+            fnCount: result.fnCount
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports.saveView = saveView;
 module.exports.deleteView = deleteView;
 module.exports.refreshViews = refreshViews;
 module.exports.seedViewsFromFile = seedViewsFromFile;
 module.exports.importViewsJson = importViewsJson;
+module.exports.importProceduresJson = importProceduresJson;
+module.exports.syncProceduresFromOracle = syncProceduresFromOracle;
 

@@ -19,3 +19,5 @@ tmp/*
 oracle-client/
 .DS_Store
 config/mapperViews.local.*
+config/spmapper.local.*
+config/fnmapper.local.*

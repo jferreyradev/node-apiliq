@@ -249,6 +249,53 @@ function addClause(clauses, clause) {
     clauses.push(clause);
 }
 
+function normalizePeriodoQueryValue(key, rawVal) {
+    if (typeof rawVal !== 'string') return rawVal;
+    const lowerKey = String(key || '').toLowerCase();
+    if (!lowerKey.includes('periodo') && lowerKey !== 'per' && lowerKey !== 'vper') {
+        return rawVal;
+    }
+
+    const trimmed = rawVal.trim();
+
+    // 1. DD/MM/YYYY o D/M/YYYY -> siempre forzar día 01: 01/MM/YYYY
+    const dmy = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (dmy) {
+        const mm = String(parseInt(dmy[2], 10)).padStart(2, '0');
+        return `01/${mm}/${dmy[3]}`;
+    }
+
+    // 2. MM/YYYY o M/YYYY -> 01/MM/YYYY
+    const my = trimmed.match(/^(\d{1,2})\/(\d{4})$/);
+    if (my) {
+        const mm = String(parseInt(my[1], 10)).padStart(2, '0');
+        return `01/${mm}/${my[2]}`;
+    }
+
+    // 3. YYYY-MM o YYYY-MM-DD -> 01/MM/YYYY
+    const iso = trimmed.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?$/);
+    if (iso) {
+        const mm = String(parseInt(iso[2], 10)).padStart(2, '0');
+        return `01/${mm}/${iso[1]}`;
+    }
+
+    // 4. Compacto YYYYMM (202609) o MMYYYY (092026) -> 01/MM/YYYY
+    if (/^\d{6}$/.test(trimmed)) {
+        const firstFour = parseInt(trimmed.slice(0, 4), 10);
+        const lastTwo = parseInt(trimmed.slice(4, 6), 10);
+        if (firstFour >= 1990 && firstFour <= 2100 && lastTwo >= 1 && lastTwo <= 12) {
+            return `01/${String(lastTwo).padStart(2, '0')}/${firstFour}`;
+        }
+        const firstTwo = parseInt(trimmed.slice(0, 2), 10);
+        const lastFour = parseInt(trimmed.slice(2, 6), 10);
+        if (lastFour >= 1990 && lastFour <= 2100 && firstTwo >= 1 && firstTwo <= 12) {
+            return `01/${String(firstTwo).padStart(2, '0')}/${lastFour}`;
+        }
+    }
+
+    return rawVal;
+}
+
 function getValidatedWhere(context, fields) {
     const binds = {};
     const clauses = [];
@@ -268,7 +315,7 @@ function getValidatedWhere(context, fields) {
             addClause(clauses, `${field} is null`);
         } else {
             addClause(clauses, `${field} = :${key}`);
-            binds[key] = context[key];
+            binds[key] = normalizePeriodoQueryValue(key, context[key]);
         }
     }
 

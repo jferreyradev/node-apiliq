@@ -1,12 +1,11 @@
-// Generado automáticamente por scripts/generate_mappers.js
+// Generado automáticamente y sanitizado para evitar duplicados y desajustes de parámetros
 module.exports.jsonStoreProcedure = {
     "forAdher183": {
         "sp_name": "FOR_ADHER_183",
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -17,8 +16,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -29,8 +27,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -41,8 +38,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -53,8 +49,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -65,8 +60,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -77,8 +71,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -89,8 +82,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -101,8 +93,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -113,8 +104,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -125,8 +115,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -137,8 +126,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -149,8 +137,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -161,8 +148,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -173,8 +159,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -185,8 +170,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -197,8 +181,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -209,8 +192,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -221,8 +203,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -233,8 +214,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -245,8 +225,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -257,8 +236,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -269,8 +247,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -281,8 +258,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -293,8 +269,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -305,8 +280,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -317,8 +291,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -329,8 +302,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -341,8 +313,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -353,8 +324,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -365,8 +335,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -377,8 +346,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -389,8 +357,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -401,8 +368,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -413,8 +379,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -425,8 +390,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -437,8 +401,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -449,8 +412,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -461,8 +423,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -473,8 +434,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -485,8 +445,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -497,8 +456,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -509,8 +467,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -521,8 +478,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -533,8 +489,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -545,8 +500,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -557,8 +511,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -569,8 +522,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -581,8 +533,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -593,8 +544,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -605,8 +555,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -617,8 +566,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -629,8 +577,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -641,8 +588,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -653,8 +599,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -665,8 +610,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -677,8 +621,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -689,8 +632,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -701,8 +643,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -713,8 +654,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -725,8 +665,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -737,8 +676,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -749,8 +687,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -761,8 +698,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -773,8 +709,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -785,8 +720,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -797,8 +731,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -809,8 +742,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -821,8 +753,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -833,8 +764,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -845,8 +775,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -857,8 +786,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -869,8 +797,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -881,8 +808,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -893,8 +819,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -905,8 +830,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -917,8 +841,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -929,8 +852,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -941,8 +863,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -953,8 +874,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -965,8 +885,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -977,8 +896,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -989,8 +907,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1001,8 +918,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1013,8 +929,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1025,8 +940,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1037,8 +951,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1049,8 +962,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1061,8 +973,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1073,8 +984,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1085,8 +995,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1097,8 +1006,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1109,8 +1017,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1121,8 +1028,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1133,8 +1039,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1145,8 +1050,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1157,8 +1061,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1169,8 +1072,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1181,8 +1083,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1193,8 +1094,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1205,8 +1105,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1217,8 +1116,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1229,8 +1127,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1241,8 +1138,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1253,8 +1149,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1265,8 +1160,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1277,8 +1171,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1289,8 +1182,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1301,8 +1193,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1313,8 +1204,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1325,8 +1215,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1337,8 +1226,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1349,8 +1237,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1361,8 +1248,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1373,8 +1259,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1385,8 +1270,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1397,8 +1281,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1409,8 +1292,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1421,8 +1303,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1433,8 +1314,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1445,8 +1325,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1457,8 +1336,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1469,8 +1347,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1481,8 +1358,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1493,8 +1369,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1505,8 +1380,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1517,8 +1391,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1529,8 +1402,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1541,8 +1413,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1553,8 +1424,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1565,8 +1435,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1577,8 +1446,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1589,8 +1457,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1601,8 +1468,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1613,8 +1479,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1625,8 +1490,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1637,8 +1501,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1649,8 +1512,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1661,8 +1523,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1673,8 +1534,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1685,8 +1545,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1697,8 +1556,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1709,8 +1567,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1721,8 +1578,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1733,8 +1589,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1745,8 +1600,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1757,8 +1611,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1769,8 +1622,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1781,8 +1633,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1793,8 +1644,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1805,8 +1655,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1817,8 +1666,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1829,8 +1677,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1841,8 +1688,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1853,8 +1699,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1865,8 +1710,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1877,8 +1721,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1889,8 +1732,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1901,8 +1743,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1913,8 +1754,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1925,8 +1765,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1937,8 +1776,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1949,8 +1787,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1961,8 +1798,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1973,8 +1809,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1985,8 +1820,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -1997,8 +1831,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2009,8 +1842,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2021,8 +1853,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2033,8 +1864,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2045,8 +1875,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2057,8 +1886,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2069,8 +1897,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2081,8 +1908,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2093,8 +1919,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2105,8 +1930,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2117,8 +1941,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2129,8 +1952,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2141,8 +1963,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2153,8 +1974,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2165,8 +1985,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2177,8 +1996,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2189,8 +2007,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2201,8 +2018,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2213,8 +2029,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2225,8 +2040,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2237,8 +2051,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2249,8 +2062,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2261,8 +2073,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2273,8 +2084,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2285,8 +2095,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2297,8 +2106,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2309,8 +2117,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2321,8 +2128,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2333,8 +2139,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2345,8 +2150,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2357,8 +2161,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2369,8 +2172,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2381,8 +2183,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2393,8 +2194,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2405,8 +2205,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2417,8 +2216,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2429,8 +2227,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2441,8 +2238,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2453,8 +2249,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2465,8 +2260,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2477,8 +2271,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2489,8 +2282,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2501,8 +2293,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2513,8 +2304,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2525,8 +2315,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2537,8 +2326,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2549,8 +2337,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2561,8 +2348,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2573,8 +2359,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2585,8 +2370,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2597,8 +2381,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2609,8 +2392,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2621,8 +2403,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2633,8 +2414,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2645,8 +2425,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2657,8 +2436,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2669,8 +2447,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2681,8 +2458,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2693,8 +2469,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2705,8 +2480,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2717,8 +2491,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2729,8 +2502,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2741,8 +2513,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2753,8 +2524,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2765,8 +2535,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2777,8 +2546,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2789,8 +2557,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2801,8 +2568,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2813,8 +2579,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2825,8 +2590,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2837,8 +2601,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2849,8 +2612,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2861,8 +2623,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2873,8 +2634,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2885,8 +2645,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2897,8 +2656,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2909,8 +2667,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2921,8 +2678,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2933,8 +2689,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2945,8 +2700,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2957,8 +2711,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2969,8 +2722,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2981,8 +2733,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -2993,8 +2744,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3005,8 +2755,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3017,8 +2766,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3029,8 +2777,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3041,8 +2788,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3053,8 +2799,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3065,8 +2810,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3077,8 +2821,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3089,8 +2832,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3101,8 +2843,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3113,8 +2854,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3125,8 +2865,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3137,8 +2876,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3149,8 +2887,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3161,8 +2898,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3173,8 +2909,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3185,8 +2920,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3197,8 +2931,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3209,8 +2942,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3221,8 +2953,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3233,8 +2964,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3245,8 +2975,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3257,8 +2986,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3269,8 +2997,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3281,8 +3008,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3293,8 +3019,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3305,8 +3030,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3317,8 +3041,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3329,8 +3052,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3341,8 +3063,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3353,8 +3074,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3365,8 +3085,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3377,8 +3096,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3389,8 +3107,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3401,8 +3118,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3413,8 +3129,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3425,8 +3140,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3437,8 +3151,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3449,8 +3162,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3461,8 +3173,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3473,8 +3184,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3485,8 +3195,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3497,8 +3206,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3509,8 +3217,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3521,8 +3228,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3533,8 +3239,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3545,8 +3250,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3557,8 +3261,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3569,8 +3272,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3581,8 +3283,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3593,8 +3294,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3605,8 +3305,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3617,8 +3316,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3629,8 +3327,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3641,8 +3338,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3653,8 +3349,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3665,8 +3360,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3677,8 +3371,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3689,8 +3382,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3701,8 +3393,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3713,8 +3404,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3725,8 +3415,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3737,8 +3426,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3749,8 +3437,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3761,8 +3448,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3773,8 +3459,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3785,8 +3470,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3797,8 +3481,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3809,8 +3492,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3821,8 +3503,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3833,8 +3514,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3845,8 +3525,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3857,8 +3536,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3869,8 +3547,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3881,8 +3558,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3893,8 +3569,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3905,8 +3580,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3917,8 +3591,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3929,8 +3602,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3941,8 +3613,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3953,8 +3624,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3965,8 +3635,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3977,8 +3646,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -3989,8 +3657,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4001,8 +3668,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4013,8 +3679,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4025,8 +3690,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4037,8 +3701,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4049,8 +3712,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4061,8 +3723,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4073,8 +3734,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4085,8 +3745,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4097,8 +3756,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4109,8 +3767,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4121,8 +3778,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4133,8 +3789,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4145,8 +3800,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4157,8 +3811,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4169,8 +3822,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4181,8 +3833,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4193,8 +3844,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4205,8 +3855,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4217,8 +3866,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4229,8 +3877,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4241,8 +3888,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4253,8 +3899,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4265,8 +3910,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4277,8 +3921,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4289,8 +3932,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4301,8 +3943,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4313,8 +3954,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4325,8 +3965,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4337,8 +3976,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4349,8 +3987,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4361,8 +3998,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4373,8 +4009,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4385,8 +4020,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4397,8 +4031,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4409,8 +4042,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4421,8 +4053,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4433,8 +4064,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4445,8 +4075,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4457,8 +4086,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4469,8 +4097,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4481,8 +4108,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4493,8 +4119,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4505,8 +4130,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4517,8 +4141,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4529,8 +4152,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4541,8 +4163,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4553,8 +4174,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4565,8 +4185,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4577,8 +4196,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4589,8 +4207,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4601,8 +4218,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4613,8 +4229,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4625,8 +4240,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4637,8 +4251,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4649,8 +4262,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4661,8 +4273,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4673,8 +4284,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4685,8 +4295,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4697,8 +4306,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4709,8 +4317,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4721,8 +4328,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4733,8 +4339,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4745,8 +4350,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4757,8 +4361,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4769,8 +4372,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4781,8 +4383,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4793,8 +4394,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4805,8 +4405,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4817,8 +4416,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4829,8 +4427,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4841,8 +4438,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4853,8 +4449,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4865,8 +4460,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4877,8 +4471,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4889,8 +4482,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4901,8 +4493,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4913,8 +4504,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4925,8 +4515,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4937,8 +4526,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4949,8 +4537,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4961,8 +4548,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4973,8 +4559,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4985,8 +4570,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -4997,8 +4581,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5009,8 +4592,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5021,8 +4603,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5033,8 +4614,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5045,8 +4625,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5057,8 +4636,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5069,8 +4647,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5081,8 +4658,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5093,8 +4669,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5105,8 +4680,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5117,8 +4691,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5129,8 +4702,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5141,8 +4713,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5153,8 +4724,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5165,8 +4735,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5177,8 +4746,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5189,8 +4757,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5201,8 +4768,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5213,8 +4779,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5225,8 +4790,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5237,8 +4801,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5249,8 +4812,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -5292,9 +4854,7 @@ module.exports.jsonStoreProcedure = {
             "vPERIODO",
             "vTIPOLIQ",
             "vGRUPOADI",
-            "vCUOTA",
-            "vCANT",
-            "vTOTAL"
+            "vCUOTA"
         ],
         "out_param": [
             "Vcant",
@@ -5308,8 +4868,7 @@ module.exports.jsonStoreProcedure = {
             "vIDTIPOLIQ",
             "vIDGRUPOADI",
             "vVALORFIJO",
-            "vCANTCUOTAS",
-            "vERROR"
+            "vCANTCUOTAS"
         ],
         "out_param": [
             "ValorError"
@@ -5407,9 +4966,7 @@ module.exports.jsonStoreProcedure = {
     },
     "cambioPeriodo_cambioPeriodo": {
         "sp_name": "MOD_CAMBIO_PERIODO.P_CAMBIO_PERIODO",
-        "in_param": [
-            "vSALIDA"
-        ],
+        "in_param": [],
         "out_param": [
             "ValorSalida"
         ]
@@ -5495,9 +5052,7 @@ module.exports.jsonStoreProcedure = {
     "fn_eliminaNoley": {
         "sp_name": "MOD_FUNCIONES.ELIMINA_NOLEY",
         "in_param": [
-            "Dni",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "Dni"
         ],
         "out_param": [
             "ValorSalida",
@@ -5509,9 +5064,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "Dni",
             "Tipo",
-            "Periodo",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "Periodo"
         ],
         "out_param": [
             "ValorSalida",
@@ -5521,9 +5074,7 @@ module.exports.jsonStoreProcedure = {
     "hojaNov_spdHojaNov": {
         "sp_name": "MOD_HOJA_NOV.SPD_HOJA_NOV",
         "in_param": [
-            "vIDHOJANOV",
-            "vSALIDA",
-            "vERROR"
+            "vIDHOJANOV"
         ],
         "out_param": [
             "ValorSalida",
@@ -5538,9 +5089,7 @@ module.exports.jsonStoreProcedure = {
             "vIDTIPOLIQ",
             "vIDGRUPOADI",
             "vIDESTADOHOJA",
-            "vIDTIPOCARGA",
-            "vSALIDA",
-            "vERROR"
+            "vIDTIPOCARGA"
         ],
         "out_param": [
             "ValorSalida",
@@ -5557,9 +5106,7 @@ module.exports.jsonStoreProcedure = {
             "vIDGRUPOADI",
             "vIDESTADOHOJA",
             "vIDTIPOCARGA",
-            "vFECHAALTA",
-            "vSALIDA",
-            "vERROR"
+            "vFECHAALTA"
         ],
         "out_param": [
             "ValorSalida",
@@ -5724,10 +5271,7 @@ module.exports.jsonStoreProcedure = {
     "nov_spdHojaNov": {
         "sp_name": "MOD_NOV.SPD_HOJA_NOV",
         "in_param": [
-            "vIDHOJANOV",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDHOJANOV"
         ],
         "out_param": [
             "ValorSalida",
@@ -5738,10 +5282,7 @@ module.exports.jsonStoreProcedure = {
     "nov_spdNovAltas": {
         "sp_name": "MOD_NOV.SPD_NOV_ALTAS",
         "in_param": [
-            "vIDNOV",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDNOV"
         ],
         "out_param": [
             "ValorSalida",
@@ -5752,10 +5293,7 @@ module.exports.jsonStoreProcedure = {
     "nov_spdNovVarias": {
         "sp_name": "MOD_NOV.SPD_NOV_VARIAS",
         "in_param": [
-            "vIDNOV",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDNOV"
         ],
         "out_param": [
             "ValorSalida",
@@ -5771,10 +5309,7 @@ module.exports.jsonStoreProcedure = {
             "vIDTIPOLIQ",
             "vIDGRUPOADI",
             "vIDESTADOHOJA",
-            "vIDTIPOCARGA",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDTIPOCARGA"
         ],
         "out_param": [
             "ValorSalida",
@@ -5802,10 +5337,7 @@ module.exports.jsonStoreProcedure = {
             "vDIF_CAT",
             "vAJUB",
             "vIDHOJANOV",
-            "vPERIODO",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vPERIODO"
         ],
         "out_param": [
             "ValorSalida",
@@ -5825,10 +5357,7 @@ module.exports.jsonStoreProcedure = {
             "vVTO",
             "vIMP",
             "vIDHOJANOV",
-            "vPERIODO",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vPERIODO"
         ],
         "out_param": [
             "ValorSalida",
@@ -5846,10 +5375,7 @@ module.exports.jsonStoreProcedure = {
             "vIDGRUPOADI",
             "vIDESTADOHOJA",
             "vIDTIPOCARGA",
-            "vFECHAALTA",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vFECHAALTA"
         ],
         "out_param": [
             "ValorSalida",
@@ -5861,10 +5387,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_NOV.SPU_HOJA_NOV_ESTADO",
         "in_param": [
             "vIDHOJANOV",
-            "vIDESTADOHOJA",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDESTADOHOJA"
         ],
         "out_param": [
             "ValorSalida",
@@ -5892,10 +5415,7 @@ module.exports.jsonStoreProcedure = {
             "vTITULO",
             "vDIF_CAT",
             "vAJUB",
-            "vPERIODO",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vPERIODO"
         ],
         "out_param": [
             "ValorSalida",
@@ -5907,10 +5427,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_NOV.SPU_NOV_ALTAS_ESTADO",
         "in_param": [
             "vIDNOV",
-            "vIDESTADOREG",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDESTADOREG"
         ],
         "out_param": [
             "ValorSalida",
@@ -5933,10 +5450,7 @@ module.exports.jsonStoreProcedure = {
             "vIDHOJANOV",
             "vPERIODO",
             "vFECHAGRAB",
-            "vIDESTADOREG",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDESTADOREG"
         ],
         "out_param": [
             "ValorSalida",
@@ -5948,10 +5462,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_NOV.SPU_NOV_VARIAS_ESTADO",
         "in_param": [
             "vIDNOV",
-            "vIDESTADOREG",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDESTADOREG"
         ],
         "out_param": [
             "ValorSalida",
@@ -5963,8 +5474,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_PARAM.P_CAB_CODIGOS",
         "in_param": [
             "vIDCAB",
-            "vDESCRIPCION",
-            "vSALIDA"
+            "vDESCRIPCION"
         ],
         "out_param": [
             "ValorSalida"
@@ -5991,8 +5501,7 @@ module.exports.jsonStoreProcedure = {
             "vESPECIAL",
             "vRELIQUIDA",
             "vOBSERVACION",
-            "vACUM_GAN",
-            "vSALIDA"
+            "vACUM_GAN"
         ],
         "out_param": [
             "ValorSalida"
@@ -6002,8 +5511,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_PARAM.P_DESC_CABVALCAT",
         "in_param": [
             "vIDCABVALCAT",
-            "vDESCRIPCION",
-            "vSALIDA"
+            "vDESCRIPCION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6014,8 +5522,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDDESC_VALCAT",
             "vDESCRIPCION",
-            "vIDCABVALCAT",
-            "vSALIDA"
+            "vIDCABVALCAT"
         ],
         "out_param": [
             "ValorSalida"
@@ -6025,8 +5532,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_PARAM.P_DESC_VALORFIJO",
         "in_param": [
             "vIDDESCFIJO",
-            "vDESCRIPCION",
-            "vSALIDA"
+            "vDESCRIPCION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6038,8 +5544,7 @@ module.exports.jsonStoreProcedure = {
             "vIDDET",
             "vIDCAB",
             "vCODIGO",
-            "vSUBCOD",
-            "vSALIDA"
+            "vSUBCOD"
         ],
         "out_param": [
             "ValorSalida"
@@ -6049,8 +5554,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_PARAM.P_ESCALA",
         "in_param": [
             "vIDESCALA",
-            "vDESCRIPCION",
-            "vSALIDA"
+            "vDESCRIPCION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6064,8 +5568,7 @@ module.exports.jsonStoreProcedure = {
             "vNROCAT",
             "vDESCRIPCION",
             "vDESC_DETALLE",
-            "vIMPORTE",
-            "vSALIDA"
+            "vIMPORTE"
         ],
         "out_param": [
             "ValorSalida"
@@ -6076,8 +5579,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDHISTNOM",
             "vIDCONCEPTO",
-            "vOPERACION",
-            "vSALIDA"
+            "vOPERACION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6090,8 +5592,7 @@ module.exports.jsonStoreProcedure = {
             "vFECHAINICIO",
             "vFECHAFIN",
             "vIDNOM",
-            "vIDESCALA",
-            "vSALIDA"
+            "vIDESCALA"
         ],
         "out_param": [
             "ValorSalida"
@@ -6102,8 +5603,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDHISTNOM",
             "vIDDESC_VALCAT",
-            "vOPERACION",
-            "vSALIDA"
+            "vOPERACION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6114,8 +5614,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDHISTNOM",
             "vIDVALUNICO",
-            "vOPERACION",
-            "vSALIDA"
+            "vOPERACION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6125,8 +5624,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_PARAM.P_IMPORTA_HIST_NOM",
         "in_param": [
             "vIDHIST_ORIGEN",
-            "vIDHIST_DESTINO",
-            "vSALIDA"
+            "vIDHIST_DESTINO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6137,8 +5635,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDREP",
             "vIDTE",
-            "vIDNOM",
-            "vSALIDA"
+            "vIDNOM"
         ],
         "out_param": [
             "ValorSalida"
@@ -6150,10 +5647,7 @@ module.exports.jsonStoreProcedure = {
             "vIDCONCEPTO",
             "vIDREP",
             "vIDTE",
-            "vFECHA",
-            "vIDHISTNOM",
-            "vIDESCALA",
-            "vIDNOM"
+            "vFECHA"
         ],
         "out_param": [
             "Vidhistnom",
@@ -6180,8 +5674,7 @@ module.exports.jsonStoreProcedure = {
             "vFECHAINICIO",
             "vFECHAFIN",
             "vORDEN",
-            "vNAMESP",
-            "vSALIDA"
+            "vNAMESP"
         ],
         "out_param": [
             "ValorSalida"
@@ -6193,8 +5686,7 @@ module.exports.jsonStoreProcedure = {
             "vIDREP",
             "vIDTE",
             "vIDNOM",
-            "vOPERACION",
-            "vSALIDA"
+            "vOPERACION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6206,8 +5698,7 @@ module.exports.jsonStoreProcedure = {
             "vIDVALCATEGORIA",
             "vIDDESC_VALCAT",
             "vNROCAT",
-            "vVALOR",
-            "vSALIDA"
+            "vVALOR"
         ],
         "out_param": [
             "ValorSalida"
@@ -6219,8 +5710,7 @@ module.exports.jsonStoreProcedure = {
             "vIDVALUNICO",
             "vDESCRIPCION",
             "vVALOR",
-            "vIDDESCFIJO",
-            "vSALIDA"
+            "vIDDESCFIJO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6378,9 +5868,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_SEG.CLAVE_USUARIO",
         "in_param": [
             "vIDUS",
-            "vCLAVE",
-            "vSALIDA",
-            "vERROR"
+            "vCLAVE"
         ],
         "out_param": [
             "ValorSalida",
@@ -6391,9 +5879,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_SEG.ESTADO_USUARIO",
         "in_param": [
             "vIDUS",
-            "vESTADO",
-            "vSALIDA",
-            "vERROR"
+            "vESTADO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6404,9 +5890,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_SEG.NUEVO_LOG",
         "in_param": [
             "vIDUSER",
-            "vTEXT",
-            "vSALIDA",
-            "vERROR"
+            "vTEXT"
         ],
         "out_param": [
             "ValorSalida",
@@ -6422,9 +5906,7 @@ module.exports.jsonStoreProcedure = {
             "vMAIL",
             "vESTADO",
             "vROL",
-            "vAPP",
-            "vSALIDA",
-            "vERROR"
+            "vAPP"
         ],
         "out_param": [
             "ValorSalida",
@@ -6435,9 +5917,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_SEG.SET_CONFBOLETA",
         "in_param": [
             "vIDLIQ",
-            "vESTADO",
-            "vSALIDA",
-            "vERROR"
+            "vESTADO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6448,9 +5928,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "MOD_SEG.SET_ROL_USUARIO",
         "in_param": [
             "vIDUS",
-            "vROL",
-            "vSALIDA",
-            "vERROR"
+            "vROL"
         ],
         "out_param": [
             "ValorSalida",
@@ -6501,8 +5979,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDHISTNOM",
             "vIDCONCEPTO",
-            "vOPERACION",
-            "vSALIDA"
+            "vOPERACION"
         ],
         "out_param": [
             "ValorSalida"
@@ -6512,10 +5989,7 @@ module.exports.jsonStoreProcedure = {
         "sp_name": "PKG_CARGA_FAMILIAR.SP_ASIGNA_SALARIO",
         "in_param": [
             "vIDCARGO",
-            "vASIGNA",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vASIGNA"
         ],
         "out_param": [
             "ValorSalida",
@@ -6526,10 +6000,7 @@ module.exports.jsonStoreProcedure = {
     "cargaFam_spdCargaFamiliar": {
         "sp_name": "PKG_CARGA_FAMILIAR.SPD_CARGA_FAMILIAR",
         "in_param": [
-            "vIDCARFAM",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDCARFAM"
         ],
         "out_param": [
             "ValorSalida",
@@ -6547,10 +6018,7 @@ module.exports.jsonStoreProcedure = {
             "vFECHANAC",
             "vIDTABTIPOESC",
             "vGRADO",
-            "vDISCAPACITADO",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vDISCAPACITADO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6569,10 +6037,7 @@ module.exports.jsonStoreProcedure = {
             "vFECHANAC",
             "vIDTABTIPOESC",
             "vGRADO",
-            "vDISCAPACITADO",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vDISCAPACITADO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6583,10 +6048,7 @@ module.exports.jsonStoreProcedure = {
     "conceptoliq_spdConceptoliq": {
         "sp_name": "PKG_CONCEPTOLIQ.SPD_CONCEPTOLIQ",
         "in_param": [
-            "vIDCONCEPTOLIQ",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vIDCONCEPTOLIQ"
         ],
         "out_param": [
             "ValorSalida",
@@ -6606,10 +6068,7 @@ module.exports.jsonStoreProcedure = {
             "vIMPORTE",
             "vPERIODO",
             "vIDGRUPOADI",
-            "vPENLEY",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vPENLEY"
         ],
         "out_param": [
             "ValorSalida",
@@ -6630,10 +6089,7 @@ module.exports.jsonStoreProcedure = {
             "vIMPORTE",
             "vPERIODO",
             "vIDGRUPOADI",
-            "vPENLEY",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vPENLEY"
         ],
         "out_param": [
             "ValorSalida",
@@ -6644,9 +6100,7 @@ module.exports.jsonStoreProcedure = {
     "djPrev_cargaDdjj": {
         "sp_name": "PKG_DDJJ_PREVISIONAL.CARGA_DDJJ",
         "in_param": [
-            "vPERIODO",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "vPERIODO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6667,9 +6121,7 @@ module.exports.jsonStoreProcedure = {
     "djPrev_cargaResumen": {
         "sp_name": "PKG_DDJJ_PREVISIONAL.CARGA_RESUMEN",
         "in_param": [
-            "vPERIODO",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "vPERIODO"
         ],
         "out_param": [
             "ValorSalida",
@@ -6683,9 +6135,7 @@ module.exports.jsonStoreProcedure = {
             "vIDTIPOLIQ",
             "vIDGRUPOADIC",
             "vIDREP",
-            "vPERIODO_LIQ",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "vPERIODO_LIQ"
         ],
         "out_param": [
             "ValorSalida",
@@ -6699,9 +6149,7 @@ module.exports.jsonStoreProcedure = {
             "vIDTIPOLIQ",
             "vIDGRUPOADIC",
             "vIDREP",
-            "vPERIODO_LIQ",
-            "vSALIDA",
-            "vMSG_ERROR"
+            "vPERIODO_LIQ"
         ],
         "out_param": [
             "ValorSalida",
@@ -6711,10 +6159,7 @@ module.exports.jsonStoreProcedure = {
     "paramDdjj_spdParamDdjj": {
         "sp_name": "PKG_PARAM_DDJJ.SPD_PARAM_DDJJ",
         "in_param": [
-            "vID",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vID"
         ],
         "out_param": [
             "ValorSalida",
@@ -6735,10 +6180,7 @@ module.exports.jsonStoreProcedure = {
             "vAPOS_MIN",
             "vAPOS_MAX",
             "vCONTOS_MIN",
-            "vCONTOS_MAX",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vCONTOS_MAX"
         ],
         "out_param": [
             "ValorSalida",
@@ -6760,10 +6202,7 @@ module.exports.jsonStoreProcedure = {
             "vAPOS_MIN",
             "vAPOS_MAX",
             "vCONTOS_MIN",
-            "vCONTOS_MAX",
-            "vSALIDA",
-            "vERROR",
-            "vERRORMSG"
+            "vCONTOS_MAX"
         ],
         "out_param": [
             "ValorSalida",
@@ -6862,8 +6301,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6874,8 +6312,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6886,8 +6323,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6898,8 +6334,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6910,8 +6345,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6922,8 +6356,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6934,8 +6367,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6946,8 +6378,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6958,8 +6389,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6970,8 +6400,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6982,8 +6411,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -6994,8 +6422,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7006,8 +6433,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7018,8 +6444,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7030,8 +6455,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7042,8 +6466,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7054,8 +6477,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7066,8 +6488,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7078,8 +6499,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7090,8 +6510,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7102,8 +6521,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7114,8 +6532,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7126,8 +6543,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7138,8 +6554,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7150,8 +6565,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7162,8 +6576,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7174,8 +6587,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7186,8 +6598,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7198,8 +6609,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7210,8 +6620,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7222,8 +6631,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7234,8 +6642,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7246,8 +6653,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7258,8 +6664,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7270,8 +6675,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7282,8 +6686,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7294,8 +6697,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7306,8 +6708,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7318,8 +6719,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7330,8 +6730,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7342,8 +6741,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7354,8 +6752,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7366,8 +6763,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7378,8 +6774,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7390,8 +6785,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7402,8 +6796,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7414,8 +6807,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7426,8 +6818,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7438,8 +6829,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7450,8 +6840,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7462,8 +6851,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7474,8 +6862,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7486,8 +6873,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7498,8 +6884,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7510,8 +6895,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7522,8 +6906,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7534,8 +6917,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7546,8 +6928,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7558,8 +6939,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7570,8 +6950,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7582,8 +6961,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7594,8 +6972,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7606,8 +6983,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7618,8 +6994,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7630,8 +7005,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7642,8 +7016,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7654,8 +7027,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7666,8 +7038,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7678,8 +7049,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7690,8 +7060,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7702,8 +7071,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7714,8 +7082,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7726,8 +7093,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7738,8 +7104,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7750,8 +7115,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7762,8 +7126,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7774,8 +7137,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7786,8 +7148,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7798,8 +7159,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7810,8 +7170,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7822,8 +7181,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7834,8 +7192,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7846,8 +7203,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7858,8 +7214,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7870,8 +7225,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7882,8 +7236,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7894,8 +7247,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7906,8 +7258,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7918,8 +7269,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7930,8 +7280,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7942,8 +7291,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7954,8 +7302,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7966,8 +7313,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7978,8 +7324,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -7990,8 +7335,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8002,8 +7346,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8014,8 +7357,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8026,8 +7368,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8038,8 +7379,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8050,8 +7390,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8062,8 +7401,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8074,8 +7412,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8086,8 +7423,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8098,8 +7434,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8110,8 +7445,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8122,8 +7456,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8134,8 +7467,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8146,8 +7478,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8158,8 +7489,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8170,8 +7500,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8182,8 +7511,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8194,8 +7522,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8206,8 +7533,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8218,8 +7544,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8230,8 +7555,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8242,8 +7566,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8254,8 +7577,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8266,8 +7588,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8278,8 +7599,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8290,8 +7610,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8302,8 +7621,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8314,8 +7632,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8326,8 +7643,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8338,8 +7654,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8350,8 +7665,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8362,8 +7676,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8374,8 +7687,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8386,8 +7698,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8398,8 +7709,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8410,8 +7720,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8422,8 +7731,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8434,8 +7742,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8446,8 +7753,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8458,8 +7764,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8470,8 +7775,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8482,8 +7786,7 @@ module.exports.jsonStoreProcedure = {
         "in_param": [
             "vIDPERS",
             "vIDCARGO",
-            "vIDCONCEPTO",
-            "vSALIDA"
+            "vIDCONCEPTO"
         ],
         "out_param": [
             "ValorSalida"
@@ -8498,12 +7801,7 @@ module.exports.jsonStoreProcedure = {
     },
     "cuerpoFormula": {
         "sp_name": "SP_CUERPO_FORMULA",
-        "in_param": [
-            "vCONDICION",
-            "vACCION",
-            "vEJEC",
-            "vVARIABLES"
-        ],
+        "in_param": [],
         "out_param": [
             "Vcondicion",
             "Vaccion",
@@ -8519,9 +7817,7 @@ module.exports.jsonStoreProcedure = {
             "vACCION",
             "vDETALLE",
             "vIDCONCEPTO",
-            "vDESC_BREVE",
-            "vSALIDA",
-            "vERROR"
+            "vDESC_BREVE"
         ],
         "out_param": [
             "ValorSalida",
@@ -8536,9 +7832,7 @@ module.exports.jsonStoreProcedure = {
             "vDESCRIPCION",
             "vCABECERA",
             "vCUERPO",
-            "vPIE",
-            "vSALIDA",
-            "vERROR"
+            "vPIE"
         ],
         "out_param": [
             "ValorSalida",

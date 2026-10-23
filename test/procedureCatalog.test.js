@@ -237,5 +237,33 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
         try { fs.unlinkSync(path.resolve(__dirname, '..', 'config', 'spmapper.local.json')); } catch (_) {}
         try { fs.unlinkSync(path.resolve(__dirname, '..', 'config', 'fnmapper.local.json')); } catch (_) {}
     });
+
+    await t.test('detectSpError identifica errores de negocio y excepciones de Oracle', () => {
+        const spapi = require('../db_apis/sp');
+
+        // Éxito: ValorError = 0
+        const successOut = { ValorSalida: '153', ValorError: '0', vErrorMsg: '' };
+        assert.strictEqual(spapi.detectSpError(successOut), null, 'ValorError 0 no debe ser detectado como error');
+
+        // Excepción de base de datos (ej: -1 ORA-00001)
+        const sqlCodeError = { ValorSalida: '0', ValorError: '-1', vErrorMsg: 'No se pudo agregar la hoja' };
+        const detected1 = spapi.detectSpError(sqlCodeError);
+        assert.ok(detected1, 'Debe detectar error de SQLCODE -1');
+        assert.strictEqual(detected1.code, -1);
+        assert.strictEqual(detected1.message, 'No se pudo agregar la hoja');
+
+        // Error de validación de negocio (ej: código 1 o 2 con mensaje)
+        const bizError = { ValorSalida: '0', vError: '1', vErrorMsg: 'El DNI ya se encuentra registrado' };
+        const detected2 = spapi.detectSpError(bizError);
+        assert.ok(detected2, 'Debe detectar error de validación');
+        assert.strictEqual(detected2.code, 1);
+        assert.strictEqual(detected2.message, 'El DNI ya se encuentra registrado');
+
+        // Solo mensaje de error
+        const msgOnly = { Output: null, msgError: 'Fila bloqueada por otro usuario' };
+        const detected3 = spapi.detectSpError(msgOnly);
+        assert.ok(detected3, 'Debe detectar error por mensaje');
+        assert.strictEqual(detected3.message, 'Fila bloqueada por otro usuario');
+    });
 });
 

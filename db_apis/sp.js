@@ -225,6 +225,53 @@ function getSQLbinds(context, sp) {
     return binds;
 }
 
+function detectSpError(outBinds) {
+    if (!outBinds || typeof outBinds !== 'object') return null;
+
+    let errorCode = null;
+    let errorMessage = null;
+
+    for (const [k, v] of Object.entries(outBinds)) {
+        const lower = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+        // Detectar código de error (valorerror, verror, error, etc.)
+        if (
+            lower === 'valorerror' ||
+            lower === 'verror' ||
+            lower === 'pvalorerror' ||
+            lower === 'perror' ||
+            lower === 'error' ||
+            lower === 'errorcode' ||
+            lower === 'coderror' ||
+            (lower.includes('error') && !lower.includes('msg') && !lower.includes('mensaje'))
+        ) {
+            const num = Number(v);
+            if (!isNaN(num) && num !== 0) {
+                errorCode = num;
+            } else if (typeof v === 'string' && v.trim() !== '' && v.trim() !== '0') {
+                errorCode = v.trim();
+            }
+        }
+        // Detectar mensaje de error
+        if (
+            lower.includes('msg') ||
+            lower.includes('mensaje') ||
+            lower.includes('desc')
+        ) {
+            if (typeof v === 'string' && v.trim() !== '') {
+                errorMessage = v.trim();
+            }
+        }
+    }
+
+    if (errorCode !== null || errorMessage !== null) {
+        return {
+            code: errorCode,
+            message: errorMessage || 'Error en la ejecución del procedimiento'
+        };
+    }
+    return null;
+}
+
 async function execStoreProcedure(context, sp) {
     const query = getSQLcall(sp);
     const binds = getSQLbinds(context, sp);
@@ -243,16 +290,29 @@ async function execStoreProcedure(context, sp) {
     }
 
     const millis = Date.now() - start;
+    const spError = detectSpError(result.outBinds);
+    let httpStatus = 200;
+    if (spError) {
+        httpStatus = (typeof spError.code === 'number' && spError.code < 0) ? 500 : 400;
+    }
 
-    return {
-        status: 200,
+    const response = {
+        status: httpStatus,
         call: query,
         params: binds,
         out: result.outBinds,
         elapsed: Math.floor(millis / 1000)
     };
+
+    if (spError) {
+        response.error = spError.message;
+        response.errorCode = spError.code;
+    }
+
+    return response;
 }
 
 module.exports.getSQLcall = getSQLcall;
 module.exports.getSQLbinds = getSQLbinds;
 module.exports.execStoreProcedure = execStoreProcedure;
+module.exports.detectSpError = detectSpError;

@@ -202,7 +202,8 @@ async function execSP(req, res, next) {
         }
 
         if (result) {
-            res.status(200).json(result);
+            const statusCode = result.status || 200;
+            res.status(statusCode).json(result);
         } else {
             res.status(404).end();
         }
@@ -225,9 +226,12 @@ async function execFN(req, res, next) {
             result = await fnapi.execFn(context, fnConfig);
         }
 
-        const val = result ? res.status(200).json(result) : res.status(404).end();
-
-        return val;
+        if (result) {
+            const statusCode = (result && result.status) ? result.status : 200;
+            res.status(statusCode).json(result);
+        } else {
+            res.status(404).end();
+        }
 
     } catch (err) {
         next(err);

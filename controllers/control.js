@@ -151,9 +151,26 @@ async function getView(req, res, next) {
 
         context = req.query;
 
-        //let entityName = 'personaCargoLiq';
         let entityName = req.path.substring(6);
-        //console.log(entityName);
+        // Soporte tolerante si la URL fue concatenada erróneamente con '&' en vez de '?' (ej: /view/hojaNov&sort=...)
+        if (entityName.includes('&')) {
+            const parts = entityName.split('&');
+            entityName = parts[0];
+            for (let i = 1; i < parts.length; i++) {
+                const eqIdx = parts[i].indexOf('=');
+                if (eqIdx !== -1) {
+                    const k = parts[i].substring(0, eqIdx);
+                    const v = parts[i].substring(eqIdx + 1);
+                    if (k && req.query[k] === undefined) {
+                        try {
+                            req.query[k] = decodeURIComponent(v);
+                        } catch (_) {
+                            req.query[k] = v;
+                        }
+                    }
+                }
+            }
+        }
 
         const viewConfig = await viewCatalog.getViewConfig(entityName);
         if (viewConfig) {

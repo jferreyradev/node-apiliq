@@ -89,6 +89,34 @@ const SP_ALIASES = {
     'novaltasestado': 'NovAltasEstado',
 };
 
+/**
+ * Sanitiza la configuración de un SP para evitar que parámetros OUT
+ * (como VSALIDA, VERROR, VERRORMSG) queden duplicados dentro de in_param.
+ */
+function sanitizeProcConfig(cfg) {
+    if (!cfg || typeof cfg !== 'object') return cfg;
+    const copy = { ...cfg };
+    if (Array.isArray(copy.in_param) && Array.isArray(copy.out_param) && copy.out_param.length > 0) {
+        const outNorms = new Set(copy.out_param.map(o => {
+            const u = String(o).toUpperCase();
+            if (u === 'VALORSALIDA' || u === 'VSALIDA' || u === 'SALIDA') return 'SALIDA';
+            if (u === 'VALORERROR' || u === 'VERROR' || u === 'ERROR') return 'ERROR';
+            if (u.includes('MSG') || u.includes('MENSAJE')) return 'MSG';
+            return u.replace(/^(V_|V|P_|P)/, '');
+        }));
+
+        copy.in_param = copy.in_param.filter(inP => {
+            const u = String(inP).toUpperCase();
+            if (u === 'VSALIDA' || u === 'SALIDA' || u === 'P_SALIDA') return !outNorms.has('SALIDA');
+            if (u === 'VERROR' || u === 'ERROR' || u === 'P_ERROR') return !outNorms.has('ERROR');
+            if (u.includes('MSG') || u.includes('MENSAJE')) return !outNorms.has('MSG');
+            const norm = u.replace(/^(V_|V|P_|P)/, '');
+            return !outNorms.has(norm);
+        });
+    }
+    return copy;
+}
+
 function clearCache() {
     spCache.clear();
     fnCache.clear();
@@ -343,42 +371,44 @@ async function getSpConfig(spName) {
 
     // 2. Mapeo histórico en spmapper.js (Garantía retrocompatible de nombres existentes)
     if (spmapper && spmapper.jsonStoreProcedure && spmapper.jsonStoreProcedure[spName]) {
-        const legacyConfig = spmapper.jsonStoreProcedure[spName];
-        spCache.set(spName, legacyConfig);
-        return legacyConfig;
+        const clean = sanitizeProcConfig(spmapper.jsonStoreProcedure[spName]);
+        spCache.set(spName, clean);
+        return clean;
     }
 
     // 2.1 Alias conocidos a nombres canónicos (ej: persUpd -> PersonaUpd)
     const aliasTarget = SP_ALIASES[lowerName];
     if (aliasTarget && spmapper && spmapper.jsonStoreProcedure && spmapper.jsonStoreProcedure[aliasTarget]) {
-        const aliasConfig = spmapper.jsonStoreProcedure[aliasTarget];
-        spCache.set(spName, aliasConfig);
-        return aliasConfig;
+        const clean = sanitizeProcConfig(spmapper.jsonStoreProcedure[aliasTarget]);
+        spCache.set(spName, clean);
+        return clean;
     }
 
     // 2.2 Búsqueda insensible a mayúsculas/minúsculas en spmapper.js
     if (spmapper && spmapper.jsonStoreProcedure) {
         for (const [k, v] of Object.entries(spmapper.jsonStoreProcedure)) {
             if (k.toLowerCase() === lowerName) {
-                spCache.set(spName, v);
-                return v;
+                const clean = sanitizeProcConfig(v);
+                spCache.set(spName, clean);
+                return clean;
             }
         }
     }
 
     // 3. Mapeo generado desde Oracle (715 SPs)
     if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure && spmapperGenerated.jsonStoreProcedure[spName]) {
-        const genConfig = spmapperGenerated.jsonStoreProcedure[spName];
-        spCache.set(spName, genConfig);
-        return genConfig;
+        const clean = sanitizeProcConfig(spmapperGenerated.jsonStoreProcedure[spName]);
+        spCache.set(spName, clean);
+        return clean;
     }
 
     // 3.1 Búsqueda insensible a mayúsculas/minúsculas en spmapperGenerated
     if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure) {
         for (const [k, v] of Object.entries(spmapperGenerated.jsonStoreProcedure)) {
             if (k.toLowerCase() === lowerName) {
-                spCache.set(spName, v);
-                return v;
+                const clean = sanitizeProcConfig(v);
+                spCache.set(spName, clean);
+                return clean;
             }
         }
     }
@@ -386,8 +416,9 @@ async function getSpConfig(spName) {
     // 4. Introspección en vivo desde Oracle
     const discovered = await introspectFromOracle(spName);
     if (discovered && !discovered.isFunction && discovered.config) {
-        spCache.set(spName, discovered.config);
-        return discovered.config;
+        const clean = sanitizeProcConfig(discovered.config);
+        spCache.set(spName, clean);
+        return clean;
     }
 
     return null;
@@ -455,23 +486,85 @@ async function getFnConfig(fnName) {
 
 /**
  * Retorna todos los procedimientos conocidos (generados + históricos + locales + descubiertos en RAM).
+ * Por defecto (dedup !== false), deduplica por nombre de procedimiento Oracle (sp_name)
+ * priorizando los nombres canónicos de spmapper.js para que en la UI no aparezcan SPs duplicados.
  */
-async function getAllSp() {
-    const all = {};
+async function getAllSp(options = {}) {
+    const dedup = options.dedup !== false;
+    const rawAll = {};
+
     if (spmapperGenerated && spmapperGenerated.jsonStoreProcedure) {
-        Object.assign(all, spmapperGenerated.jsonStoreProcedure);
+        Object.assign(rawAll, spmapperGenerated.jsonStoreProcedure);
     }
     if (spmapper && spmapper.jsonStoreProcedure) {
-        Object.assign(all, spmapper.jsonStoreProcedure);
+        Object.assign(rawAll, spmapper.jsonStoreProcedure);
     }
     const localSp = loadLocalJsonMapper('spmapper.local.json');
     if (localSp && typeof localSp === 'object') {
-        Object.assign(all, localSp);
+        Object.assign(rawAll, localSp);
     }
     for (const [key, val] of spCache.entries()) {
-        all[key] = val;
+        rawAll[key] = val;
     }
-    return all;
+
+    if (!dedup) {
+        const result = {};
+        for (const [k, v] of Object.entries(rawAll)) {
+            result[k] = sanitizeProcConfig(v);
+        }
+        return result;
+    }
+
+    // Deduplicación inteligente por sp_name (evita SPs repetidos en UI / Explorer):
+    const bySpName = new Map();
+
+    // 1. Priorizar nombres canónicos de spmapper.js (HojaIns, PersonaUpd, etc.)
+    if (spmapper && spmapper.jsonStoreProcedure) {
+        for (const [key, cfg] of Object.entries(spmapper.jsonStoreProcedure)) {
+            if (!cfg || !cfg.sp_name) continue;
+            const norm = cfg.sp_name.toUpperCase().trim();
+            if (!bySpName.has(norm)) {
+                bySpName.set(norm, {
+                    primaryKey: key,
+                    config: sanitizeProcConfig(cfg),
+                    aliases: []
+                });
+            } else {
+                const entry = bySpName.get(norm);
+                if (entry.primaryKey !== key && !entry.aliases.includes(key)) {
+                    entry.aliases.push(key);
+                }
+            }
+        }
+    }
+
+    // 2. Incorporar el resto de SPs generados / locales / cache sin duplicar
+    for (const [key, cfg] of Object.entries(rawAll)) {
+        if (!cfg || !cfg.sp_name) continue;
+        const norm = cfg.sp_name.toUpperCase().trim();
+        if (bySpName.has(norm)) {
+            const entry = bySpName.get(norm);
+            if (entry.primaryKey !== key && !entry.aliases.includes(key)) {
+                entry.aliases.push(key);
+            }
+        } else {
+            bySpName.set(norm, {
+                primaryKey: key,
+                config: sanitizeProcConfig(cfg),
+                aliases: []
+            });
+        }
+    }
+
+    const deduped = {};
+    for (const [, item] of bySpName.entries()) {
+        const finalConfig = { ...item.config };
+        if (item.aliases.length > 0) {
+            finalConfig.aliases = item.aliases;
+        }
+        deduped[item.primaryKey] = finalConfig;
+    }
+    return deduped;
 }
 
 /**

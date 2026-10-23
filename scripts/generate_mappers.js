@@ -323,7 +323,12 @@ function generateSpMapper(procedures, existingSpMap = {}) {
         const outParams = [];
 
         for (const arg of proc.arguments) {
-            if (arg.inOut === 'IN' || arg.inOut === 'IN/OUT') {
+            const isOutVar = (arg.name || '').toUpperCase().includes('SALIDA') ||
+                             (arg.name || '').toUpperCase().includes('ERROR') ||
+                             (arg.name || '').toUpperCase().includes('MSG') ||
+                             (arg.name || '').toUpperCase().includes('CURSOR');
+
+            if (arg.inOut === 'IN' || (arg.inOut === 'IN/OUT' && !isOutVar)) {
                 inParams.push(formatInParam(arg.name));
             }
             if (arg.inOut === 'OUT' || arg.inOut === 'IN/OUT') {

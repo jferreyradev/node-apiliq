@@ -200,9 +200,19 @@ test('procedureCatalog resuelve procedimientos y funciones', async (t) => {
     await t.test('getAllSp incluye mappers generados e importProceduresFromObject registra nuevos SPs y FNs', async () => {
         const fs = require('fs');
         const path = require('path');
-        const allSp = await procedureCatalog.getAllSp();
+        const allSp = await procedureCatalog.getAllSp({ dedup: false });
         assert.ok(allSp.exportacion_generaArchivoAcred, 'Debe incluir SPs de spmapper.generated');
         assert.ok(allSp.cambioPeriodo, 'Debe incluir SPs de spmapper legacy');
+
+        // Verificar deduplicación por defecto
+        const dedupedSp = await procedureCatalog.getAllSp();
+        assert.ok(dedupedSp.HojaIns, 'Debe tener HojaIns como canónico');
+        assert.ok(!dedupedSp.nov_spiHojaNov, 'nov_spiHojaNov debe ser unificado bajo HojaIns');
+        assert.ok(dedupedSp.HojaIns.aliases && dedupedSp.HojaIns.aliases.includes('nov_spiHojaNov'));
+        // in_param no debe incluir vSALIDA ni vERROR
+        assert.ok(!dedupedSp.HojaIns.in_param.includes('vSALIDA'));
+        assert.ok(!dedupedSp.HojaIns.in_param.includes('vERROR'));
+        assert.strictEqual(dedupedSp.HojaIns.in_param.length, 6, 'HojaIns debe tener exactamente 6 in_params');
 
         const res = procedureCatalog.importProceduresFromObject({
             spTestImportado: {

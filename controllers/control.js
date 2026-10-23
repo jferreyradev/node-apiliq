@@ -219,7 +219,8 @@ async function execFN(req, res, next) {
 
 async function getProc(req, res, next) {
     try {
-        const result = await procedureCatalog.getAllSp();
+        const dedup = req.query && req.query.all === 'true' ? false : true;
+        const result = await procedureCatalog.getAllSp({ dedup });
         const val = result ? res.status(200).json(result) : res.status(404).end();
 
         return val;

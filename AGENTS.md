@@ -112,7 +112,7 @@ api_liquid/
 ## ⚙️ 4. Flujos Clave de la API
 
 ### Flujo A: Consultas y Vistas Dinámicas (`GET /api/view/:name`)
-1. Llega la petición: `GET /api/view/empleadosPorRep?IdRep=1&fields=PersonaId,ApeNom&limit=50&offset=0`.
+1. Llega la petición: `GET /api/view/empleadosPorRep?IdRep=1&fields=PersonaId,ApeNom&limit=50&offset=0` (incluye tolerancia defensiva si la URL se invoca con `&` en vez de `?`, ej. `GET /api/view/hojaNov&sort=...`).
 2. `viewCatalog.getViewConfig(name)` busca en la **memoria RAM** (latencia 0 ms).
    - Si no está en RAM, consulta la tabla `API_VIEW_MAPPER` en Oracle.
    - Si la BD está caída, recurre al fallback local `config/mapperViews.js`.
@@ -126,10 +126,14 @@ api_liquid/
 3. `sqlViewParser.parseSqlToViewConfig(sqlText)` desglosa columnas, alias, tablas, joins y filtros `:param`.
 4. Se guarda en Oracle mediante `API_VIEW_MAPPER_PKG.UPSERT_VIEW` y se actualiza la memoria RAM inmediatamente sin reiniciar el servidor.
 
-### Flujo C: Stored Procedures en Tiempo Real (`POST /api/sp/:name`)
-1. El usuario invoca `POST /api/sp/hojaIns` con `{ "vIDREP": 1, ... }`.
-2. `procedureCatalog.getSpConfig(name)` consulta `ALL_ARGUMENTS` en Oracle para descubrir tipos y direcciones (`IN`, `OUT`, `IN/OUT`).
+### Flujo C: Stored Procedures en Tiempo Real (`POST /api/sp/:name`) y Manejo Real de Errores
+1. El usuario invoca `POST /api/sp/hojaIns` (o cualquiera de sus `aliases`, ej. `POST /api/sp/nov_spiHojaNov`) con `{ "vIDREP": 1, ... }`.
+2. `procedureCatalog.getSpConfig(name)` resuelve la firma real en Oracle (`ALL_ARGUMENTS`), depurando cualquier variable `OUT` para que nunca se duplique en `in_param`.
 3. Construye el bloque PL/SQL anónimo dinámicamente y mapea binds de entrada y cursores `CURSOR` o valores de salida.
+4. **Manejo Real de Errores (HTTP 400 / 500):**
+   - Si el SP devuelve `ValorError < 0` (excepción de BD, ej. `-1` `ORA-00001`), responde con **HTTP 500 Internal Server Error**.
+   - Si devuelve `ValorError > 0` o mensaje en `vErrorMsg` (error de validación de negocio), responde con **HTTP 400 Bad Request**.
+   - El payload de error incluye `{ status, error, errorCode, call, params, out, elapsed }`.
 
 ### Flujo D: Carga Masiva de Archivos a Tablas (`POST /api/import/*`)
 1. **Paso 1 (Preview):** `POST /api/import/preview` recibe buffer binario `.xlsx` o `.csv`.

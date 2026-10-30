@@ -195,12 +195,52 @@ async function initialize() {
 module.exports.initialize = initialize;
 */
 
-async function close() {
-    await oracledb.getPool().close();
-    console.log('Desconexión a BD.');
+async function close(drainTime = 10) {
+    try {
+        const pool = oracledb.getPool();
+        if (pool) {
+            // drainTime en segundos permite que las consultas activas finalicen antes de forzar el cierre
+            await pool.close(drainTime);
+            console.log(`Desconexión a BD exitosa (drainTime: ${drainTime}s).`);
+        }
+    } catch (err) {
+        if (!err.message || !err.message.includes('NJS-047')) {
+            console.warn('Aviso al cerrar el pool de conexiones:', err.message);
+        }
+    }
 }
 
 module.exports.close = close;
+
+/**
+ * Obtiene métricas en vivo del estado del pool de conexiones Oracle.
+ */
+function getPoolStats() {
+    try {
+        const pool = oracledb.getPool();
+        if (!pool) {
+            return { status: 'uninitialized', open: false, message: 'Pool de Oracle no inicializado' };
+        }
+        return {
+            status: pool.status !== undefined ? (pool.status === oracledb.POOL_STATUS_OPEN ? 'open' : String(pool.status)) : 'open',
+            open: true,
+            connectionsOpen: typeof pool.connectionsOpen === 'number' ? pool.connectionsOpen : 0,
+            connectionsInUse: typeof pool.connectionsInUse === 'number' ? pool.connectionsInUse : 0,
+            poolMin: pool.poolMin !== undefined ? pool.poolMin : (dbConfig.dbPool ? dbConfig.dbPool.poolMin : 4),
+            poolMax: pool.poolMax !== undefined ? pool.poolMax : (dbConfig.dbPool ? dbConfig.dbPool.poolMax : 10),
+            poolIncrement: pool.poolIncrement !== undefined ? pool.poolIncrement : (dbConfig.dbPool ? dbConfig.dbPool.poolIncrement : 1),
+            poolTimeout: pool.poolTimeout !== undefined ? pool.poolTimeout : (dbConfig.dbPool ? dbConfig.dbPool.poolTimeout : 60)
+        };
+    } catch (_) {
+        return {
+            status: 'uninitialized',
+            open: false,
+            message: 'Pool de Oracle no disponible o no inicializado'
+        };
+    }
+}
+
+module.exports.getPoolStats = getPoolStats;
 
 function getQueryLimits(query) {
     return `SELECT * FROM (SELECT A.*, ROWNUM AS MY_RNUM FROM ( ${query} ) A

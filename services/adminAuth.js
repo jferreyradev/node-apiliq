@@ -131,6 +131,9 @@ async function adminHealthHandler(req, res) {
         }
     };
 
+    const database = require('./database');
+    health.database.pool = database.getPoolStats();
+
     if (req.query.testDb === 'true') {
         const oracledb = require('oracledb');
         let conn;
@@ -158,10 +161,24 @@ async function adminHealthHandler(req, res) {
     res.status(200).json(health);
 }
 
+/**
+ * Endpoint de telemetría y diagnóstico en vivo del pool de conexiones Oracle (/api/admin/pool-status).
+ */
+function adminPoolStatusHandler(req, res) {
+    const database = require('./database');
+    const stats = database.getPoolStats();
+    res.status(200).json({
+        service: 'node-apiliq',
+        pool: stats,
+        timestamp: new Date().toISOString()
+    });
+}
+
 module.exports = {
     adminAuthMiddleware,
     verifyKeyHandler,
     adminHealthHandler,
+    adminPoolStatusHandler,
     extractKeyFromRequest,
     valuesMatch
 };

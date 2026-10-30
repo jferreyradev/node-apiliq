@@ -11,6 +11,12 @@ const importController = require('../controllers/importController.js');
 
 const app = new express.Router();
 
+const requestIdMiddleware = require('./requestId');
+const compressionMiddleware = require('./compression');
+
+app.use(requestIdMiddleware);
+app.use(compressionMiddleware());
+
 const control = require('../controllers/control');
 const controlUser = require('../controllers/controlUsers');
 const createInternalAccessMiddleware = require('./internalAccess');
@@ -99,6 +105,7 @@ app.use(cors(createCorsOptions()));
 
 app.route('/admin/verify').post(adminAuth.verifyKeyHandler);
 app.route('/admin/health').get(adminAuth.adminHealthHandler);
+app.route('/admin/pool-status').get(adminAuth.adminAuthMiddleware, adminAuth.adminPoolStatusHandler);
 
 app.route('/view/list').get(control.getViews);
 app.route('/view/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
@@ -162,6 +169,7 @@ app.use((err, req, res, next) => {
     const safeStatusCode = statusCode >= 400 && statusCode <= 599 ? statusCode : 500;
 
     console.error('API request failed', {
+        requestId: req.id,
         method: req.method,
         path: req.originalUrl,
         statusCode: safeStatusCode,

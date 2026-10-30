@@ -46,10 +46,10 @@ async function shutdown(e) {
 
     try {
         console.log('Closing database module');
-        await database.close();
-    } catch (err) {
-        console.log('Encountered error', e);
-        err = err || e;
+        await database.close(10);
+    } catch (dbErr) {
+        console.log('Encountered error', dbErr);
+        err = err || dbErr;
         console.log(err);
     }
 

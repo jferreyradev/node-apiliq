@@ -58,7 +58,7 @@ Cualquier agente que modifique este código **DEBE** respetar estas reglas:
   ```bash
   npm test
   ```
-  Todas las pruebas (72+ tests) deben pasar con 0 fallos.
+  Todas las pruebas (107 tests) deben pasar con 0 fallos.
 
 ### Regla 6: Regla de Dominio para Períodos (Siempre Día `01`)
 * 📅 **SIEMPRE el día es `01`** al trabajar con períodos de liquidación en toda la API (`Periodo`, `vPERIODO`, `PeriodoLiq`, `PeriodoDDJJ`, `vPERIODO_HASTA`, `vPER`). **Solamente cambian el mes y el año**.
@@ -91,6 +91,8 @@ api_liquid/
 ├── services/
 │   ├── database.js          # Inicialización de Oracle Client (Thick/Thin) y Pool
 │   ├── router.js            # Router central Express y montaje de rutas /api/*
+│   ├── requestId.js         # Asignación y propagación de cabecera X-Request-ID
+│   ├── compression.js       # Compresión HTTP nativa (Gzip/Deflate) sin dependencias
 │   ├── viewCatalog.js       # Caché RAM de vistas + tabla Oracle API_VIEW_MAPPER
 │   ├── procedureCatalog.js  # Introspección en vivo de SPs/FNs desde ALL_ARGUMENTS
 │   ├── sqlViewParser.js     # Auto-parser de sentencias SELECT planas

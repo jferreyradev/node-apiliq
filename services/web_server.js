@@ -44,12 +44,25 @@ function initialize() {
 
 module.exports.initialize = initialize;
 
-function close() {
+function close(timeoutMs = 10000) {
     return new Promise((resolve, reject) => {
         if (!httpServer) {
             return resolve();
         }
+
+        let timer;
+        if (timeoutMs > 0) {
+            timer = setTimeout(() => {
+                if (typeof httpServer.closeIdleConnections === 'function') {
+                    httpServer.closeIdleConnections();
+                }
+                resolve();
+            }, timeoutMs);
+            if (timer.unref) timer.unref();
+        }
+
         httpServer.close(err => {
+            if (timer) clearTimeout(timer);
             if (err) return reject(err);
             resolve();
         });

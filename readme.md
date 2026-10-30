@@ -2,22 +2,25 @@
 
 API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19c)** para la gestión y liquidación de sueldos municipales, generación de boletas PDF, reportes Excel/TXT, intercambio de novedades IPSST y ejecución dinámica de procedimientos y consultas.
 
-> 🚀 **¿Necesitas instalar el servidor desde cero rápidamente?** Consulta la **[Guía Rápida de Puesta en Marcha para Terceros (PUESTA_EN_MARCHA.md)](PUESTA_EN_MARCHA.md)** con instrucciones detalladas para Linux (Ubuntu/Debian/RHEL), macOS y Windows.
+> 📚 **Documentación y Guías Operativas:**
+> * 🖥️ **[Manual Operativo: Instalación, Actualización y Logs (Windows / Linux)](docs/GUIA_OPERATIVA_DESPLIEGUE_Y_LOGS.md)** — *Guía paso a paso para instaladores (NSSM, Servicios Windows, PM2, Systemd).*
+> * 🏛️ **[Justificación Técnica y Defensa Arquitectónica](docs/JUSTIFICACION_TECNICA_ARQUITECTURA.md)** — *Documento formal para directores y comités técnicos (por qué Node.js supera a PHP y métricas).*
+> * 🍓 **[Instructivo: Despliegue en Raspberry Pi con Cloudflare Tunnel](docs/INSTRUCTIVO_DESPLIEGUE_RASPBERRY_PI_CLOUDFLARE.md)** — *Aislamiento total de Oracle en red local con salida HTTPS segura.*
+> * 🚀 **[Puesta en Marcha Rápida (PUESTA_EN_MARCHA.md)](PUESTA_EN_MARCHA.md)** — *Instrucciones rápidas de instalación inicial.*
 
 ---
 
 ## 🌟 Características Principales
 
-* **Arquitectura Dinámica Zero-Config**: Se prescinde de la edición manual de archivos de mapeo en tiempo de ejecución.
-* **Catálogo de Consultas en Base de Datos**: Las vistas y consultas residen en la tabla `API_VIEW_MAPPER` con recarga en memoria RAM (0 ms de latencia) y fallback automático.
-* **Auto-Parser SQL**: Permite crear nuevas consultas en la API simplemente enviando la sentencia `SELECT ... FROM ...` pura o leyendo una vista física de Oracle.
-* **Introspección en Vivo de Stored Procedures y Funciones**: La API descubre los parámetros `IN` y `OUT` consultando `ALL_ARGUMENTS` en tiempo real.
-* **Carga Masiva de Archivos a Tablas Oracle**: Importación por lotes de archivos Excel (`.xlsx`, `.xls`) y delimitados (`.csv`, `.tsv`, `.txt`) a cualquier tabla de la base de datos con `executeMany`, introspección de columnas, auto-mapeo visual y rollback atómico.
-* **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends existentes (`HojaIns`, `novHaberesDel`, `cargoIns`, `verifConcepto`, etc.).
-* **Generación de Boletas PDF y Reportes XLSX**: Soporte para generación vectorial de recibos y exportación de planillas.
-* **Procesamiento de Novedades IPSST**: Flujo en dos pasos con `uploadId` único y aislado para evitar colisiones concurrentes.
-* **Developer & Admin Studio Integrado**: Interfaz visual moderna integrada en la propia API (`/admin`) con **API Explorer**, explorador interactivo de las 54 vistas, selector de columnas (`?fields=...`), creador SQL Studio en tiempo real, tester de Stored Procedures con binds dinámicos e importador masivo de Excel/CSV a Oracle.
-* **Seguridad y Producción**: CORS configurable con whitelist, protección de endpoints de modificación y Frontend Studio mediante clave maestra (`ADMIN_ACCESS_KEY`), clave interna `X-Internal-Key` para llamadas desde Deno, y arquitectura de puerto único optimizada para proxy inverso HTTPS (Nginx/Caddy).
+* **Arquitectura Dinámica Zero-Config**: Se prescinde de la edición manual de archivos de mapeo en tiempo de ejecución; las vistas y Stored Procedures se administran sobre la tabla `API_VIEW_MAPPER` y el diccionario `ALL_ARGUMENTS` en tiempo real.
+* **Compresión HTTP Dinámica y Transparente**: Middleware nativo Gzip que reduce el tamaño del JSON hasta en un 85% sobre enlaces VPN municipales.
+* **Trazabilidad con `X-Request-Id`**: Cada petición cuenta con un UUID único propagado en headers y logs de error para auditorías instantáneas.
+* **Telemetría y Estado del Pool en Tiempo Real**: Endpoint protegido `GET /api/admin/pool-status` para monitorear conexiones abiertas y en uso en Oracle.
+* **Cierre Suave (*Graceful Shutdown*)**: Drenado ordenado de 10 segundos en el pool de Oracle para evitar transacciones huérfanas al reiniciar el servidor.
+* **Catálogo de Consultas en Base de Datos**: Vistas cacheadas en memoria RAM (latencia 0 ms) con sincronización en caliente y fallback pasivo.
+* **Carga Masiva de Archivos a Tablas Oracle**: Importación por lotes de archivos Excel (`.xlsx`, `.xls`) y delimitados (`.csv`, `.tsv`, `.txt`) con `executeMany` (2.000 filas por lote) y rollback atómico.
+* **100% Retrocompatible**: Conserva todos los nombres y endpoints históricos utilizados por los frontends (`liq-panel` en Vue 3 y `dno-admin-bridge` en Deno).
+* **Suite de 107 Tests Automatizados**: Ejecución en menos de 2 segundos mediante `npm test` con 0 dependencias externas de testing.
 
 ---
 
@@ -39,25 +42,18 @@ npm install
 ```
 
 ### 2. Configurar Variables de Entorno (`.env`)
-Crea o edita tu archivo `.env` en la raíz del proyecto:
+Crea tu archivo `.env` en la raíz del proyecto con la configuración esencial:
 ```env
 USERDB="US_SUELDO"
 PASSWORD="TuPassword"
-CONNECTIONSTRING="181.14.228.210:1521/desa"
+CONNECTIONSTRING="192.168.1.50:1521/desa"
 
+ADMIN_ACCESS_KEY="admin_liq_2026"
 PORT=3005
+
+# Opcional (solo si Instant Client está en una carpeta local personalizada):
 # ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
-LOGO_PATH=./assets/logo.png
-
-# Clave maestra para Developer & Admin Studio y endpoints de modificación
-ADMIN_ACCESS_KEY=admin_liq_2026
-ENABLE_ADMIN_STUDIO=true
-
-# Opcional: Clave interna para peticiones del puente Deno
-REQUIRE_INTERNAL_KEY=false
-API_INTERNAL_KEY=clave_secreta_desa
-
-# Opcional: Whitelist CORS (separada por comas)
+```
 CORS_ORIGINS=http://localhost:3005,https://liq.midominio.com
 ```
 

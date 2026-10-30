@@ -81,9 +81,8 @@ USERDB="US_SUELDO"
 PASSWORD="TuPasswordSegura"
 CONNECTIONSTRING="192.168.1.50:1521/ORCL"
 
-PORT=3005
 ADMIN_ACCESS_KEY="admin_liq_2026"
-ENABLE_ADMIN_STUDIO=true
+PORT=3005
 
 # Solo si el Instant Client está en una carpeta personalizada:
 # ORACLE_CLIENT_LIB_DIR="/opt/oracle/instantclient_23_4"

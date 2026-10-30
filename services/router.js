@@ -23,8 +23,6 @@ const createInternalAccessMiddleware = require('./internalAccess');
 const createCorsOptions = require('./corsConfig');
 const adminAuth = require('./adminAuth');
 
-const { json } = require('body-parser');
-
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 
 const options = {
@@ -67,39 +65,6 @@ app.use(morgan('combined', { stream: accessLogStream }));
 app.use(helmet());
 
 app.use(createInternalAccessMiddleware());
-
-/*
-const whitelist = ['http//localhost:3005',
-    'https//localhost:3003',
-    'http//localhost:5173',
-    'http://liq-trancas.surge.sh',
-    'https://liq-trancas.surge.sh',
-    'http://liq-trancas-dev.surge.sh',
-    'https://liq-trancas-dev.surge.sh',
-    'https://liq-dev.surge.sh',
-    'http://servertrancas.duckdns.org:8090',
-    'http://servertrancas.duckdns.org:8091'];
-
-
-const corsOptions = {
-    origin: function (origin, callback) {
-        console.log(origin);
-        if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORDS'))
-        }
-    }
-};
-
-/*
-app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
-*/
 
 app.use(cors(createCorsOptions()));
 

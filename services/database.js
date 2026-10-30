@@ -182,19 +182,6 @@ async function initialize() {
 
 module.exports.initialize = initialize;
 
-/*
-const oracledb = require('oracledb');
-const dbConfig = require('../config/database');
-
-async function initialize() {
-    //console.log(dbConfig.dbPool)
-    const pool = await oracledb.createPool(dbConfig.dbPool);
-    console.log('Conexión a BD establecida.');
-}
-
-module.exports.initialize = initialize;
-*/
-
 async function close(drainTime = 10) {
     try {
         const pool = oracledb.getPool();

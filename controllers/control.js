@@ -22,7 +22,6 @@ var path = require('path');
 const { simpleExecute, getConnection } = require('../services/database');
 const database = require('../config/database');
 const embedLogo = require('../db_apis/embedLogo');
-//var URL = require('url');
 
 // private func
 

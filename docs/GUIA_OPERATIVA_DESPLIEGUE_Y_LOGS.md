@@ -62,13 +62,13 @@ notepad .env
 #### Configuración Mínima en `.env`:
 Modifica el archivo con los datos del servidor Oracle de la municipalidad:
 ```env
-USERDB="US_SUELDO"
-PASSWORD="TuPassword"
-# IP del servidor Oracle en la red local o VPN
-CONNECTIONSTRING="192.168.1.50:1521/desa"
+USERDB="<USUARIO_ORACLE>"
+PASSWORD="<PASSWORD_ORACLE>"
+# Host/IP del servidor Oracle y servicio (ejemplo: 192.168.1.X:1521/ORCL)
+CONNECTIONSTRING="<HOST_ORACLE>:<PUERTO_ORACLE>/<SERVICIO>"
 
 # Clave maestra de administración
-ADMIN_ACCESS_KEY="admin_liq_2026"
+ADMIN_ACCESS_KEY="<TU_CLAVE_ADMIN_AQUI>"
 
 PORT=3005
 ```
@@ -300,7 +300,7 @@ Devuelve estado del servidor y confirma: `"connected": true, "message": "Conexi�
 
 ### 3. Supervisar el Pool de Conexiones en Tiempo Real:
 ```bash
-curl -H "X-Admin-Key: admin_liq_2026" http://localhost:3005/api/admin/pool-status
+curl -H "X-Admin-Key: <TU_CLAVE_ADMIN>" http://localhost:3005/api/admin/pool-status
 ```
 Muestra conexiones abiertas, en uso y límites de cola.
 
@@ -312,6 +312,6 @@ Muestra conexiones abiertas, en uso y límites de cola.
 | :--- | :--- | :--- |
 | `EADDRINUSE: address already in use :::3005` | El puerto 3005 ya está ocupado por otra instancia. | **Windows:** En PowerShell corre `Get-Process -Id (Get-NetTCPConnection -LocalPort 3005).OwningProcess \| Stop-Process -Force`.<br>**Linux:** Corre `npx kill-port 3005`. |
 | `DPI-1047: Cannot locate a 64-bit Oracle Client library` | Falta descomprimir Instant Client de 64 bits en Windows o la arquitectura es de 32 bits. | Asegúrate de instalar Node.js de 64 bits y descomprimir Instant Client 64-bit en `C:\oracle\instantclient_19_24`. |
-| `ORA-12541: TNS:no listener` o timeout de conexión | La IP o el puerto de Oracle en `.env` son inalcanzables desde esta máquina. | Comprueba con `Test-NetConnection -ComputerName 192.168.1.50 -Port 1521` (en PowerShell) si el puerto está accesible en la red. |
+| `ORA-12541: TNS:no listener` o timeout de conexión | La IP o el puerto de Oracle en `.env` son inalcanzables desde esta máquina. | Comprueba con `Test-NetConnection -ComputerName <HOST_ORACLE> -Port <PUERTO_ORACLE>` (en PowerShell) si el puerto está accesible en la red. |
 | `ORA-01017: invalid username/password` | Clave o usuario erróneo. | Revisa `USERDB` y `PASSWORD` en tu archivo `.env`. |
-| `HTTP 401 Unauthorized` | Petición a ruta administrativa sin clave. | Incluir cabecera `X-Admin-Key: admin_liq_2026` en la solicitud HTTP. |
+| `HTTP 401 Unauthorized` | Petición a ruta administrativa sin clave. | Incluir cabecera `X-Admin-Key: <TU_CLAVE_ADMIN>` en la solicitud HTTP. |

@@ -51,12 +51,10 @@ flowchart TD
 ### Paso 1: Variables de Entorno (`.env`)
 Verifica que tu archivo `.env` tenga los valores correctos de conexión a Oracle:
 ```env
-USERDB="US_SUELDO"
-PASSWORD="TuPassword"
-CONNECTIONSTRING="181.14.228.210:1521/desa"
-HTTP_PORT=3005
-HTTPS_PORT=3007
-ENABLE_HTTPS=false
+USERDB="<USUARIO_ORACLE>"
+PASSWORD="<PASSWORD_ORACLE>"
+CONNECTIONSTRING="<HOST_ORACLE>:<PUERTO>/<SERVICIO>"
+PORT=3005
 ```
 
 ### Paso 2: Iniciar la API
@@ -83,7 +81,7 @@ node index.js
 Starting application
 Initializing database module
 Oracle Client cargado desde: ./oracle-client/instantclient_23_3
-Conexión a BD establecida: US_SUELDO@181.14.228.210:1521/desa
+Conexión a BD establecida: <USUARIO>@<HOST>:<PUERTO>/<SERVICIO>
 Initializing web server module
 Web http server listening on http://localhost:3005/api
 ```

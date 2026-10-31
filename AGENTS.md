@@ -175,6 +175,6 @@ api_liquid/
 ## 🔑 6. Cabeceras y Autenticación para Pruebas
 
 Al hacer peticiones HTTP en desarrollo o tests:
-* **Admin Key:** `X-Admin-Key: <ADMIN_ACCESS_KEY>` (por defecto en local: `admin_liq_2026`).
+* **Admin Key:** `X-Admin-Key: <ADMIN_ACCESS_KEY>`.
 * **Content-Type para Archivos Binarios:** `Content-Type: application/octet-stream` con `X-File-Name: nombre.xlsx`.
 * **Content-Type para JSON:** `Content-Type: application/json`.

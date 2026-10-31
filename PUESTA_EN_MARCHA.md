@@ -77,11 +77,11 @@ nano .env
 
 Parámetros principales:
 ```env
-USERDB="US_SUELDO"
-PASSWORD="TuPasswordSegura"
-CONNECTIONSTRING="192.168.1.50:1521/ORCL"
+USERDB="<USUARIO_ORACLE>"
+PASSWORD="<PASSWORD_ORACLE>"
+CONNECTIONSTRING="<HOST_ORACLE>:<PUERTO>/<SERVICIO>"
 
-ADMIN_ACCESS_KEY="admin_liq_2026"
+ADMIN_ACCESS_KEY="<TU_CLAVE_ADMIN_AQUI>"
 PORT=3005
 
 # Solo si el Instant Client está en una carpeta personalizada:

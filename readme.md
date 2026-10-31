@@ -44,17 +44,15 @@ npm install
 ### 2. Configurar Variables de Entorno (`.env`)
 Crea tu archivo `.env` en la raíz del proyecto con la configuración esencial:
 ```env
-USERDB="US_SUELDO"
-PASSWORD="TuPassword"
-CONNECTIONSTRING="192.168.1.50:1521/desa"
+USERDB="<USUARIO_ORACLE>"
+PASSWORD="<PASSWORD_ORACLE>"
+CONNECTIONSTRING="<HOST_ORACLE>:<PUERTO>/<SERVICIO>"
 
-ADMIN_ACCESS_KEY="admin_liq_2026"
+ADMIN_ACCESS_KEY="<TU_CLAVE_ADMIN_AQUI>"
 PORT=3005
 
 # Opcional (solo si Instant Client está en una carpeta local personalizada):
 # ORACLE_CLIENT_LIB_DIR=./oracle-client/instantclient_23_3
-```
-CORS_ORIGINS=http://localhost:3005,https://liq.midominio.com
 ```
 
 ### 3. Ejecutar los Scripts Iniciales en Oracle (Solo la primera vez)
@@ -116,7 +114,7 @@ Para trabajar con cualquier endpoint de esta API, **el día del período es siem
 ```bash
 curl -X POST http://localhost:3005/api/view/save \
      -H "Content-Type: application/json" \
-     -H "X-Admin-Key: admin_liq_2026" \
+     -H "X-Admin-Key: <TU_CLAVE_ADMIN>" \
      -d '{
        "viewName": "empleadosPorRep",
        "sql": "SELECT p.idpers AS PersonaId, p.dni AS Documento, p.apellido || \x27, \x27 || p.nombre AS ApeNom, c.idrep AS IdRep FROM personas p INNER JOIN cargos c ON c.idpers = p.idpers WHERE c.idrep = :IdRep ORDER BY p.apellido"
@@ -202,7 +200,7 @@ Permite subir archivos **Excel (`.xlsx`, `.xls`)** o **Delimitados (`.csv`, `.ts
 #### Ejemplo de carga directa en 1 solo comando (curl):
 ```bash
 curl -X POST http://localhost:3005/api/import/direct \
-     -H "X-Admin-Key: admin_liq_2026" \
+     -H "X-Admin-Key: <TU_CLAVE_ADMIN>" \
      -H "Content-Type: application/octet-stream" \
      -H "X-Table-Name: STG_NOVEDADES" \
      -H "X-Truncate: true" \

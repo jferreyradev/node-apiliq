@@ -92,14 +92,13 @@ cp .env.example .env 2>/dev/null || nano .env
 
 Configura tu `.env` apuntando a la **IP privada del servidor Oracle en la red local**:
 ```env
-USERDB="US_SUELDO"
-PASSWORD="TuPassword"
-# Coloca la IP privada de Oracle en la red local (ej: 192.168.1.50)
-CONNECTIONSTRING="192.168.1.50:1521/desa"
+USERDB="<USUARIO_ORACLE>"
+PASSWORD="<PASSWORD_ORACLE>"
+# Formato: host:puerto/servicio
+CONNECTIONSTRING="<IP_ORACLE_LAN>:<PUERTO_ORACLE>/<SERVICIO>"
 
 PORT=3005
-ADMIN_ACCESS_KEY="admin_liq_2026"
-ENABLE_ADMIN_STUDIO=false
+ADMIN_ACCESS_KEY="<TU_CLAVE_ADMIN_AQUI>"
 ```
 
 Prueba que todo funcione ejecutando la suite de tests:
@@ -174,7 +173,7 @@ sudo systemctl enable --now cloudflared
 ---
 
 ## ⚡ Método B: La Raspberry Pi como "Puente / Gateway" Rápido (5 Minutos)
-*(Usa este método si la API ya corre en una PC o servidor existente en la LAN en `http://192.168.1.100:3005`).*
+*(Usa este método si la API ya corre en una PC o servidor existente en la LAN en `http://<IP_LOCAL_API>:<PUERTO>`).*
 
 1. En la Raspberry Pi solo instalas `cloudflared`:
    ```bash
@@ -183,7 +182,7 @@ sudo systemctl enable --now cloudflared
    ```
 2. Inicias un túnel rápido apuntando a la IP de la otra máquina en la red local:
    ```bash
-   cloudflared tunnel --url http://192.168.1.100:3005
+   cloudflared tunnel --url http://<IP_LOCAL_API>:<PUERTO>
    ```
 3. Cloudflare te asignará una URL pública HTTPS inmediata (ej. `https://random-word.trycloudflare.com`).
 

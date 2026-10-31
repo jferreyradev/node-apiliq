@@ -1,14 +1,24 @@
-var bcrypt = require('bcrypt');
-var config = require('../config/database')
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const config = require('../config/database');
+const { simpleExecute } = require('../services/database');
 
-const { simpleExecute, getConnection } = require('../services/database');
+function createJwtHS256(payload, secret, expiresInSeconds = 3600) {
+    const header = { alg: 'HS256', typ: 'JWT' };
+    const now = Math.floor(Date.now() / 1000);
+    const fullPayload = { ...payload, iat: now, exp: now + expiresInSeconds };
+    const encHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
+    const encPayload = Buffer.from(JSON.stringify(fullPayload)).toString('base64url');
+    const signature = crypto.createHmac('sha256', secret).update(`${encHeader}.${encPayload}`).digest('base64url');
+    return `${encHeader}.${encPayload}.${signature}`;
+}
 
 async function post(req, res, next) {
     if (!req.body || !req.body.usr || !req.body.pws || !req.body.email) {
         return res.status(400).json({ error: 'usr, pws y email son requeridos' });
     }
 
-    var user = {
+    const user = {
         userName: req.body.usr,
         email: req.body.email
     };
@@ -21,16 +31,11 @@ async function post(req, res, next) {
         user.hashedPassword = await bcrypt.hash(req.body.pws, 10);
         await insertUser(user);
 
-        const { SignJWT } = await import('jose');
         const payload = {
             sub: user.userName,
             role: 1
         };
-        const token = await new SignJWT(payload)
-            .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-            .setIssuedAt()
-            .setExpirationTime('1h')
-            .sign(new TextEncoder().encode(config.jwtSecretKey));
+        const token = createJwtHS256(payload, config.jwtSecretKey, 3600);
 
         res.status(200).json({
             user: user,
@@ -42,6 +47,7 @@ async function post(req, res, next) {
 }
 
 module.exports.post = post;
+module.exports.createJwtHS256 = createJwtHS256;
 
 async function insertUser(user) {
 

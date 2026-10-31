@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -23,7 +22,7 @@ const createInternalAccessMiddleware = require('./internalAccess');
 const createCorsOptions = require('./corsConfig');
 const adminAuth = require('./adminAuth');
 
-app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 const options = {
     limit: '50mb',
@@ -57,7 +56,7 @@ const options = {
     }
 };
 
-app.use(bodyParser.json(options));
+app.use(express.json(options));
 
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 

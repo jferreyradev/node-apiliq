@@ -13,29 +13,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.3",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "helmet": "^7.2.0",
-    "jose": "^6.1.0",
     "morgan": "^1.12.1",
     "oracledb": "^7.0.1",
     "pdf-lib": "^1.16.0",
     "xlsx": "^0.18.5"
   },
   "overrides": {
-    "braces": ">=3.0.3",
-    "cross-spawn": ">=6.0.6",
     "cookie": "^0.7.2",
     "path-to-regexp": "^0.1.12",
     "send": "^0.19.0",
     "serve-static": "^1.16.2",
     "proxy-addr": "^2.0.8",
-    "on-headers": "^1.1.0",
-    "tar": ">=7.5.21",
-    "picomatch": ">=2.3.2",
-    "minimatch": ">=3.1.2"
+    "on-headers": "^1.1.0"
   }
 }

@@ -3,6 +3,7 @@ const test = require('node:test');
 const express = require('express');
 const http = require('node:http');
 const router = require('../services/router');
+const controlUser = require('../controllers/controlUsers');
 
 const app = express();
 app.use('/api', router);
@@ -248,6 +249,19 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
             body: {}
         });
         assert.equal(res.statusCode, 400);
+    });
+
+    await t.test('createJwtHS256 genera token JWT RFC 7519 válido', () => {
+        const token = controlUser.createJwtHS256({ sub: 'admin', role: 1 }, 'test-secret', 3600);
+        assert.ok(token);
+        const parts = token.split('.');
+        assert.equal(parts.length, 3);
+        const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8'));
+        assert.equal(header.alg, 'HS256');
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+        assert.equal(payload.sub, 'admin');
+        assert.equal(payload.role, 1);
+        assert.ok(payload.exp > payload.iat);
     });
 });
 

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node --watch index.js",
+    "prod": "node index.js",
     "test": "node --test",
     "test:unit": "node --test test/baseQuery.test.js",
     "test:integration": "RUN_INTEGRATION=1 node --test test/integration.test.js"
@@ -24,10 +25,9 @@
     "pdf-lib": "^1.16.0",
     "xlsx": "^0.18.5"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
   "overrides": {
+    "braces": ">=3.0.3",
+    "cross-spawn": ">=6.0.6",
     "cookie": "^0.7.2",
     "path-to-regexp": "^0.1.12",
     "send": "^0.19.0",

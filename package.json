@@ -21,7 +21,7 @@
     "morgan": "^1.12.1",
     "oracledb": "^7.0.1",
     "pdf-lib": "^1.16.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "overrides": {
     "cookie": "^0.7.2",

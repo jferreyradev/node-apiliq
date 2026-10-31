@@ -177,5 +177,27 @@ test('adminAuth service unit tests', async t => {
         assert.ok(jsonCalled.database);
         assert.ok(jsonCalled.database.connectionString !== undefined);
     });
+
+    await t.test('statusHandler retorna status ok, uptime y database pool', () => {
+        const { statusHandler } = require('../services/adminAuth');
+        let statusCalled = null;
+        let jsonCalled = null;
+        const mockRes = {
+            status: code => {
+                statusCalled = code;
+                return {
+                    json: data => { jsonCalled = data; }
+                };
+            }
+        };
+
+        statusHandler({}, mockRes);
+        assert.equal(statusCalled, 200);
+        assert.equal(jsonCalled.status, 'ok');
+        assert.equal(jsonCalled.service, 'node-apiliq');
+        assert.ok(jsonCalled.uptime);
+        assert.ok(typeof jsonCalled.uptimeSeconds === 'number');
+        assert.ok(jsonCalled.database);
+    });
 });
 

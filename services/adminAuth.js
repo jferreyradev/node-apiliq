@@ -174,11 +174,41 @@ function adminPoolStatusHandler(req, res) {
     });
 }
 
+/**
+ * Endpoint público y ligero de estado para balanceadores, monitores y comprobación rápida (/status, /health, /api/status, /api/health).
+ */
+function statusHandler(req, res) {
+    const uptimeSec = Math.round(process.uptime());
+    const days = Math.floor(uptimeSec / 86400);
+    const hours = Math.floor((uptimeSec % 86400) / 3600);
+    const minutes = Math.floor((uptimeSec % 3600) / 60);
+    const seconds = uptimeSec % 60;
+    const uptimeFormatted = `${days > 0 ? days + 'd ' : ''}${hours}h ${minutes}m ${seconds}s`;
+
+    const database = require('./database');
+    const pool = database.getPoolStats();
+
+    res.status(200).json({
+        status: 'ok',
+        service: 'node-apiliq',
+        uptime: uptimeFormatted,
+        uptimeSeconds: uptimeSec,
+        timestamp: new Date().toISOString(),
+        node: process.version,
+        database: {
+            status: pool.status,
+            connectionsOpen: pool.connectionsOpen,
+            connectionsInUse: pool.connectionsInUse
+        }
+    });
+}
+
 module.exports = {
     adminAuthMiddleware,
     verifyKeyHandler,
     adminHealthHandler,
     adminPoolStatusHandler,
+    statusHandler,
     extractKeyFromRequest,
     valuesMatch
 };

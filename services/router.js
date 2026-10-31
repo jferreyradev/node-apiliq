@@ -67,6 +67,8 @@ app.use(createInternalAccessMiddleware());
 
 app.use(cors(createCorsOptions()));
 
+app.route('/status').get(adminAuth.statusHandler);
+app.route('/health').get(adminAuth.statusHandler);
 app.route('/admin/verify').post(adminAuth.verifyKeyHandler);
 app.route('/admin/health').get(adminAuth.adminHealthHandler);
 app.route('/admin/pool-status').get(adminAuth.adminAuthMiddleware, adminAuth.adminPoolStatusHandler);

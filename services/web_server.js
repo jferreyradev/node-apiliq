@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const webServerConfig = require('../config/web_server.js');
 const router = require('./router.js');
+const adminAuth = require('./adminAuth.js');
 
 let httpServer;
 
@@ -27,6 +28,9 @@ function initialize() {
                 message: 'Admin UI desacoplada. Utilice dno-admin-bridge para gestionar la API.'
             });
         });
+
+        app.get('/status', adminAuth.statusHandler);
+        app.get('/health', adminAuth.statusHandler);
 
         app.use('/api', router);
 

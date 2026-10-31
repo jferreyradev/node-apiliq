@@ -263,5 +263,22 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(payload.role, 1);
         assert.ok(payload.exp > payload.iat);
     });
+
+    await t.test('GET /api/status responde 200 con telemetria publica', async () => {
+        const res = await executeRequest({ url: '/api/status' });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
+        assert.equal(data.service, 'node-apiliq');
+        assert.ok(data.uptime);
+        assert.ok(data.database);
+    });
+
+    await t.test('GET /api/health responde 200 con telemetria publica', async () => {
+        const res = await executeRequest({ url: '/api/health' });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.status, 'ok');
+    });
 });
 

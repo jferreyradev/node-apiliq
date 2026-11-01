@@ -975,6 +975,41 @@ async function syncProceduresFromOracle(req, res, next) {
     }
 }
 
+/**
+ * Ejecuta una consulta SQL SELECT de prueba en Oracle (para SQL Studio)
+ */
+async function executeSql(req, res, next) {
+    try {
+        const body = req.body || {};
+        const sql = (body.sql || body.query || '').trim();
+        const limit = Math.min(Math.max(Number(body.limit) || 50, 1), 500);
+
+        if (!sql) {
+            return res.status(400).json({ error: 'La consulta SQL es obligatoria' });
+        }
+
+        // Seguridad: solo permitir consultas de lectura (SELECT o WITH)
+        if (!/^\s*(SELECT|WITH)\b/i.test(sql)) {
+            return res.status(400).json({ error: 'Solo se permiten consultas de lectura (SELECT o WITH)' });
+        }
+
+        const binds = body.binds || {};
+        const startTime = Date.now();
+        const result = await database.simpleExecute(sql, binds, { maxRows: limit });
+        const durationMs = Date.now() - startTime;
+
+        res.status(200).json({
+            status: 'ok',
+            durationMs,
+            rowCount: (result && result.rows) ? result.rows.length : 0,
+            rows: (result && result.rows) ? result.rows : [],
+            metaData: (result && result.metaData) ? result.metaData : []
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports.saveView = saveView;
 module.exports.deleteView = deleteView;
 module.exports.refreshViews = refreshViews;
@@ -982,4 +1017,5 @@ module.exports.seedViewsFromFile = seedViewsFromFile;
 module.exports.importViewsJson = importViewsJson;
 module.exports.importProceduresJson = importProceduresJson;
 module.exports.syncProceduresFromOracle = syncProceduresFromOracle;
+module.exports.executeSql = executeSql;
 

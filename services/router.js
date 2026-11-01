@@ -80,6 +80,7 @@ app.route('/view/save').post(adminAuth.adminAuthMiddleware, control.saveView);
 app.route('/view/upsert').post(adminAuth.adminAuthMiddleware, control.saveView);
 app.route('/view/seed-from-file').post(adminAuth.adminAuthMiddleware, control.seedViewsFromFile);
 app.route('/view/import-json').post(adminAuth.adminAuthMiddleware, control.importViewsJson);
+app.route('/sql/execute').post(adminAuth.adminAuthMiddleware, control.executeSql);
 
 app.route('/sp/list').get(control.getProc);
 app.route('/sp/import-json').post(adminAuth.adminAuthMiddleware, control.importProceduresJson);

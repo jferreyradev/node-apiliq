@@ -79,6 +79,10 @@ async function post(req, res, next) {
     try {
         let entityName = req.path.substring(1);
 
+        if (!mapper.jsonEntityMap[entityName]) {
+            return res.status(404).json({ error: `Entidad '${entityName}' no encontrada` });
+        }
+
         let context = getEntityValues(req, mapper.jsonEntityMap[entityName].fields);
 
         let result = await entityapi.create(context, mapper.jsonEntityMap[entityName]);
@@ -98,6 +102,10 @@ async function post(req, res, next) {
 async function put(req, res, next) {
     try {
         let entityName = req.path.substring(1);
+
+        if (!mapper.jsonEntityMap[entityName]) {
+            return res.status(404).json({ error: `Entidad '${entityName}' no encontrada` });
+        }
 
         let context = getEntityValues(req, mapper.jsonEntityMap[entityName].fields);
 
@@ -122,6 +130,10 @@ async function put(req, res, next) {
 async function del(req, res, next) {
     try {
         let entityName = req.path.substring(1);
+
+        if (!mapper.jsonEntityMap[entityName]) {
+            return res.status(404).json({ error: `Entidad '${entityName}' no encontrada` });
+        }
 
         let context = getEntityValues(req, mapper.jsonEntityMap[entityName].fields);
 

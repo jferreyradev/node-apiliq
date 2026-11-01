@@ -1000,9 +1000,20 @@ async function executeSql(req, res, next) {
             return res.status(400).json({ error: 'La consulta SQL es obligatoria' });
         }
 
-        // Seguridad: solo permitir consultas de lectura (SELECT o WITH)
+        // Seguridad 1: Solo permitir sentencias de lectura que inicien con SELECT o WITH
         if (!/^\s*(SELECT|WITH)\b/i.test(sql)) {
             return res.status(400).json({ error: 'Solo se permiten consultas de lectura (SELECT o WITH)' });
+        }
+
+        // Seguridad 2: Prohibir punto y coma (;) para evitar inyecciones de múltiples sentencias
+        if (sql.includes(';')) {
+            return res.status(400).json({ error: 'No se permite el carácter de punto y coma (;)' });
+        }
+
+        // Seguridad 3: Prohibir palabras clave destructivas, de modificación de datos (DML) o esquema (DDL)
+        const forbiddenDmlDdl = /\b(INSERT|UPDATE|DELETE|DROP|ALTER|TRUNCATE|CREATE|REPLACE|GRANT|REVOKE|EXEC|EXECUTE|MERGE)\b/i;
+        if (forbiddenDmlDdl.test(sql)) {
+            return res.status(400).json({ error: 'Operación no permitida: la consulta contiene palabras clave de modificación o ejecución.' });
         }
 
         const binds = body.binds || {};

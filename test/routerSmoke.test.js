@@ -264,6 +264,33 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.ok(payload.exp > payload.iat);
     });
 
+    await t.test('POST /api/sql/execute rechaza solicitud sin clave de admin (401)', async () => {
+        const res = await executeRequest({
+            method: 'POST',
+            url: '/api/sql/execute',
+            body: { sql: 'SELECT 1 FROM DUAL' }
+        });
+        assert.equal(res.statusCode, 401);
+    });
+
+    await t.test('POST /api/sql/execute rechaza consulta no SELECT o con punto y coma (400)', async () => {
+        const res1 = await executeRequest({
+            method: 'POST',
+            url: '/api/sql/execute',
+            headers: adminHeaders,
+            body: { sql: 'DROP TABLE EMPLEADOS' }
+        });
+        assert.equal(res1.statusCode, 400);
+
+        const res2 = await executeRequest({
+            method: 'POST',
+            url: '/api/sql/execute',
+            headers: adminHeaders,
+            body: { sql: 'SELECT 1 FROM DUAL;' }
+        });
+        assert.equal(res2.statusCode, 400);
+    });
+
     await t.test('GET /api/status responde 200 con telemetria publica', async () => {
         const res = await executeRequest({ url: '/api/status' });
         assert.equal(res.statusCode, 200);

@@ -1018,7 +1018,7 @@ async function executeSql(req, res, next) {
 
         const binds = body.binds || {};
         const startTime = Date.now();
-        const result = await database.simpleExecute(sql, binds, { maxRows: limit });
+        const result = await simpleExecute(sql, binds, { maxRows: limit });
         const durationMs = Date.now() - startTime;
 
         res.status(200).json({

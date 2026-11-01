@@ -36,7 +36,7 @@ async function readClobAsString(value) {
 /**
  * Obtiene la configuración de una vista específica:
  * 1. Primero busca en la memoria RAM (Caché).
- * 2. Si no está en RAM, consulta la tabla API_VIEW_MAPPER en Oracle.
+ * 2. Si no está en RAM, consulta la tabla API_VIEW_MAPPER en Oracle (con timeout seguro).
  * 3. Si no existe en la BD o la BD está inaccesible, usa `config/mapperViews.js` como fallback.
  */
 async function getViewConfig(viewName) {
@@ -47,7 +47,7 @@ async function getViewConfig(viewName) {
         return viewCache.get(viewName);
     }
 
-    // 2. Intentar consultar en la tabla de Oracle
+    // 2. Intentar consultar en la tabla de Oracle con timeout para no bloquear
     try {
         const query = `
             SELECT CONFIG_JSON 
@@ -55,7 +55,11 @@ async function getViewConfig(viewName) {
             WHERE VIEW_NAME = :viewName 
               AND IS_ACTIVE = 1
         `;
-        const result = await database.simpleExecute(query, { viewName });
+        const executeWithTimeout = Promise.race([
+            database.simpleExecute(query, { viewName }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout al consultar vista en Oracle')), 2000))
+        ]);
+        const result = await executeWithTimeout;
 
         if (result && result.rows && result.rows.length > 0) {
             const rawJson = await readClobAsString(result.rows[0].CONFIG_JSON);
@@ -82,23 +86,43 @@ async function getViewConfig(viewName) {
 /**
  * Obtiene el catálogo completo de vistas (usado por GET /api/view/list).
  * Combina las vistas de la base de datos con las históricas de mapperViews.js.
+ * Utiliza caché en memoria y timeout estricto para evitar bloqueos o errores 502 de Cloudflare.
  */
 async function getAllViews() {
-    const combined = {};
-
-    // 1. Cargar base histórica de mapperViews.js
-    if (mapperViews && mapperViews.jsonViewMap) {
-        Object.assign(combined, mapperViews.jsonViewMap);
+    // Si ya fueron cargadas y la caché de RAM está lista, retornar de inmediato en 0ms
+    if (allLoaded && viewCache.size > 0) {
+        const cached = {};
+        for (const [key, val] of viewCache.entries()) {
+            cached[key] = val;
+        }
+        return cached;
     }
 
-    // 2. Sobrescribir / complementar con las vistas activas de la BD
+    const combined = {};
+
+    // 1. Cargar base histórica de mapperViews.js en combined y viewCache
+    if (mapperViews && mapperViews.jsonViewMap) {
+        Object.assign(combined, mapperViews.jsonViewMap);
+        for (const [k, v] of Object.entries(mapperViews.jsonViewMap)) {
+            if (!viewCache.has(k)) {
+                viewCache.set(k, v);
+            }
+        }
+    }
+
+    // 2. Sobrescribir / complementar con las vistas activas de la BD con timeout seguro (2s)
     try {
         const query = `
             SELECT VIEW_NAME, CONFIG_JSON 
             FROM API_VIEW_MAPPER 
             WHERE IS_ACTIVE = 1
         `;
-        const result = await database.simpleExecute(query, {});
+        const executeWithTimeout = Promise.race([
+            database.simpleExecute(query, {}),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Oracle timeout al listar vistas')), 2000))
+        ]);
+
+        const result = await executeWithTimeout;
 
         if (result && result.rows) {
             for (const row of result.rows) {
@@ -112,7 +136,8 @@ async function getAllViews() {
             allLoaded = true;
         }
     } catch (err) {
-        // En caso de que la tabla aún no exista, retornamos las vistas del archivo local
+        // En caso de que Oracle no responda o la tabla no exista, usamos las vistas locales y marcamos como cargado
+        allLoaded = true;
     }
 
     // 3. Incluir siempre las vistas activas en la memoria RAM

@@ -5,6 +5,19 @@ function getAllowedOrigins() {
         .filter(Boolean);
 }
 
+function isOriginAllowed(origin, allowedOrigins) {
+    if (!origin) return true;
+
+    return allowedOrigins.some(allowed => {
+        if (allowed === '*' || allowed === origin) return true;
+        if (allowed.includes('*')) {
+            const regex = new RegExp('^' + allowed.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+            return regex.test(origin);
+        }
+        return false;
+    });
+}
+
 function createCorsOptions() {
     const allowedOrigins = getAllowedOrigins();
 
@@ -14,7 +27,7 @@ function createCorsOptions() {
 
     return {
         origin(origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) {
+            if (isOriginAllowed(origin, allowedOrigins)) {
                 return callback(null, true);
             }
 

@@ -21,6 +21,7 @@ const controlUser = require('../controllers/controlUsers');
 const createInternalAccessMiddleware = require('./internalAccess');
 const createCorsOptions = require('./corsConfig');
 const adminAuth = require('./adminAuth');
+const { authLimiter, generalLimiter } = require('./rateLimiter');
 
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
@@ -66,10 +67,13 @@ app.use(helmet());
 app.use(createInternalAccessMiddleware());
 
 app.use(cors(createCorsOptions()));
+app.use(generalLimiter);
 
 app.route('/status').get(adminAuth.statusHandler);
 app.route('/health').get(adminAuth.statusHandler);
-app.route('/admin/verify').post(adminAuth.verifyKeyHandler);
+app.route('/admin/verify').post(authLimiter, adminAuth.verifyKeyHandler);
+app.route('/auth/login').post(authLimiter, controlUser.login);
+app.route('/login').post(authLimiter, controlUser.login);
 app.route('/admin/health').get(adminAuth.adminHealthHandler);
 app.route('/admin/pool-status').get(adminAuth.adminAuthMiddleware, adminAuth.adminPoolStatusHandler);
 
@@ -112,7 +116,7 @@ app.route('/txt/*').get(control.getTXT);
 
 app.route('/txtfromsp/*').post(control.getCursorFromSP);
 
-app.route('/adduser').post(adminAuth.adminAuthMiddleware, controlUser.post);
+app.route('/adduser').post(authLimiter, adminAuth.adminAuthMiddleware, controlUser.post);
 
 app.route('/boleta').get(control.getBoletaPDF2);
 

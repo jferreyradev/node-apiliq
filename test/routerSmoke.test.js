@@ -307,5 +307,61 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         const data = JSON.parse(res.body);
         assert.equal(data.status, 'ok');
     });
+
+    await t.test('clientAuth en router: protege endpoints de datos cuando REQUIRE_AUTH=true', async () => {
+        const origRequire = process.env.REQUIRE_AUTH;
+        const origClient = process.env.API_CLIENT_KEY;
+        const origAdmin = process.env.ADMIN_ACCESS_KEY;
+        const origSecret = process.env.JWT_SECRET;
+
+        try {
+            process.env.REQUIRE_AUTH = 'true';
+            process.env.API_CLIENT_KEY = 'clave_cliente_test';
+            process.env.ADMIN_ACCESS_KEY = 'clave_admin_test';
+            process.env.JWT_SECRET = 'secret_test';
+
+            // 1. Sin credenciales -> 401
+            const resAnon = await executeRequest({ url: '/api/view/list' });
+            assert.equal(resAnon.statusCode, 401);
+
+            // 2. Con X-API-Key -> 200
+            const resClient = await executeRequest({ 
+                url: '/api/view/list',
+                headers: { 'x-api-key': 'clave_cliente_test' }
+            });
+            assert.equal(resClient.statusCode, 200);
+
+            // 3. Con X-Admin-Key -> 200
+            const resAdmin = await executeRequest({ 
+                url: '/api/view/list',
+                headers: { 'x-admin-key': 'clave_admin_test' }
+            });
+            assert.equal(resAdmin.statusCode, 200);
+
+            // 4. Con Bearer JWT -> 200
+            const validToken = controlUser.createJwtHS256({ sub: 'user1' }, 'secret_test', 3600);
+            const resJwt = await executeRequest({ 
+                url: '/api/view/list',
+                headers: { 'authorization': `Bearer ${validToken}` }
+            });
+            assert.equal(resJwt.statusCode, 200);
+
+            // 5. Telemetria publica /status sigue respondiendo 200 sin clave
+            const resStatus = await executeRequest({ url: '/api/status' });
+            assert.equal(resStatus.statusCode, 200);
+        } finally {
+            if (origRequire !== undefined) process.env.REQUIRE_AUTH = origRequire;
+            else delete process.env.REQUIRE_AUTH;
+
+            if (origClient !== undefined) process.env.API_CLIENT_KEY = origClient;
+            else delete process.env.API_CLIENT_KEY;
+
+            if (origAdmin !== undefined) process.env.ADMIN_ACCESS_KEY = origAdmin;
+            else delete process.env.ADMIN_ACCESS_KEY;
+
+            if (origSecret !== undefined) process.env.JWT_SECRET = origSecret;
+            else delete process.env.JWT_SECRET;
+        }
+    });
 });
 

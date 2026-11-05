@@ -21,6 +21,7 @@ const controlUser = require('../controllers/controlUsers');
 const createInternalAccessMiddleware = require('./internalAccess');
 const createCorsOptions = require('./corsConfig');
 const adminAuth = require('./adminAuth');
+const clientAuth = require('./clientAuth');
 const { authLimiter, generalLimiter } = require('./rateLimiter');
 
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
@@ -77,7 +78,7 @@ app.route('/login').post(authLimiter, controlUser.login);
 app.route('/admin/health').get(adminAuth.adminHealthHandler);
 app.route('/admin/pool-status').get(adminAuth.adminAuthMiddleware, adminAuth.adminPoolStatusHandler);
 
-app.route('/view/list').get(control.getViews);
+app.route('/view/list').get(clientAuth.clientAuthMiddleware, control.getViews);
 app.route('/view/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
 app.route('/catalog/refresh').post(adminAuth.adminAuthMiddleware, control.refreshViews);
 app.route('/view/save').post(adminAuth.adminAuthMiddleware, control.saveView);
@@ -86,41 +87,41 @@ app.route('/view/seed-from-file').post(adminAuth.adminAuthMiddleware, control.se
 app.route('/view/import-json').post(adminAuth.adminAuthMiddleware, control.importViewsJson);
 app.route('/sql/execute').post(adminAuth.adminAuthMiddleware, control.executeSql);
 
-app.route('/sp/list').get(control.getProc);
+app.route('/sp/list').get(clientAuth.clientAuthMiddleware, control.getProc);
 app.route('/sp/import-json').post(adminAuth.adminAuthMiddleware, control.importProceduresJson);
 app.route('/sp/sync-oracle').post(adminAuth.adminAuthMiddleware, control.syncProceduresFromOracle);
 
-app.route('/fn/list').get(control.getFunc);
+app.route('/fn/list').get(clientAuth.clientAuthMiddleware, control.getFunc);
 app.route('/fn/import-json').post(adminAuth.adminAuthMiddleware, control.importProceduresJson);
 
-app.route('/en/list').get(control.getEntities);
+app.route('/en/list').get(clientAuth.clientAuthMiddleware, control.getEntities);
 
-app.route('/repo/list').get(control.getReps);
+app.route('/repo/list').get(clientAuth.clientAuthMiddleware, control.getReps);
 
-app.route('/sp/*').post(control.execSP);
+app.route('/sp/*').post(clientAuth.clientAuthMiddleware, control.execSP);
 
-app.route('/fn/*').post(control.execFN);
+app.route('/fn/*').post(clientAuth.clientAuthMiddleware, control.execFN);
 
 app.route('/view/*')
-    .get(control.getView)
+    .get(clientAuth.clientAuthMiddleware, control.getView)
     .delete(adminAuth.adminAuthMiddleware, control.deleteView);
 
 
-app.route('/repo/*').get(control.getRepo);
+app.route('/repo/*').get(clientAuth.clientAuthMiddleware, control.getRepo);
 
-app.route('/fileUpload').post(files.post);
+app.route('/fileUpload').post(clientAuth.clientAuthMiddleware, files.post);
 
-app.route('/xlsx/*').get(control.getxlsx);
+app.route('/xlsx/*').get(clientAuth.clientAuthMiddleware, control.getxlsx);
 
-app.route('/txt/*').get(control.getTXT);
+app.route('/txt/*').get(clientAuth.clientAuthMiddleware, control.getTXT);
 
-app.route('/txtfromsp/*').post(control.getCursorFromSP);
+app.route('/txtfromsp/*').post(clientAuth.clientAuthMiddleware, control.getCursorFromSP);
 
 app.route('/adduser').post(authLimiter, adminAuth.adminAuthMiddleware, controlUser.post);
 
-app.route('/boleta').get(control.getBoletaPDF2);
+app.route('/boleta').get(clientAuth.clientAuthMiddleware, control.getBoletaPDF2);
 
-app.route('/generaNovIPSST').get(files.getHojaId);
+app.route('/generaNovIPSST').get(clientAuth.clientAuthMiddleware, files.getHojaId);
 
 app.route('/import/tables').get(adminAuth.adminAuthMiddleware, importController.getTables);
 app.route('/import/table-columns/:table').get(adminAuth.adminAuthMiddleware, importController.getTableColumns);

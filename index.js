@@ -1,4 +1,10 @@
-require('dotenv').config();
+const path = require('path');
+const envFile = process.env.ENV_FILE || process.env.NODE_ENV_FILE;
+if (envFile) {
+    require('dotenv').config({ path: path.resolve(process.cwd(), envFile) });
+} else {
+    require('dotenv').config();
+}
 
 const webServer = require('./services/web_server.js');
 const database = require('./services/database.js');

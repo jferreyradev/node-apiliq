@@ -97,7 +97,9 @@ api_liquid/
 │   ├── procedureCatalog.js  # Introspección en vivo de SPs/FNs desde ALL_ARGUMENTS
 │   ├── sqlViewParser.js     # Auto-parser de sentencias SELECT planas
 │   ├── tableImporter.js     # Parseo Excel/CSV y executeMany por lotes en Oracle
-│   └── adminAuth.js         # Middleware de autenticación X-Admin-Key (timing-safe)
+│   ├── adminAuth.js         # Middleware de autenticación X-Admin-Key (timing-safe)
+│   ├── clientAuth.js        # Middleware híbrido (X-API-Key, Bearer JWT, timing-safe)
+│   └── rateLimiter.js       # Rate limiter anti-DDoS e IP real (CF-Connecting-IP)
 ├── scripts/
 │   ├── oracle_api_view_mapper.sql  # DDL de la tabla de catálogo en Oracle
 │   ├── seed_views.sql              # Inserción de las 54 consultas iniciales
@@ -159,6 +161,14 @@ api_liquid/
    - `POST /api/sp/sync-oracle` descubre en vivo todos los procedimientos y funciones del esquema en Oracle (`ALL_ARGUMENTS`) y actualiza la caché RAM.
 4. **Aislamiento Multi-despliegue:** Para clientes con vistas o procedimientos particulares, los archivos `config/mapperViews.local.*`, `config/spmapper.local.*` y `config/fnmapper.local.*` están ignorados en Git (`.gitignore`) para permitir `git pull origin main` sin conflictos de merge.
 
+### Flujo F: Autenticación y Seguridad Híbrida (`clientAuth`)
+1. **Configuración en `.env`:** Si `REQUIRE_AUTH=false` (por defecto), la API permite acceso abierto para desarrollo local y retrocompatibilidad de intranet.
+2. **Si `REQUIRE_AUTH=true`:** Los endpoints de datos (`/api/view/*`, `/api/sp/*`, `/api/fn/*`, `/api/xlsx/*`) autorizan la petición con **CUALQUIERA** de estas credenciales independientes:
+   - `X-API-Key: <API_CLIENT_KEY>` (frontends y scripts sin login de usuario).
+   - `Authorization: Bearer <token>` (usuarios logueados en `POST /api/auth/login` con JWT HS256).
+   - `X-Admin-Key: <ADMIN_ACCESS_KEY>` (administrador).
+3. **Endpoints siempre públicos:** `/api/status`, `/api/health`, `/api/auth/login`.
+
 ---
 
 ## 🧪 5. Comandos de Prueba y Diagnóstico
@@ -175,6 +185,8 @@ api_liquid/
 ## 🔑 6. Cabeceras y Autenticación para Pruebas
 
 Al hacer peticiones HTTP en desarrollo o tests:
-* **Admin Key:** `X-Admin-Key: <ADMIN_ACCESS_KEY>`.
+* **Admin Key (Acceso total):** `X-Admin-Key: <ADMIN_ACCESS_KEY>`.
+* **Client Key (Consultas de datos):** `X-API-Key: <API_CLIENT_KEY>`.
+* **Bearer Token (Usuario logueado):** `Authorization: Bearer <token>`.
 * **Content-Type para Archivos Binarios:** `Content-Type: application/octet-stream` con `X-File-Name: nombre.xlsx`.
 * **Content-Type para JSON:** `Content-Type: application/json`.

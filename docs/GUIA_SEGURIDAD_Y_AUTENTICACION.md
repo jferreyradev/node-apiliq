@@ -64,6 +64,10 @@ CORS_WHITELIST="https://mi-portal.com,https://api-rpi.liqsysonline.com,http://lo
 
 ## 🔑 3. Los 3 Métodos de Autenticación Soportados
 
+> [!NOTE]
+> **Son métodos 100% independientes ("O" lógico):**  
+> NO necesitas combinar credenciales. Si envías `Authorization: Bearer <token>`, el token funciona completamente **solo**, sin necesidad de enviar `X-API-Key` ni ninguna otra cabecera adicional. Con CUALQUIERA de los métodos válidos, la API autoriza la consulta.
+
 ### Método 1: Clave de Cliente (`X-API-Key`)
 **¿Cuándo usarlo?** Para frontends web (Angular, React, Vue), paneles internos o scripts automatizados donde **no hay login individual de usuarios**, pero quieres blindar la API para que nadie de afuera pueda consultarla.
 

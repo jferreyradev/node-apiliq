@@ -3,6 +3,7 @@
 API REST robusta construida con **Node.js, Express y Oracle Database (11g/12c/19c)** para la gestión y liquidación de sueldos municipales, generación de boletas PDF, reportes Excel/TXT, intercambio de novedades IPSST y ejecución dinámica de procedimientos y consultas.
 
 > 📚 **Documentación y Guías Operativas:**
+> * 🔐 **[Guía Completa de Seguridad y Autenticación](docs/GUIA_SEGURIDAD_Y_AUTENTICACION.md)** — *Configuración de REQUIRE_AUTH, X-API-Key, Bearer JWT y X-Admin-Key con ejemplos cURL y JS.*
 > * 🖥️ **[Manual Operativo: Instalación, Actualización y Logs (Windows / Linux)](docs/GUIA_OPERATIVA_DESPLIEGUE_Y_LOGS.md)** — *Guía paso a paso para instaladores (NSSM, Servicios Windows, PM2, Systemd).*
 > * 🏛️ **[Justificación Técnica y Defensa Arquitectónica](docs/JUSTIFICACION_TECNICA_ARQUITECTURA.md)** — *Documento formal para directores y comités técnicos (por qué Node.js supera a PHP y métricas).*
 > * 🍓 **[Instructivo: Despliegue en Raspberry Pi con Cloudflare Tunnel](docs/INSTRUCTIVO_DESPLIEGUE_RASPBERRY_PI_CLOUDFLARE.md)** — *Aislamiento total de Oracle en red local con salida HTTPS segura.*

@@ -1,7 +1,8 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const config = require('../config/database');
-const { simpleExecute } = require('../services/database');
+const database = require('../services/database');
+const viewCatalog = require('../services/viewCatalog');
 
 function createJwtHS256(payload, secret, expiresInSeconds = 3600) {
     const header = { alg: 'HS256', typ: 'JWT' };
@@ -43,7 +44,10 @@ async function post(req, res, next) {
 
     const user = {
         userName: req.body.usr,
-        email: req.body.email
+        email: req.body.email,
+        dni: req.body.dni || null,
+        rol: req.body.idrol || req.body.rol || 1,
+        app: req.body.app || 'APP'
     };
 
     try {
@@ -54,7 +58,8 @@ async function post(req, res, next) {
 
         const payload = {
             sub: user.userName,
-            role: req.body.idrol || 1
+            role: user.rol,
+            email: user.email
         };
         const token = createJwtHS256(payload, secret, 3600);
 
@@ -77,12 +82,43 @@ async function login(req, res, next) {
     const { usr, pws } = req.body;
 
     try {
+        // Consultar la definición de la vista 'users' (RAM / API_VIEW_MAPPER / fallback mapperViews.js)
+        let viewConfig = null;
+        try {
+            viewConfig = await viewCatalog.getViewConfig('users');
+        } catch (_) {
+            // Silencioso ante fallback
+        }
+
+        const fields = (viewConfig && viewConfig.fields) || {};
+        const fromClause = (viewConfig && viewConfig.sql && Array.isArray(viewConfig.sql.fromClause))
+            ? viewConfig.sql.fromClause.join(' ')
+            : 'FROM SG_USUARIO';
+
+        // Columnas mapeadas en la vista 'users'
+        const colId = fields.Id || 'IDUS';
+        const colDni = fields.DNI || 'DNI';
+        const colUser = fields.UserName || 'USUARIO';
+        const colPass = fields.Password || 'CLAVE';
+        const colMail = fields.email || fields.Email || 'MAIL';
+        const colEstado = fields.Estado || 'IDESTADOUS';
+        const colRol = fields.Rol || 'ROL';
+        const colApp = fields.App || 'APP';
+
         const query = `
-            SELECT ID, USR, PWS, MAIL, IDROL, ACTIVO
-            FROM US_SUELDO.USUARIOS
-            WHERE LOWER(USR) = LOWER(:usr)
+            SELECT ${colId} AS IDUS,
+                   ${colDni} AS DNI,
+                   ${colUser} AS USUARIO,
+                   ${colPass} AS CLAVE,
+                   ${colMail} AS MAIL,
+                   ${colEstado} AS IDESTADOUS,
+                   ${colRol} AS ROL,
+                   ${colApp} AS APP
+            ${fromClause}
+            WHERE LOWER(${colUser}) = LOWER(:usr)
         `;
-        const result = await simpleExecute(query, { usr: usr.trim() });
+
+        const result = await database.simpleExecute(query, { usr: usr.trim() });
 
         if (!result || !result.rows || result.rows.length === 0) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -90,21 +126,56 @@ async function login(req, res, next) {
 
         const userRow = result.rows[0];
 
-        if (Number(userRow.ACTIVO) !== 1) {
-            return res.status(403).json({ error: 'El usuario se encuentra inactivo. Contacta al administrador.' });
+        // Normalización defensiva de campos (soportando tanto alias como campos originales)
+        const idUs = userRow.IDUS !== undefined ? userRow.IDUS : userRow.ID;
+        const userName = userRow.USUARIO || userRow.USR;
+        const dni = userRow.DNI;
+        const mail = userRow.MAIL || userRow.EMAIL;
+        const estadoVal = userRow.IDESTADOUS !== undefined ? userRow.IDESTADOUS : userRow.ESTADO;
+        const rol = userRow.ROL !== undefined ? userRow.ROL : userRow.IDROL;
+        const app = userRow.APP;
+        const clave = userRow.CLAVE || userRow.PWS;
+
+        // Verificación de estado activo (1 = Activo, 'A' = Activo, 0 o 2 o 'I' = Inactivo)
+        if (estadoVal !== null && estadoVal !== undefined) {
+            const estadoStr = String(estadoVal).trim().toUpperCase();
+            const isInactive = Number(estadoVal) === 0 ||
+                               Number(estadoVal) > 1 ||
+                               ['0', '2', 'I', 'B', 'INACTIVO', 'BLOQUEADO', 'BAJA'].includes(estadoStr);
+            if (isInactive) {
+                return res.status(403).json({ error: 'El usuario se encuentra inactivo. Contacta al administrador.' });
+            }
         }
 
-        const isValid = await bcrypt.compare(pws, userRow.PWS);
+        // Validación de contraseña (Bcrypt, con soporte de transición para texto plano o MD5)
+        const storedPassword = clave ? String(clave).trim() : '';
+        if (!storedPassword) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
+
+        let isValid = false;
+        if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$') || storedPassword.startsWith('$2y$')) {
+            isValid = await bcrypt.compare(pws, storedPassword);
+        } else {
+            isValid = (storedPassword === pws);
+            if (!isValid) {
+                const md5 = crypto.createHash('md5').update(pws).digest('hex');
+                isValid = (storedPassword.toLowerCase() === md5.toLowerCase());
+            }
+        }
+
         if (!isValid) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
         const secret = config.jwtSecretKey || process.env.JWT_SECRET || 'liqsys_secret_jwt_key_2026';
         const payload = {
-            sub: userRow.USR,
-            userId: userRow.ID,
-            email: userRow.MAIL,
-            role: userRow.IDROL
+            sub: userName,
+            userId: idUs,
+            dni: dni,
+            email: mail,
+            role: rol,
+            app: app
         };
         const expiresInSeconds = 28800; // 8 horas
         const token = createJwtHS256(payload, secret, expiresInSeconds);
@@ -114,10 +185,14 @@ async function login(req, res, next) {
             token,
             expiresInSeconds,
             user: {
-                id: userRow.ID,
-                usr: userRow.USR,
-                email: userRow.MAIL,
-                role: userRow.IDROL
+                id: idUs,
+                usr: userName,
+                userName: userName,
+                dni: dni,
+                email: mail,
+                role: rol,
+                app: app,
+                estado: estadoVal
             }
         });
     } catch (err) {
@@ -126,15 +201,16 @@ async function login(req, res, next) {
 }
 
 async function insertUser(user) {
-    await simpleExecute(
-        `insert into US_SUELDO.USUARIOS( ID,USR,PWS,MAIL,CREADO,ACTIVO,IDROL)
-                values((SELECT NVL(MAX(ID), 0) + 1 FROM US_SUELDO.USUARIOS),:usr, :pwd, :email, :creacion, 1, :idrol)`,
+    await database.simpleExecute(
+        `INSERT INTO SG_USUARIO (IDUS, DNI, USUARIO, CLAVE, MAIL, IDESTADOUS, ROL, APP)
+         VALUES ((SELECT NVL(MAX(IDUS), 0) + 1 FROM SG_USUARIO), :dni, :usr, :pwd, :email, 1, :rol, :app)`,
         {
+            dni: user.dni || null,
             usr: user.userName,
-            email: user.email.toLowerCase(),
             pwd: user.hashedPassword,
-            creacion: new Date(),
-            idrol: 1
+            email: user.email.toLowerCase(),
+            rol: user.rol || 1,
+            app: user.app || 'APP'
         }
     );
 }

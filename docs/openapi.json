@@ -1,0 +1,699 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API de Sueldos y Recursos Humanos (node-apiliq)",
+    "description": "API REST headless de alto rendimiento para liquidación de haberes, gestión de personal, ejecución de procedimientos almacenados PL/SQL, consultas dinámicas y carga masiva de novedades sobre Oracle Database 11g R2.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Equipo de Desarrollo de Liquidación de Sueldos"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "Ruta relativa en el mismo host"
+    },
+    {
+      "url": "https://api-rpi.liqsysonline.com/api",
+      "description": "Servidor de Producción (Raspberry Pi)"
+    },
+    {
+      "url": "http://localhost:3005/api",
+      "description": "Entorno Local de Desarrollo"
+    }
+  ],
+  "tags": [
+    { "name": "Autenticación", "description": "Inicio de sesión de usuarios y verificación de claves de aplicación" },
+    { "name": "Telemetría y Estado", "description": "Monitoreo de salud, uptime y pool de conexiones Oracle" },
+    { "name": "Vistas Dinámicas", "description": "Consultas dinámicas sobre el catálogo API_VIEW_MAPPER con paginación Oracle 11g (ROWNUM)" },
+    { "name": "Stored Procedures", "description": "Ejecución e introspección de procedimientos almacenados PL/SQL en tiempo real" },
+    { "name": "Funciones PL/SQL", "description": "Ejecución de funciones escalares de base de datos" },
+    { "name": "Importador de Archivos", "description": "Carga masiva de archivos Excel (.xlsx/.xls) y CSV a tablas Oracle por lotes (executeMany)" },
+    { "name": "SQL Studio y Administración", "description": "Ejecución de consultas directas, catálogos y gestión del sistema" },
+    { "name": "Reportes y Novedades", "description": "Generación de boletas PDF, exportación Excel y novedades IPSST" }
+  ],
+  "paths": {
+    "/openapi.json": {
+      "get": {
+        "tags": ["Telemetría y Estado"],
+        "summary": "Especificación OpenAPI 3.0",
+        "description": "Retorna el documento JSON de la especificación OpenAPI de la API.",
+        "responses": {
+          "200": {
+            "description": "Especificación OpenAPI en formato JSON",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "tags": ["Telemetría y Estado"],
+        "summary": "Estado general de la API",
+        "description": "Ruta pública de telemetría ligera para health checks de balanceadores, monitoreo y uptime.",
+        "responses": {
+          "200": {
+            "description": "Estado del servicio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Telemetría y Estado"],
+        "summary": "Health check público",
+        "description": "Alias idéntico a /api/status para comprobaciones de estado de Cloudflare o Nginx.",
+        "responses": {
+          "200": {
+            "description": "Estado del servicio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Inicio de sesión de usuarios",
+        "description": "Autentica al usuario consultando la tabla SG_USUARIO (vista users) en Oracle. Si REQUIRE_AUTH=true, la aplicación cliente debe enviar la cabecera X-API-Key para autorizar la petición antes de validar las credenciales del usuario.",
+        "security": [
+          { "ApiKeyAuth": [] },
+          { "AdminKeyAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticación exitosa. Retorna token JWT HS256 y datos del usuario.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetros faltantes (usr o pws)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Credenciales inválidas o cliente no autorizado (falta X-API-Key)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "Usuario inactivo (IDESTADOUS != 1)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/admin/verify": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Verificar clave de administrador",
+        "description": "Valida si una clave provista coincide con ADMIN_ACCESS_KEY mediante comparación timing-safe.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adminKey": { "type": "string", "example": "clave_admin_2026" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clave válida",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "authenticated": { "type": "boolean", "example": true } } } } }
+          },
+          "401": { "description": "Clave incorrecta" }
+        }
+      }
+    },
+    "/admin/health": {
+      "get": {
+        "tags": ["Telemetría y Estado"],
+        "summary": "Diagnóstico de conexión a Oracle",
+        "description": "Verifica conectividad ejecutando SELECT 1 FROM DUAL en Oracle.",
+        "responses": {
+          "200": { "description": "Base de datos y API online" }
+        }
+      }
+    },
+    "/admin/pool-status": {
+      "get": {
+        "tags": ["Telemetría y Estado"],
+        "summary": "Métricas del Pool de Conexiones Oracle",
+        "description": "Retorna conexiones abiertas, conexiones en uso, límites de pool y tiempos de timeout.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Métricas del pool" },
+          "401": { "description": "No autorizado (requiere X-Admin-Key)" }
+        }
+      }
+    },
+    "/view/list": {
+      "get": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Listar catálogo de vistas mapeadas",
+        "description": "Retorna el catálogo unificado de vistas dinámicas disponibles en memoria RAM y en Oracle.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Objeto con las configuraciones de todas las vistas mapeadas"
+          }
+        }
+      }
+    },
+    "/view/{name}": {
+      "get": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Consultar vista con filtros y paginación",
+        "description": "Ejecuta una vista mapeada proyectando columnas solicitadas, aplicando filtros con binds y paginando con ROWNUM (compatible con Oracle 11g R2). Si se incluye un filtro de Período, se normaliza automáticamente al día 01 (01/MM/YYYY).",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "path", "required": true, "description": "Nombre de la vista mapeada (ej. empleadosPorRep, hojaNov, conceptos)", "schema": { "type": "string" } },
+          { "name": "fields", "in": "query", "required": false, "description": "Lista separada por comas de columnas a proyectar", "schema": { "type": "string", "example": "Id,ApeNom,Dni" } },
+          { "name": "limit", "in": "query", "required": false, "description": "Cantidad máxima de filas a retornar", "schema": { "type": "integer", "default": 100 } },
+          { "name": "offset", "in": "query", "required": false, "description": "Desplazamiento inicial para paginación", "schema": { "type": "integer", "default": 0 } },
+          { "name": "sort", "in": "query", "required": false, "description": "Ordenamiento en formato JSON (ej. {\"ApeNom\":\"asc\"})", "schema": { "type": "string" } },
+          { "name": "Periodo", "in": "query", "required": false, "description": "Filtro de período (se normaliza siempre a 01/MM/YYYY)", "schema": { "type": "string", "example": "09/2026" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Filas retornadas por la consulta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "rows": { "type": "array", "items": { "type": "object" } },
+                    "metaData": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Parámetro o campo no permitido en el mapper" },
+          "404": { "description": "Vista no encontrada en el catálogo" }
+        }
+      },
+      "delete": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Desactivar vista del catálogo",
+        "description": "Desactiva una vista en la tabla API_VIEW_MAPPER y purga la memoria RAM.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Vista desactivada correctamente" }
+        }
+      }
+    },
+    "/view/save": {
+      "post": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Crear o actualizar vista desde SQL plano",
+        "description": "Parsea automáticamente una sentencia SQL SELECT (columnas, joins, where :binds) y la registra en API_VIEW_MAPPER y en la memoria RAM.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["viewName", "sql"],
+                "properties": {
+                  "viewName": { "type": "string", "example": "empleadosActivos" },
+                  "sql": { "type": "string", "example": "SELECT IDPERS, APELLIDO, NOMBRE, DNI FROM PERSONAS WHERE ACTIVO = 1" },
+                  "description": { "type": "string", "example": "Listado de empleados activos" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Vista parseada y guardada exitosamente" },
+          "400": { "description": "SQL inválido o sintaxis errónea" }
+        }
+      }
+    },
+    "/view/refresh": {
+      "post": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Purgar caché RAM de vistas",
+        "description": "Limpia la memoria RAM para forzar la recarga desde la base de datos Oracle.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Caché de vistas reiniciada" }
+        }
+      }
+    },
+    "/view/seed-from-file": {
+      "post": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Sincronizar vistas desde archivo local a Oracle",
+        "description": "Carga todas las vistas definidas en config/mapperViews.js o mapperViews.local.js hacia la tabla API_VIEW_MAPPER.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Sincronización finalizada" }
+        }
+      }
+    },
+    "/view/import-json": {
+      "post": {
+        "tags": ["Vistas Dinámicas"],
+        "summary": "Importar lote de vistas en formato JSON",
+        "description": "Recibe un mapa de configuraciones de vistas y las inserta o actualiza masivamente.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": { "type": "object" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Lote importado con éxito" }
+        }
+      }
+    },
+    "/sp/list": {
+      "get": {
+        "tags": ["Stored Procedures"],
+        "summary": "Listar catálogo de procedimientos almacenados",
+        "description": "Retorna la lista unificada de procedimientos PL/SQL con sus parámetros IN y OUT.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Catálogo de procedures" }
+        }
+      }
+    },
+    "/sp/{name}": {
+      "post": {
+        "tags": ["Stored Procedures"],
+        "summary": "Ejecutar procedimiento almacenado PL/SQL",
+        "description": "Resuelve la firma en Oracle (ALL_ARGUMENTS), mapea parámetros de entrada y cursores de salida, y ejecuta el bloque anónimo. Manejo determinístico: ValorError < 0 devuelve HTTP 500; ValorError > 0 o vErrorMsg devuelve HTTP 400.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "path", "required": true, "description": "Nombre o alias del procedimiento (ej. hojaIns, novHaberesDel, cargoIns)", "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "example": { "vIDREP": 1, "vPERIODO": "01/09/2026" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ejecución exitosa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "integer", "example": 200 },
+                    "out": { "type": "object", "description": "Valores de retorno, IDs generados o Cursores" },
+                    "elapsed": { "type": "string", "example": "14ms" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Error de validación de negocio (ValorError > 0 o vErrorMsg)" },
+          "500": { "description": "Error interno de base de datos Oracle (ValorError < 0 o excepción ORA-)" }
+        }
+      }
+    },
+    "/sp/sync-oracle": {
+      "post": {
+        "tags": ["Stored Procedures"],
+        "summary": "Introspección y sincronización en vivo desde Oracle",
+        "description": "Inspecciona el diccionario de datos (ALL_ARGUMENTS) y actualiza la caché RAM de todos los procedimientos y funciones del esquema.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Sincronización completada" }
+        }
+      }
+    },
+    "/fn/list": {
+      "get": {
+        "tags": ["Funciones PL/SQL"],
+        "summary": "Listar funciones almacenadas",
+        "description": "Retorna el catálogo unificado de funciones escalares de base de datos.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Catálogo de funciones" }
+        }
+      }
+    },
+    "/fn/{name}": {
+      "post": {
+        "tags": ["Funciones PL/SQL"],
+        "summary": "Ejecutar función escalar PL/SQL",
+        "description": "Ejecuta una función en Oracle y retorna el valor escalar en out.ValorSalida.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Resultado de la función" }
+        }
+      }
+    },
+    "/import/tables": {
+      "get": {
+        "tags": ["Importador de Archivos"],
+        "summary": "Listar tablas disponibles para importación",
+        "description": "Retorna los nombres de tablas del esquema actual en Oracle.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de tablas" }
+        }
+      }
+    },
+    "/import/table-columns/{table}": {
+      "get": {
+        "tags": ["Importador de Archivos"],
+        "summary": "Columnas y tipos de una tabla",
+        "description": "Introspecciona ALL_TAB_COLUMNS para obtener tipos de datos (NUMBER, DATE, VARCHAR2).",
+        "security": [{ "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "table", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Estructura de columnas de la tabla" }
+        }
+      }
+    },
+    "/import/preview": {
+      "post": {
+        "tags": ["Importador de Archivos"],
+        "summary": "Previsualizar archivo Excel o CSV (Fase 1)",
+        "description": "Recibe un archivo binario (.xlsx, .xls, .csv), parsea la primera hoja con SheetJS, genera una muestra de 10 filas y guarda un JSON temporal en ./tmp/<uploadId>.json.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Previsualización generada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPreviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/import/execute": {
+      "post": {
+        "tags": ["Importador de Archivos"],
+        "summary": "Ejecutar inserción por lotes en Oracle (Fase 2)",
+        "description": "Lee el archivo temporal ./tmp/<uploadId>.json, tipa columnas con bindDefs, ejecuta truncate opcional, e inserta lotes de 2000 registros mediante connection.executeMany() con commit final o rollback automático ante fallas.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportExecuteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Importación completada exitosamente" }
+        }
+      }
+    },
+    "/sql/execute": {
+      "post": {
+        "tags": ["SQL Studio y Administración"],
+        "summary": "Ejecución de consultas SQL directas (SQL Studio)",
+        "description": "Permite a la consola de administración ejecutar sentencias SELECT planas sobre Oracle.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sql"],
+                "properties": {
+                  "sql": { "type": "string", "example": "SELECT * FROM SG_USUARIO" },
+                  "limit": { "type": "integer", "default": 100 },
+                  "offset": { "type": "integer", "default": 0 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Filas retornadas" }
+        }
+      }
+    },
+    "/adduser": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Crear nuevo usuario en SG_USUARIO",
+        "description": "Inserta un usuario con contraseña hasheada en Bcrypt en la tabla SG_USUARIO.",
+        "security": [{ "AdminKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["usr", "pws", "email"],
+                "properties": {
+                  "usr": { "type": "string" },
+                  "pws": { "type": "string" },
+                  "email": { "type": "string" },
+                  "dni": { "type": "integer" },
+                  "rol": { "type": "integer", "default": 1 },
+                  "app": { "type": "string", "default": "APP" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuario creado" }
+        }
+      }
+    },
+    "/boleta": {
+      "get": {
+        "tags": ["Reportes y Novedades"],
+        "summary": "Generar boleta de sueldo en PDF",
+        "description": "Genera el documento PDF de la boleta de liquidación usando pdf-lib.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "IdLiq", "in": "query", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documento PDF",
+            "content": {
+              "application/pdf": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/xlsx/{name}": {
+      "get": {
+        "tags": ["Reportes y Novedades"],
+        "summary": "Exportar consulta a Excel (.xlsx)",
+        "description": "Ejecuta la vista solicitada y devuelve un archivo descargable en formato Excel con SheetJS.",
+        "security": [{ "ApiKeyAuth": [] }, { "BearerAuth": [] }, { "AdminKeyAuth": [] }],
+        "parameters": [
+          { "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Archivo Excel binario",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": { "type": "string", "format": "binary" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Clave para frontends y aplicaciones cliente configurada en API_CLIENT_KEY."
+      },
+      "AdminKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Admin-Key",
+        "description": "Clave maestra de administrador configurada en ADMIN_ACCESS_KEY."
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT estándar RFC 7519 emitido en el endpoint POST /api/auth/login."
+      }
+    },
+    "schemas": {
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" },
+          "service": { "type": "string", "example": "api-liquid" },
+          "uptime": { "type": "string", "example": "1d 4h 32m" },
+          "uptimeSeconds": { "type": "number", "example": 102720 },
+          "timestamp": { "type": "string", "example": "2026-11-09T18:30:00.000Z" },
+          "authRequired": { "type": "boolean", "example": true },
+          "databasePool": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string", "example": "open" },
+              "open": { "type": "boolean", "example": true },
+              "connectionsOpen": { "type": "integer", "example": 4 },
+              "connectionsInUse": { "type": "integer", "example": 0 }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["usr", "pws"],
+        "properties": {
+          "usr": { "type": "string", "example": "operador_liq", "description": "Nombre de usuario registrado en SG_USUARIO" },
+          "pws": { "type": "string", "example": "clave_segura_123", "description": "Contraseña del usuario" },
+          "apiKey": { "type": "string", "description": "Opcional si no se envía por cabecera X-API-Key" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" },
+          "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+          "expiresInSeconds": { "type": "integer", "example": 28800 },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "example": 1 },
+              "usr": { "type": "string", "example": "operador_liq" },
+              "userName": { "type": "string", "example": "operador_liq" },
+              "dni": { "type": "integer", "example": 28999888 },
+              "email": { "type": "string", "example": "operador@sueldos.gov.ar" },
+              "role": { "type": "integer", "example": 1 },
+              "app": { "type": "string", "example": "ADMIN" },
+              "estado": { "type": "integer", "example": 1 }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "error": { "type": "string", "example": "Credenciales inválidas" },
+          "code": { "type": "string", "example": "UNAUTHORIZED" },
+          "hint": { "type": "string" }
+        }
+      },
+      "ImportPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "uploadId": { "type": "string", "format": "uuid" },
+          "fileName": { "type": "string" },
+          "sheets": { "type": "array", "items": { "type": "string" } },
+          "selectedSheet": { "type": "string" },
+          "columns": { "type": "array", "items": { "type": "string" } },
+          "totalRows": { "type": "integer" },
+          "preview": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "ImportExecuteRequest": {
+        "type": "object",
+        "required": ["uploadId", "tableName", "mapping"],
+        "properties": {
+          "uploadId": { "type": "string", "format": "uuid" },
+          "tableName": { "type": "string", "example": "HOJA_NOV" },
+          "mapping": {
+            "type": "object",
+            "description": "Mapa de columna en Excel a columna en Oracle",
+            "example": { "DNI": "DNI", "IMPORTE": "IMP", "CONCEPTO": "COD" }
+          },
+          "truncate": { "type": "boolean", "default": false },
+          "atomic": { "type": "boolean", "default": true }
+        }
+      }
+    }
+  }
+}

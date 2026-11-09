@@ -291,6 +291,21 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
         assert.equal(res2.statusCode, 400);
     });
 
+    await t.test('GET /api/openapi.json retorna la especificación OpenAPI 3.0', async () => {
+        const res = await executeRequest({ url: '/api/openapi.json' });
+        assert.equal(res.statusCode, 200);
+        const data = JSON.parse(res.body);
+        assert.equal(data.openapi, '3.0.3');
+        assert.ok(data.paths['/auth/login']);
+        assert.ok(data.paths['/view/{name}']);
+    });
+
+    await t.test('GET /api/docs retorna interfaz Swagger UI HTML', async () => {
+        const res = await executeRequest({ url: '/api/docs' });
+        assert.equal(res.statusCode, 200);
+        assert.ok(res.body.includes('SwaggerUIBundle'));
+    });
+
     await t.test('GET /api/status responde 200 con telemetria publica', async () => {
         const res = await executeRequest({ url: '/api/status' });
         assert.equal(res.statusCode, 200);

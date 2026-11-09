@@ -222,6 +222,16 @@ curl -X POST http://localhost:3005/api/import/direct \
 
 ---
 
+### 6. Documentación OpenAPI 3.0 / Swagger UI
+
+La API expone la especificación estándar OpenAPI 3.0.3 lista para importar en Postman, Insomnia o Swagger:
+
+* **Swagger UI interactivo en navegador:** [`GET /api/docs`](http://localhost:3005/api/docs)
+* **Especificación OpenAPI (JSON):** [`GET /api/openapi.json`](http://localhost:3005/api/openapi.json) o [`GET /api/swagger.json`](http://localhost:3005/api/swagger.json)
+* **Archivo fuente:** [`docs/openapi.json`](docs/openapi.json)
+
+---
+
 ## 🛠️ Herramientas y Scripts Útiles
 
 * **Generador de Vistas por Terminal (`scripts/create_view.js`):**

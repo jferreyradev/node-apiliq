@@ -70,6 +70,42 @@ app.use(createInternalAccessMiddleware());
 app.use(cors(createCorsOptions()));
 app.use(generalLimiter);
 
+const openApiSpec = require('../docs/openapi.json');
+
+app.route('/openapi.json').get((req, res) => res.json(openApiSpec));
+app.route('/swagger.json').get((req, res) => res.json(openApiSpec));
+app.route('/docs').get((req, res) => {
+    res.removeHeader('Content-Security-Policy');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Documentación API Sueldos — Swagger UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    body { margin: 0; padding: 0; background: #fafafa; }
+    .topbar { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: './openapi.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [SwaggerUIBundle.presets.apis]
+      });
+    };
+  </script>
+</body>
+</html>`);
+});
+
 app.route('/status').get(adminAuth.statusHandler);
 app.route('/health').get(adminAuth.statusHandler);
 app.route('/admin/verify').post(authLimiter, adminAuth.verifyKeyHandler);

@@ -375,17 +375,24 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
             const loginNoKeyJson = JSON.parse(resLoginNoKey.body);
             assert.equal(loginNoKeyJson.code, 'UNAUTHORIZED_CLIENT');
 
-            // 7. POST /api/auth/login con X-API-Key válida atraviesa el middleware (responde 401 de credenciales o 400 si faltan)
-            const resLoginWithKey = await executeRequest({
-                method: 'POST',
-                url: '/api/auth/login',
-                headers: { 'x-api-key': 'clave_cliente_test' },
-                body: { usr: 'usuario_inexistente', pws: '123' }
+            // 8. GET /api/openapi.json y /api/docs protegidos cuando REQUIRE_AUTH=true
+            const resOpenApiNoKey = await executeRequest({ url: '/api/openapi.json' });
+            assert.equal(resOpenApiNoKey.statusCode, 401);
+
+            const resOpenApiWithKey = await executeRequest({
+                url: '/api/openapi.json',
+                headers: { 'x-api-key': 'clave_cliente_test' }
             });
-            // Si atravesó el middleware, no es 401 de cliente sino que llegó a la BD/handler
-            assert.notEqual(resLoginWithKey.statusCode, 404);
-            const loginWithKeyJson = JSON.parse(resLoginWithKey.body);
-            assert.notEqual(loginWithKeyJson.code, 'UNAUTHORIZED_CLIENT');
+            assert.equal(resOpenApiWithKey.statusCode, 200);
+
+            const resDocsNoKey = await executeRequest({ url: '/api/docs' });
+            assert.equal(resDocsNoKey.statusCode, 401);
+
+            const resDocsWithKey = await executeRequest({
+                url: '/api/docs?api_key=clave_cliente_test'
+            });
+            assert.equal(resDocsWithKey.statusCode, 200);
+            assert.ok(resDocsWithKey.body.includes('SwaggerUIBundle'));
         } finally {
             if (origRequire !== undefined) process.env.REQUIRE_AUTH = origRequire;
             else delete process.env.REQUIRE_AUTH;

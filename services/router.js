@@ -72,11 +72,14 @@ app.use(generalLimiter);
 
 const openApiSpec = require('../docs/openapi.json');
 
-app.route('/openapi.json').get((req, res) => res.json(openApiSpec));
-app.route('/swagger.json').get((req, res) => res.json(openApiSpec));
-app.route('/docs').get((req, res) => {
+app.route('/openapi.json').get(clientAuth.clientAuthMiddleware, (req, res) => res.json(openApiSpec));
+app.route('/swagger.json').get(clientAuth.clientAuthMiddleware, (req, res) => res.json(openApiSpec));
+app.route('/docs').get(clientAuth.clientAuthMiddleware, (req, res) => {
     res.removeHeader('Content-Security-Policy');
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const rawKey = (req.query && (req.query.api_key || req.query.admin_key)) ? String(req.query.api_key || req.query.admin_key) : '';
+    const safeKey = rawKey.replace(/[^a-zA-Z0-9_\-\.]/g, '');
+    const specUrl = safeKey ? `./openapi.json?api_key=${encodeURIComponent(safeKey)}` : './openapi.json';
     res.send(`<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -94,11 +97,18 @@ app.route('/docs').get((req, res) => {
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     window.onload = () => {
+      const apiKey = '${safeKey}';
       window.ui = SwaggerUIBundle({
-        url: './openapi.json',
+        url: '${specUrl}',
         dom_id: '#swagger-ui',
         deepLinking: true,
-        presets: [SwaggerUIBundle.presets.apis]
+        presets: [SwaggerUIBundle.presets.apis],
+        requestInterceptor: (req) => {
+          if (apiKey && !req.headers['X-API-Key']) {
+            req.headers['X-API-Key'] = apiKey;
+          }
+          return req;
+        }
       });
     };
   </script>

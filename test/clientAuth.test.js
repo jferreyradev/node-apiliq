@@ -3,7 +3,8 @@ const test = require('node:test');
 const { 
     valuesMatch, 
     verifyJwtHS256, 
-    createClientAuthMiddleware 
+    createClientAuthMiddleware,
+    createLoginAuthMiddleware
 } = require('../services/clientAuth');
 const { createJwtHS256 } = require('../controllers/controlUsers');
 
@@ -144,5 +145,87 @@ test('clientAuth service unit tests', async (t) => {
         assert.equal(nextCalled, true);
         assert.ok(req.user);
         assert.equal(req.user.sub, 'empleado1');
+    });
+
+    await t.test('loginAuthMiddleware permite login libre cuando REQUIRE_AUTH=false', () => {
+        const middleware = createLoginAuthMiddleware({ requireAuth: false });
+        let nextCalled = false;
+        const req = { get: () => null, body: { usr: 'admin', pws: '123' } };
+        middleware(req, {}, () => { nextCalled = true; });
+        assert.equal(nextCalled, true);
+    });
+
+    await t.test('loginAuthMiddleware rechaza login con 401 si REQUIRE_AUTH=true y no hay X-API-Key', () => {
+        const middleware = createLoginAuthMiddleware({
+            requireAuth: true,
+            clientKey: 'clave_front_123',
+            adminKey: 'clave_admin_123'
+        });
+
+        let statusCode = null;
+        let responseJson = null;
+        const req = { get: () => null, body: { usr: 'admin', pws: '123' } };
+        const res = {
+            status: code => {
+                statusCode = code;
+                return { json: data => { responseJson = data; } };
+            }
+        };
+
+        middleware(req, res, () => {});
+        assert.equal(statusCode, 401);
+        assert.equal(responseJson.code, 'UNAUTHORIZED_CLIENT');
+    });
+
+    await t.test('loginAuthMiddleware permite login si viene con X-API-Key válida', () => {
+        const middleware = createLoginAuthMiddleware({
+            requireAuth: true,
+            clientKey: 'clave_front_123'
+        });
+
+        let nextCalled = false;
+        const req = {
+            get: h => h.toLowerCase() === 'x-api-key' ? 'clave_front_123' : null,
+            body: { usr: 'admin', pws: '123' }
+        };
+
+        middleware(req, {}, () => { nextCalled = true; });
+        assert.equal(nextCalled, true);
+        assert.equal(req.isClient, true);
+    });
+
+    await t.test('loginAuthMiddleware permite login si viene con apiKey en body', () => {
+        const middleware = createLoginAuthMiddleware({
+            requireAuth: true,
+            clientKey: 'clave_front_123'
+        });
+
+        let nextCalled = false;
+        const req = {
+            get: () => null,
+            body: { usr: 'admin', pws: '123', apiKey: 'clave_front_123' }
+        };
+
+        middleware(req, {}, () => { nextCalled = true; });
+        assert.equal(nextCalled, true);
+        assert.equal(req.isClient, true);
+    });
+
+    await t.test('loginAuthMiddleware permite login si viene con X-Admin-Key válida', () => {
+        const middleware = createLoginAuthMiddleware({
+            requireAuth: true,
+            adminKey: 'clave_admin_123',
+            clientKey: 'clave_front_123'
+        });
+
+        let nextCalled = false;
+        const req = {
+            get: h => h.toLowerCase() === 'x-admin-key' ? 'clave_admin_123' : null,
+            body: { usr: 'admin', pws: '123' }
+        };
+
+        middleware(req, {}, () => { nextCalled = true; });
+        assert.equal(nextCalled, true);
+        assert.equal(req.isAdmin, true);
     });
 });

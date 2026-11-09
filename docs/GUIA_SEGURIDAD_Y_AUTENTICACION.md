@@ -15,7 +15,11 @@ flowchart TD
     RateLimiter --> Router{¿Endpoint Solicitado?}
 
     Router -->|Público: /api/status, /api/health| PublicEndpoints[200 OK sin autenticación]
-    Router -->|Login: /api/auth/login| LoginFlow[Autentica en Oracle US_SUELDO.USUARIOS -> Genera JWT]
+    Router -->|Login: /api/auth/login| LoginAuthCheck{REQUIRE_AUTH=true?}
+    LoginAuthCheck -->|No / false| LoginProcess[Consulta vista users / SG_USUARIO -> Genera JWT]
+    LoginAuthCheck -->|Sí / true| LoginKeyCheck{¿X-API-Key o X-Admin-Key válida?}
+    LoginKeyCheck -->|No| Login401[HTTP 401 Unauthorized Client]
+    LoginKeyCheck -->|Sí| LoginProcess
 
     Router -->|Datos: /view/*, /sp/*, /fn/*, /xlsx/*| ClientAuthCheck{REQUIRE_AUTH=true?}
     ClientAuthCheck -->|No / false| DataOpen[Permite acceso directo]
@@ -94,10 +98,11 @@ console.log(data);
 ---
 
 ### Método 2: Autenticación por Usuario con JWT (`Bearer <token>`)
-**¿Cuándo usarlo?** Cuando tu aplicación cuenta con una pantalla de inicio de sesión con **Usuario y Contraseña**. Los usuarios se validan en la tabla `US_SUELDO.USUARIOS` de Oracle.
+**¿Cuándo usarlo?** Cuando tu aplicación cuenta con una pantalla de inicio de sesión con **Usuario y Contraseña**. Los usuarios se validan en la tabla `SG_USUARIO` (vista `users`) de Oracle.
 
 #### Paso 1: El usuario inicia sesión (`POST /api/auth/login`)
 * **Endpoint:** `POST https://api-rpi.liqsysonline.com/api/auth/login`
+* **Cabecera requerida cuando `REQUIRE_AUTH=true`:** `X-API-Key: <TU_API_CLIENT_KEY>` (o `X-Admin-Key`) para asegurar que la aplicación que solicita el login está autorizada.
 * **Body (JSON):**
 ```json
 {
@@ -110,6 +115,7 @@ console.log(data);
 ```bash
 curl -X POST https://api-rpi.liqsysonline.com/api/auth/login \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: clave_cliente_portal_sueldos_2026" \
   -d '{"usr":"jferreyra", "pws":"contraseña123"}'
 ```
 
@@ -117,7 +123,19 @@ curl -X POST https://api-rpi.liqsysonline.com/api/auth/login \
 ```json
 {
   "status": "ok",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqZmVycmV5cmEiLCJ1c2VySWQiOjUsInJvbGUiOjEsImlhdCI6MTc2MjM1MDAwMCwiZXhwIjoxNzYyMzc4ODAwfQ...",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqZmVycmV5cmEiLCJ1c2VySWQiOjUsImlhdCI6MTc2MjM1MDAwMCwiZXhwIjoxNzYyMzc4ODAwfQ...",
+  "expiresInSeconds": 28800,
+  "user": {
+    "id": 5,
+    "usr": "jferreyra",
+    "userName": "jferreyra",
+    "email": "jferreyra@liqsys.com",
+    "role": 1,
+    "app": "ADMIN",
+    "estado": 1
+  }
+}
+```
   "expiresInSeconds": 28800,
   "user": {
     "id": 5,

@@ -349,6 +349,28 @@ test('Router responde catálogos de mappers y rutas de error sin base de datos',
             // 5. Telemetria publica /status sigue respondiendo 200 sin clave
             const resStatus = await executeRequest({ url: '/api/status' });
             assert.equal(resStatus.statusCode, 200);
+
+            // 6. POST /api/auth/login sin X-API-Key rechaza con 401
+            const resLoginNoKey = await executeRequest({
+                method: 'POST',
+                url: '/api/auth/login',
+                body: { usr: 'admin', pws: '123' }
+            });
+            assert.equal(resLoginNoKey.statusCode, 401);
+            const loginNoKeyJson = JSON.parse(resLoginNoKey.body);
+            assert.equal(loginNoKeyJson.code, 'UNAUTHORIZED_CLIENT');
+
+            // 7. POST /api/auth/login con X-API-Key válida atraviesa el middleware (responde 401 de credenciales o 400 si faltan)
+            const resLoginWithKey = await executeRequest({
+                method: 'POST',
+                url: '/api/auth/login',
+                headers: { 'x-api-key': 'clave_cliente_test' },
+                body: { usr: 'usuario_inexistente', pws: '123' }
+            });
+            // Si atravesó el middleware, no es 401 de cliente sino que llegó a la BD/handler
+            assert.notEqual(resLoginWithKey.statusCode, 404);
+            const loginWithKeyJson = JSON.parse(resLoginWithKey.body);
+            assert.notEqual(loginWithKeyJson.code, 'UNAUTHORIZED_CLIENT');
         } finally {
             if (origRequire !== undefined) process.env.REQUIRE_AUTH = origRequire;
             else delete process.env.REQUIRE_AUTH;

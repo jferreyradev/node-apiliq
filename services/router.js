@@ -73,8 +73,8 @@ app.use(generalLimiter);
 app.route('/status').get(adminAuth.statusHandler);
 app.route('/health').get(adminAuth.statusHandler);
 app.route('/admin/verify').post(authLimiter, adminAuth.verifyKeyHandler);
-app.route('/auth/login').post(authLimiter, controlUser.login);
-app.route('/login').post(authLimiter, controlUser.login);
+app.route('/auth/login').post(authLimiter, clientAuth.loginAuthMiddleware, controlUser.login);
+app.route('/login').post(authLimiter, clientAuth.loginAuthMiddleware, controlUser.login);
 app.route('/admin/health').get(adminAuth.adminHealthHandler);
 app.route('/admin/pool-status').get(adminAuth.adminAuthMiddleware, adminAuth.adminPoolStatusHandler);
 

@@ -131,9 +131,60 @@ function createClientAuthMiddleware(options = {}) {
     };
 }
 
+/**
+ * Middleware para proteger el endpoint de inicio de sesión:
+ * Exige una clave de aplicación autorizada (X-API-Key o X-Admin-Key) cuando REQUIRE_AUTH=true.
+ * No acepta Bearer JWT porque el usuario aún no posee token de sesión.
+ */
+function createLoginAuthMiddleware(options = {}) {
+    return (req, res, next) => {
+        const requireAuth = options.requireAuth ?? (process.env.REQUIRE_AUTH === 'true');
+
+        // Modo abierto (desarrollo local o intranet abierta)
+        if (!requireAuth) {
+            return next();
+        }
+
+        const adminKey = options.adminKey ?? process.env.ADMIN_ACCESS_KEY;
+        const clientKey = options.clientKey ?? process.env.API_CLIENT_KEY;
+
+        // 1. Si ya fue verificado como admin previamente
+        if (req.isAdmin) {
+            return next();
+        }
+
+        // 2. Comprobar X-Admin-Key
+        const providedAdminKey = req.get('X-Admin-Key') || (req.query && req.query.admin_key);
+        if (adminKey && valuesMatch(adminKey, providedAdminKey)) {
+            req.isAdmin = true;
+            return next();
+        }
+
+        // 3. Comprobar X-API-Key (cabecera o campo en body/query)
+        const providedClientKey = req.get('X-API-Key') ||
+                                  (req.body && (req.body.apiKey || req.body.api_key || req.body.clientKey)) ||
+                                  (req.query && req.query.api_key);
+
+        if (clientKey && valuesMatch(clientKey, providedClientKey)) {
+            req.isClient = true;
+            return next();
+        }
+
+        // Rechazo 401 si no presenta clave de aplicación válida
+        return res.status(401).json({
+            status: 'error',
+            code: 'UNAUTHORIZED_CLIENT',
+            error: 'Cliente no autorizado para iniciar sesión. Se requiere cabecera X-API-Key o X-Admin-Key válida.',
+            hint: 'Envía la cabecera X-API-Key con tu API_CLIENT_KEY, o configura REQUIRE_AUTH=false en .env.'
+        });
+    };
+}
+
 module.exports = {
     valuesMatch,
     verifyJwtHS256,
     createClientAuthMiddleware,
-    clientAuthMiddleware: createClientAuthMiddleware()
+    clientAuthMiddleware: createClientAuthMiddleware(),
+    createLoginAuthMiddleware,
+    loginAuthMiddleware: createLoginAuthMiddleware()
 };

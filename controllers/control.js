@@ -58,13 +58,13 @@ async function get(req, res, next) {
 
         context = req.query;
 
-        let entityName = req.path.substring(1);
+        let entityName = req.path.substring(1).replace(/^en\//, '');
 
         if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
-        if (result.rows.length > 0) {
+        if (result && result.rows && result.rows.length > 0) {
             res.status(200).json(result.rows);
         } else {
             res.status(404).end();
@@ -186,6 +186,8 @@ async function getView(req, res, next) {
         const viewConfig = await viewCatalog.getViewConfig(entityName);
         if (viewConfig) {
             result = await viewapi.getView(context, viewConfig);
+        } else if (mapper.jsonEntityMap[entityName]) {
+            result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
         if (result && result.rows.length > 0) {
@@ -385,6 +387,8 @@ async function getTXT(req, res, next) {
         const viewConfig = await viewCatalog.getViewConfig(entityName);
         if (viewConfig) {
             result = await viewapi.getView(context, viewConfig);
+        } else if (mapper.jsonEntityMap[entityName]) {
+            result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
         if (result && result.rows.length > 0) {
@@ -441,6 +445,8 @@ async function getTXTipsst(req, res, next) {
         const viewConfig = await viewCatalog.getViewConfig(entityName);
         if (viewConfig) {
             result = await viewapi.getView(context, viewConfig);
+        } else if (mapper.jsonEntityMap[entityName]) {
+            result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
         if (result && result.rows.length > 0) {
@@ -550,6 +556,8 @@ async function getBoletaPDF(req, res, next) {
         const viewConfig = await viewCatalog.getViewConfig(entityName);
         if (viewConfig) {
             result = await viewapi.getView(context, viewConfig);
+        } else if (mapper.jsonEntityMap[entityName]) {
+            result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
         //console.log(result);

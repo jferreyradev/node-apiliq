@@ -1410,7 +1410,35 @@ const baseJsonViewMap = {
 		"order by l.idtipoliq, l.idgrupoadi, L.PERIODO, l.fechadev, t.codigo, t.subcod"
             ]
         }
-    }	
+    },
+    conceptoLiq: {
+        fields: {
+            Id: 'c.IDCONCEPTOLIQ',
+            CargoId: 'c.IDCARGO',
+            Codigo: 'c.CODIGO',
+            SubCodigo: 'c.SUBCOD',
+            Parametro1: 'c.PARM1',
+            Parametro2: 'c.PARM2',
+            Vencimiento: 'c.VTO',
+            Importe: 'c.IMPORTE',
+            Periodo: 'c.PERIODO',
+            GrupoAdicionalId: 'c.IDGRUPOADI',
+            PenLey: 'c.PENLEY'
+        },
+        key: { field: 'Id' },
+        sql: {
+            fromClause: [
+                'FROM US_SUELDO.CONCEPTOLIQ c'
+            ],
+            whereFields: {
+                CargoId: 'c.IDCARGO',
+                Codigo: 'c.CODIGO',
+                SubCodigo: 'c.SUBCOD',
+                Periodo: 'c.PERIODO'
+            },
+            orderBy: 'ORDER BY c.CODIGO ASC, c.SUBCOD ASC, c.VTO ASC'
+        }
+    }
 };
 
 // Soporte para archivos de vistas locales por despliegue / municipio (no pisados por git)

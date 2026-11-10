@@ -1438,6 +1438,122 @@ const baseJsonViewMap = {
             },
             orderBy: 'ORDER BY c.CODIGO ASC, c.SUBCOD ASC, c.VTO ASC'
         }
+    },
+    archivoAcred: {
+        fields: {
+            Cadena: 'a.cadena'
+        },
+        sql: {
+            fromClause: [
+                'FROM us_sueldo.ACRED_ARCHIVO a ',
+                'inner join us_sueldo.liq l on l.idliq = a.idliq'
+            ],
+            whereFields: {
+                Periodo: 'l.PERIODO',
+                TipoLiquidacionId: 'l.IDTIPOLIQ',
+                GrupoAdicionalId: 'l.IDGRUPOADI',
+                Ley: 'a.ESLEY'
+            }
+        }
+    },
+    resumenAcred: {
+        fields: {
+            Periodo: 'l.PERIODO',
+            FechaDev: 'l.FECHADEV',
+            Importe: 'sum(a.NETO)',
+            Cantidad: 'count(distinct l.idliq)',
+            Bloq: 'a.BLOQUEADO',
+            EsLey: 'a.ESLEY'
+        },
+        sql: {
+            fromClause: [
+                'FROM US_SUELDO.ACRED_RESUMEN a ',
+                'inner join us_sueldo.liq l on l.idliq = a.idliq and a.cbu <> 0 '
+            ],
+            whereFields: {
+                Periodo: 'l.PERIODO',
+                TipoLiquidacionId: 'l.IDTIPOLIQ',
+                GrupoAdicionalId: 'l.IDGRUPOADI',
+                Ley: 'a.ESLEY'
+            },
+            groupClause: [
+                'group by l.PERIODO, l.FECHADEV, a.BLOQUEADO, a.ESLEY'
+            ]
+        }
+    },
+    detalleAcred: {
+        fields: {
+            GrupoAdicionalId: 'l.IDGRUPOADI',
+            Periodo: 'l.PERIODO',
+            FechaDev: 'l.FECHADEV',
+            LiquidacionId: 'l.IDLIQ',
+            Documento: 'p.DNI',
+            Apellido: 'p.APELLIDO',
+            Nombre: 'p.NOMBRE',
+            ReparticionId: 'c.IDREP',
+            Orden: 'c.ORDEN',
+            Afiliado: 'c.AFILIADO',
+            CUIL: 'p.CUIL',
+            CBU: 'a.CBU',
+            Haberes: 'a.HABERES',
+            Retenciones: 'a.RETEN',
+            Neto: 'a.NETO',
+            UniOrg: 'c.NROGRAL',
+            Bloq: 'a.BLOQUEADO',
+            EsLey: 'a.ESLEY'
+        },
+        sql: {
+            fromClause: [
+                'FROM US_SUELDO.ACRED_RESUMEN a ',
+                'inner join us_sueldo.liq l on l.idliq = a.idliq and a.cbu <> 0 ',
+                'inner join us_sueldo.cargos c on c.idcargo = l.idcargo ',
+                'inner join us_sueldo.personas p on p.idpers = c.idpers'
+            ],
+            whereFields: {
+                Periodo: 'l.PERIODO',
+                TipoLiquidacionId: 'l.IDTIPOLIQ',
+                GrupoAdicionalId: 'l.IDGRUPOADI',
+                Ley: 'a.ESLEY'
+            },
+            orderBy: 'ORDER BY c.IDREP, c.ORDEN'
+        }
+    },
+    resumenLiq: {
+        fields: {
+            IdRep: 'c.idrep',
+            Orden: 'c.orden',
+            PersonaDocumento: 'p.dni',
+            PersonaApellido: 'P.APELLIDO',
+            PersonaNombre: 'P.NOMBRE',
+            SujetoAporte: 'sum( case when CON.IDTIPOCONCEPTO = 1 THEN li.impticket ELSE 0 END)',
+            ExcentoAporte: 'sum( case when CON.IDTIPOCONCEPTO in (2,7) THEN li.impticket ELSE 0 END)',
+            AsignacionFamiliar: 'sum( case when CON.IDTIPOCONCEPTO = 4 THEN li.impticket ELSE 0 END)',
+            DescuentosLey: 'sum( case when CON.IDTIPOCONCEPTO = 3 THEN li.impticket ELSE 0 END)',
+            DescuentosVarios: 'sum( case when CON.IDTIPOCONCEPTO = 6 THEN li.impticket ELSE 0 END) ',
+            Neto: 'sum( case when CON.IDTIPOCONCEPTO in (1,2,4,7) THEN li.impticket else 0 end) - sum(case when CON.IDTIPOCONCEPTO in (3,6) then li.impticket else 0 END)',
+            TipoTotal: 'grouping(c.orden)'
+        },
+        whereFields: {
+            SituacionRevistaId: 'c.idsitrev',
+            TipoLiquidacionId: 'l.idtipoliq',
+            GrupoAdicionalId: 'l.idgrupoadi',
+            Periodo: 'l.periodo',
+            IdRep: 'c.idrep'
+        },
+        key: { field: '' },
+        sql: {
+            fromClause: [
+                'from us_sueldo.liq l',
+                'inner join us_sueldo.liqitem li on l.idliq = li.idliq',
+                'inner join us_sueldo.cargos c on C.IDCARGO = l.idcargo',
+                'inner join us_sueldo.personas p on p.idpers = c.idpers',
+                'inner join us_sueldo.concepto con on con.idconcepto = li.idconcepto'
+            ],
+            groupClause: [
+                'group by rollup ((c.idrep,c.orden,p.dni,P.APELLIDO,P.NOMBRE))',
+                'ORDER BY c.idrep,c.orden, TipoTotal'
+            ]
+        }
     }
 };
 

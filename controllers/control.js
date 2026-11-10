@@ -62,9 +62,14 @@ async function get(req, res, next) {
 
         if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
+        } else {
+            const viewConfig = await viewCatalog.getViewConfig(entityName);
+            if (viewConfig) {
+                result = await viewapi.getView(context, viewConfig);
+            }
         }
 
-        if (result && result.rows && result.rows.length > 0) {
+        if (result && Array.isArray(result.rows)) {
             res.status(200).json(result.rows);
         } else {
             res.status(404).end();
@@ -188,6 +193,8 @@ async function getView(req, res, next) {
             result = await viewapi.getView(context, viewConfig);
         } else if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
+        } else if (repomapper.jsonReportes[entityName]) {
+            result = await repoapi.getRepo(context, repomapper.jsonReportes[entityName]);
         }
 
         if (result && Array.isArray(result.rows)) {
@@ -389,6 +396,8 @@ async function getTXT(req, res, next) {
             result = await viewapi.getView(context, viewConfig);
         } else if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
+        } else if (repomapper.jsonReportes[entityName]) {
+            result = await repoapi.getRepo(context, repomapper.jsonReportes[entityName]);
         }
 
         if (result && result.rows.length > 0) {
@@ -447,6 +456,8 @@ async function getTXTipsst(req, res, next) {
             result = await viewapi.getView(context, viewConfig);
         } else if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
+        } else if (repomapper.jsonReportes[entityName]) {
+            result = await repoapi.getRepo(context, repomapper.jsonReportes[entityName]);
         }
 
         if (result && result.rows.length > 0) {
@@ -558,6 +569,8 @@ async function getBoletaPDF(req, res, next) {
             result = await viewapi.getView(context, viewConfig);
         } else if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
+        } else if (repomapper.jsonReportes[entityName]) {
+            result = await repoapi.getRepo(context, repomapper.jsonReportes[entityName]);
         }
 
         //console.log(result);

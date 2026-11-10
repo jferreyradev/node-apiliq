@@ -216,11 +216,27 @@ function badRequest(message) {
 }
 
 function getMappedField(fields, key) {
-    if (!Object.prototype.hasOwnProperty.call(fields, key) || typeof fields[key] !== 'string') {
-        throw badRequest(`Campo no permitido: ${key}`);
+    if (Object.prototype.hasOwnProperty.call(fields, key) && typeof fields[key] === 'string') {
+        return fields[key];
     }
 
-    return fields[key];
+    const lower = String(key || '').toLowerCase();
+    const matchedKey = Object.keys(fields).find(k => k.toLowerCase() === lower);
+    if (matchedKey && typeof fields[matchedKey] === 'string') {
+        return fields[matchedKey];
+    }
+
+    if (lower === 'subcod' && fields.SubCodigo) {
+        return fields.SubCodigo;
+    }
+    if (lower === 'vencimiento' && fields.Vto) {
+        return fields.Vto;
+    }
+    if (lower === 'vencimiento' && fields.Vencimiento) {
+        return fields.Vencimiento;
+    }
+
+    throw badRequest(`Campo no permitido: ${key}`);
 }
 
 function parseFilter(value, name) {

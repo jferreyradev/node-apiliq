@@ -48,6 +48,14 @@ test('valida ordenamiento y paginación', () => {
     assert.match(result.where, /order by PERSONAS\.NOMBRE desc/);
 });
 
+test('tolera ordenamiento con claves en minuscula o alias', () => {
+    const result = baseQuery.getWhereFields({
+        sort: '{"nombre":"asc","subcod":"desc"}'
+    }, { ...fields, SubCodigo: 'P.SUBCOD' });
+
+    assert.match(result.where, /order by PERSONAS\.NOMBRE asc, P\.SUBCOD desc/);
+});
+
 test('rechaza campos que no están en el mapper', () => {
     assert.throws(
         () => baseQuery.getWhereFields({ search: 'Password:secret' }, fields),

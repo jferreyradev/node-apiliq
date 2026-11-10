@@ -190,7 +190,7 @@ async function getView(req, res, next) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         }
 
-        if (result && result.rows.length > 0) {
+        if (result && Array.isArray(result.rows)) {
             res.status(200).json(result.rows);
         } else {
             res.status(404).end();
@@ -331,7 +331,7 @@ async function getRepo(req, res, next) {
             result = await repoapi.getRepo(context, repomapper.jsonReportes[repoName]);
         }
 
-        if (result && result.rows.length > 0) {
+        if (result && Array.isArray(result.rows)) {
             res.status(200).json(result.rows);
         } else {
             res.status(404).end();

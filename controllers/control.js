@@ -60,6 +60,16 @@ async function get(req, res, next) {
 
         let entityName = req.path.substring(1).replace(/^en\//, '');
 
+        if (!entityName) {
+            return res.status(200).json({
+                service: 'node-apiliq',
+                status: 'online',
+                api: '/api',
+                documentation: '/api/docs',
+                statusEndpoint: '/api/status'
+            });
+        }
+
         if (mapper.jsonEntityMap[entityName]) {
             result = await entityapi.find(context, mapper.jsonEntityMap[entityName]);
         } else {

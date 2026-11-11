@@ -70,6 +70,16 @@ app.use(createInternalAccessMiddleware());
 app.use(cors(createCorsOptions()));
 app.use(generalLimiter);
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        service: 'node-apiliq',
+        status: 'online',
+        api: '/api',
+        documentation: '/api/docs',
+        statusEndpoint: '/api/status'
+    });
+});
+
 const openApiSpec = require('../docs/openapi.json');
 
 app.route('/openapi.json').get(clientAuth.clientAuthMiddleware, (req, res) => res.json(openApiSpec));

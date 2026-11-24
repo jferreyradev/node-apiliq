@@ -153,7 +153,7 @@ test('viewapi.getSQLselect proyecta solo columnas solicitadas', () => {
     assert.doesNotMatch(sqlSubset, /c\.descripcion as Descripcion/);
 });
 
-test('normaliza filtros Periodo siempre al día 01 (01/MM/YYYY)', () => {
+test('normaliza filtros Periodo siempre al día 01 (01/MM/YYYY) y usa TO_DATE explicito', () => {
     const whereFields = {
         Periodo: 'l.periodo',
         IdRep: 'l.idrep'
@@ -163,5 +163,7 @@ test('normaliza filtros Periodo siempre al día 01 (01/MM/YYYY)', () => {
         const res = baseQuery.getWhereFields({ Periodo: rawInput, IdRep: '18' }, whereFields);
         assert.equal(res.binds.Periodo, '01/09/2026', `Input '${rawInput}' debe normalizarse a '01/09/2026'`);
         assert.equal(res.binds.IdRep, '18');
+        assert.match(res.where, /TRUNC\(l\.periodo\) = TO_DATE\(:Periodo, 'DD\/MM\/YYYY'\)/);
+        assert.match(res.where, /l\.idrep = :IdRep/);
     }
 });

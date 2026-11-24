@@ -330,8 +330,18 @@ function getValidatedWhere(context, fields) {
         if (context[key] === 'null') {
             addClause(clauses, `${field} is null`);
         } else {
-            addClause(clauses, `${field} = :${key}`);
-            binds[key] = normalizePeriodoQueryValue(key, context[key]);
+            const lowerKey = String(key || '').toLowerCase();
+            const lowerField = String(field || '').toLowerCase();
+            const isPeriodo = lowerKey.includes('periodo') || lowerKey === 'per' || lowerKey === 'vper' || lowerField.includes('periodo');
+
+            if (isPeriodo) {
+                const cleanField = lowerField.includes('trunc(') ? field : `TRUNC(${field})`;
+                addClause(clauses, `${cleanField} = TO_DATE(:${key}, 'DD/MM/YYYY')`);
+                binds[key] = normalizePeriodoQueryValue(key, context[key]);
+            } else {
+                addClause(clauses, `${field} = :${key}`);
+                binds[key] = context[key];
+            }
         }
     }
 

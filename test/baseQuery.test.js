@@ -167,3 +167,17 @@ test('normaliza filtros Periodo siempre al día 01 (01/MM/YYYY) y usa TO_DATE ex
         assert.match(res.where, /l\.idrep = :IdRep/);
     }
 });
+
+test('no confunde nombres de tablas que contienen "periodo" con campos fecha (ej: tabperiodo.activo)', () => {
+    const whereFields = {
+        Periodo: 'tabperiodo.PERIODO',
+        Activo: 'tabperiodo.activo'
+    };
+
+    const res = baseQuery.getWhereFields({ Activo: 1, Periodo: '10/2026' }, whereFields);
+    assert.match(res.where, /tabperiodo\.activo = :Activo/);
+    assert.doesNotMatch(res.where, /TO_DATE\(:Activo/);
+    assert.equal(res.binds.Activo, 1);
+    assert.match(res.where, /TRUNC\(tabperiodo\.PERIODO\) = TO_DATE\(:Periodo, 'DD\/MM\/YYYY'\)/);
+    assert.equal(res.binds.Periodo, '01/10/2026');
+});
